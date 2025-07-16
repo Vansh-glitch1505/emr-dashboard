@@ -1,13 +1,51 @@
-# React + Vite
+# 🏥 EMR Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An Electronic Medical Record (EMR) Dashboard built using **ReactJS** to manage and preview patient information such as demographics, contact details, insurance info, medical history, and more.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# emr-dashboard
+- 📋 Patient Demographics Form  
+- 📞 Contact & Emergency Info  
+- 💳 Insurance Information  
+- 🩺 Medical History (Conditions, Surgeries, Allergies, Immunizations)  
+- 📄 Real-time Preview of Entered Data  
+- ✅ Consent Form  
+- 📁 Clean and Modular File Structure
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React, React Router  
+- **Styling**: CSS  
+- **State Management**: useState + useOutletContext  
+- **Version Control**: Git & GitHub
+
+---
+
+## 🔧 Installation
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/Vansh-glitch1505/emr-dashboard.git
+   cd emr-dashboard
+   ```
+2. Install Dependencies
+```bash
+npm install
+```
+
+3.Run the App
+```bash
+npm start
+```
+
+🙌 Author
+Vansh Rotkar
+GitHub
+
+
+
