@@ -1,0 +1,54 @@
+.assessment-container {
+  padding: 30px;
+  background-color: #fff;
+  font-family: "Segoe UI", sans-serif;
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 10px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.form-actions {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.next-btn {
+  padding: 10px 30px;
+  background-color: #1c9cd8;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.next-btn:hover {
+  background-color: #0074a6;
+}

@@ -1,0 +1,88 @@
+.insurance-container {
+  padding: 30px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.insurance-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.insurance-section {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.insurance-section legend {
+  font-weight: bold;
+  font-size: 16px;
+  padding: 5px 15px;
+  background-color: #d3ebf7;
+  border-radius: 12px;
+}
+
+.optional-text {
+  font-weight: normal;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.form-row div {
+  flex: 1;
+}
+
+.form-row label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+.date-pair {
+  display: flex;
+  gap: 10px;
+}
+
+.form-actions {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.next-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.next-btn:hover {
+  background-color: #1e40af;
+}

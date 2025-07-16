@@ -1,0 +1,46 @@
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden; /* Prevent double scroll on the whole page */
+}
+
+.sidebar-container {
+  width: 250px; /* Fixed sidebar width */
+  height: 100vh;
+  overflow-y: auto; /* Enable scroll for sidebar */
+  background: #2c3e50; /* Example sidebar color */
+  color: white;
+  position: sticky;
+  top: 0;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  background-color: #f5f7fa;
+  overflow-y: auto; /* Enable scroll for main content */
+  height: 100vh;
+}
+
+/* Custom scrollbar styling */
+.sidebar-container::-webkit-scrollbar,
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar-container::-webkit-scrollbar-track,
+.main-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.sidebar-container::-webkit-scrollbar-thumb,
+.main-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.sidebar-container::-webkit-scrollbar-thumb:hover,
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

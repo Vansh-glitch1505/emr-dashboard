@@ -1,0 +1,42 @@
+/* src/pages/Consent/Consent.css */
+.consent-container {
+  max-width: 800px;
+  margin: 40px auto;
+  background-color: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+}
+
+.form-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.consent-header p {
+  margin: 10px 0;
+  font-size: 1rem;
+}
+
+.consent-header u {
+  text-decoration: underline;
+  color: #1e88e5;
+}
+
+.consent-body p {
+  margin-top: 25px;
+  font-size: 1rem;
+}
+
+.consent-body ol {
+  margin-top: 15px;
+  padding-left: 20px;
+}
+
+.consent-body li {
+  margin-bottom: 15px;
+  font-size: 1rem;
+}

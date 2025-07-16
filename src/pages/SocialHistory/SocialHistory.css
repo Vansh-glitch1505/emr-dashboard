@@ -1,0 +1,71 @@
+.social-history-container {
+  padding: 25px;
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+.toggle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  padding-right: 10px;
+}
+
+.toggle-switch {
+  width: 60px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  text-align: center;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: #0b74b8;
+  transition: all 0.3s ease;
+}
+
+.toggle-switch.off {
+  background-color: #0b74b8;
+  color: #f0f4f8;
+}
+
+.toggle-switch.on {
+  background-color: #2ecc71;
+  color: #fff;
+}
+
+.social-history-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.preview-btn,
+.next-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 20px;
+  background-color: #e1f5fd;
+  color: #007baf;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.next-btn:hover {
+  background-color: #d1eaf4;
+}
+
+.preview-btn:hover {
+  background-color: #d1eaf4;
+}
