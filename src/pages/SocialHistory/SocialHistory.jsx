@@ -1,6 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./SocialHistory.css";
+import TobaccoUse from "./TobaccoUse.jsx"; // Adjust path if needed
+import AlcoholUse from "./AlcoholUse.jsx";
+import FinancialResources from "./FinancialResources.jsx";
+import PhysicalActivity from "./PhysicalActivity.jsx";
+import GenderIdentity from "./GenderIdentity.jsx";
+import SocialText from "./SocialText.jsx";
+import SexualOrientation from "./SexualOrientation.jsx";
+import Stress from "./Stress.jsx";
+import SocialIsolation from "./SocialIsolation.jsx";
+import ExposureToViolence from "./ExposureToViolence.jsx";
+import NutrientsHistory from "./NutrientsHistory.jsx";
+import Education from "./Education.jsx";
 
 const SocialHistory = () => {
   const fields = [
@@ -32,12 +44,13 @@ const SocialHistory = () => {
   };
 
   const handleNext = () => {
-    navigate('/dashboard/preview');  // or the next section path
+    navigate('/dashboard/preview');
   };
 
   return (
     <div className="social-history-container">
       <h2>Social History</h2>
+
       <div className="toggle-list">
         {fields.map((field) => (
           <div className="toggle-row" key={field}>
@@ -51,6 +64,20 @@ const SocialHistory = () => {
           </div>
         ))}
       </div>
+
+      {toggles["Tobacco use"] && <TobaccoUse />}
+      {toggles["Alcohol use"] && <AlcoholUse />}
+      {toggles["Social History (free text)"] && <SocialText />}
+      {toggles["Financial Resources"] && <FinancialResources />}
+      {toggles["Physical activity"] && <PhysicalActivity />}
+      {toggles["Gender identity"] && <GenderIdentity />}
+      {toggles["Sexual orientation"] && <SexualOrientation />}
+      {toggles["Stress"] && <Stress />}
+      {toggles["Social isolation & connection"] && <SocialIsolation />}
+      {toggles["Exposure to violence"] && <ExposureToViolence />}
+      {toggles["Nutrients History"] && <NutrientsHistory />}
+      {toggles["Education"] && <Education />}
+
 
       <div className="social-history-buttons">
         <button className="preview-btn" onClick={handleNext}>Preview</button>

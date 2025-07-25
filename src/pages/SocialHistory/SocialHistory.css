@@ -1,6 +1,9 @@
 .social-history-container {
   padding: 25px;
   font-family: Arial, sans-serif;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 h2 {
@@ -10,27 +13,34 @@ h2 {
 .toggle-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 30px;
+  gap: 10px;
+  max-width: 400px; /* Makes the left side narrower */
 }
 
 .toggle-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   font-size: 16px;
-  padding-right: 10px;
+  padding: 6px 12px;
+  background: #f6fafd;
+  border-radius: 8px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+.toggle-row label {
+  margin-right: 12px;
+  flex: 1;
 }
 
 .toggle-switch {
-  width: 60px;
-  padding: 5px 10px;
+  min-width: 50px;
+  padding: 4px 10px;
   border-radius: 999px;
   text-align: center;
   color: white;
   font-weight: 500;
   cursor: pointer;
-  background-color: #0b74b8;
   transition: all 0.3s ease;
 }
 
@@ -48,6 +58,7 @@ h2 {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  margin-top: 30px;
 }
 
 .preview-btn,
@@ -62,10 +73,7 @@ h2 {
   transition: 0.2s;
 }
 
-.next-btn:hover {
-  background-color: #d1eaf4;
-}
-
+.next-btn:hover,
 .preview-btn:hover {
   background-color: #d1eaf4;
 }
