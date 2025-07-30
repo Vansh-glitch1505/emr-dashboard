@@ -1,24 +1,48 @@
 import React, { useState } from "react";
+import { useSocialHistory } from "./SocialHistoryContext";
 import "./SocialIsolation.css";
 
 const SocialIsolation = () => {
+  const { updateSocialIsolation, socialHistoryData } = useSocialHistory();
   const [formData, setFormData] = useState({
-    isolationStatus: "Low",
-    socialSupport: "Supportive family",
-    interactions: "",
-    notes: "",
+    isolationStatus: socialHistoryData?.socialIsolation?.isolationStatus || "Low",
+    socialSupport: socialHistoryData?.socialIsolation?.socialSupport || "Supportive family",
+    interactions: socialHistoryData?.socialIsolation?.interactions || "",
+    notes: socialHistoryData?.socialIsolation?.notes || ""
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = () => {
+    const isolationData = {
+      isolationStatus: formData.isolationStatus,
+      socialSupport: formData.socialSupport,
+      interactions: formData.interactions,
+      notes: formData.notes
+    };
+    
+    updateSocialIsolation(isolationData);
+    console.log("Social isolation data saved:", isolationData);
+    alert('Social isolation information saved successfully!');
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      isolationStatus: socialHistoryData?.socialIsolation?.isolationStatus || "Low",
+      socialSupport: socialHistoryData?.socialIsolation?.socialSupport || "Supportive family",
+      interactions: socialHistoryData?.socialIsolation?.interactions || "",
+      notes: socialHistoryData?.socialIsolation?.notes || ""
+    });
   };
 
   return (
     <div className="social-panel">
       <div className="panel-header">
-        <h3>Social isolation & connection</h3>
-        <button className="close-btn">X</button>
+        <h3>Social Isolation & Connection</h3>
+        <button className="close-btn">×</button>
       </div>
 
       <div className="form-group">
@@ -56,6 +80,7 @@ const SocialIsolation = () => {
           placeholder="e.g., Weekly calls, monthly visits, daily chats..."
           value={formData.interactions}
           onChange={handleChange}
+          rows={3}
         />
       </div>
 
@@ -65,13 +90,18 @@ const SocialIsolation = () => {
           name="notes"
           value={formData.notes}
           onChange={handleChange}
+          placeholder="Additional notes about social connections..."
+          rows={3}
         />
       </div>
 
       <div className="social-buttons">
-        <button>Add</button>
-        <button>Cancel</button>
-        <button className="save-btn">Save</button>
+        <button className="save-btn" onClick={handleSave}>
+          Save Social Data
+        </button>
+        <button className="cancel-btn" onClick={handleCancel}>
+          Cancel
+        </button>
       </div>
     </div>
   );

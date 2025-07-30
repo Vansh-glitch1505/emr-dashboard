@@ -1,24 +1,53 @@
 import React, { useState } from "react";
+import { useSocialHistory } from "./SocialHistoryContext";
 import "./ExposureToViolence.css";
 
 const ExposureToViolence = () => {
+  const { updateExposureToViolence, socialHistoryData } = useSocialHistory();
   const [formData, setFormData] = useState({
-    typeOfViolence: "",
-    lastExposure: "",
-    supportReceived: "",
-    notes: "",
+    typeOfViolence: socialHistoryData?.exposureToViolence?.typeOfViolence || "",
+    lastExposure: socialHistoryData?.exposureToViolence?.lastExposure || "",
+    supportReceived: socialHistoryData?.exposureToViolence?.supportReceived || "",
+    notes: socialHistoryData?.exposureToViolence?.notes || ""
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = () => {
+    if (!formData.typeOfViolence) {
+      alert('Please select a type of violence');
+      return;
+    }
+
+    const violenceData = {
+      typeOfViolence: formData.typeOfViolence,
+      lastExposure: formData.lastExposure,
+      supportReceived: formData.supportReceived,
+      notes: formData.notes
+    };
+    
+    updateExposureToViolence(violenceData);
+    console.log("Violence exposure data saved:", violenceData);
+    alert('Violence exposure information saved successfully!');
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      typeOfViolence: socialHistoryData?.exposureToViolence?.typeOfViolence || "",
+      lastExposure: socialHistoryData?.exposureToViolence?.lastExposure || "",
+      supportReceived: socialHistoryData?.exposureToViolence?.supportReceived || "",
+      notes: socialHistoryData?.exposureToViolence?.notes || ""
+    });
   };
 
   return (
     <div className="violence-panel">
       <div className="panel-header">
-        <h3>Exposure to violence</h3>
-        <button className="close-btn">X</button>
+        <h3>Exposure to Violence</h3>
+        <button className="close-btn">×</button>
       </div>
 
       <div className="form-group">
@@ -27,6 +56,7 @@ const ExposureToViolence = () => {
           name="typeOfViolence"
           value={formData.typeOfViolence}
           onChange={handleChange}
+          required
         >
           <option value="">Select</option>
           <option>Domestic violence</option>
@@ -54,6 +84,7 @@ const ExposureToViolence = () => {
           placeholder="e.g., Counseling, legal support, shelter..."
           value={formData.supportReceived}
           onChange={handleChange}
+          rows={3}
         />
       </div>
 
@@ -63,13 +94,18 @@ const ExposureToViolence = () => {
           name="notes"
           value={formData.notes}
           onChange={handleChange}
+          placeholder="Additional details about the exposure..."
+          rows={3}
         />
       </div>
 
       <div className="violence-buttons">
-        <button>Add</button>
-        <button>Cancel</button>
-        <button className="save-btn">Save</button>
+        <button className="save-btn" onClick={handleSave}>
+          Save Violence Data
+        </button>
+        <button className="cancel-btn" onClick={handleCancel}>
+          Cancel
+        </button>
       </div>
     </div>
   );

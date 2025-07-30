@@ -1,20 +1,47 @@
 import React, { useState } from "react";
+import { useSocialHistory } from "./SocialHistoryContext";
 import "./Education.css";
 
 const Education = () => {
+  const { updateEducation, socialHistoryData } = useSocialHistory();
   const [formData, setFormData] = useState({
-    highestEducation: "",
+    highestEducation: socialHistoryData?.education?.highestEducation || "",
+    notes: socialHistoryData?.education?.notes || ""
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, highestEducation: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = () => {
+    if (!formData.highestEducation) {
+      alert('Please select an education level');
+      return;
+    }
+
+    const educationData = {
+      highestEducation: formData.highestEducation,
+      notes: formData.notes
+    };
+    
+    updateEducation(educationData);
+    console.log("Education data saved:", educationData);
+    alert('Education information saved successfully!');
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      highestEducation: socialHistoryData?.education?.highestEducation || "",
+      notes: socialHistoryData?.education?.notes || ""
+    });
   };
 
   return (
     <div className="education-panel">
       <div className="panel-header">
         <h3>Education</h3>
-        <button className="close-btn">X</button>
+        <button className="close-btn">×</button>
       </div>
 
       <div className="form-group">
@@ -23,6 +50,7 @@ const Education = () => {
           name="highestEducation"
           value={formData.highestEducation}
           onChange={handleChange}
+          required
         >
           <option value="">Select</option>
           <option value="High School">High School</option>
@@ -35,10 +63,24 @@ const Education = () => {
         </select>
       </div>
 
+      <div className="form-group">
+        <label>Additional Notes</label>
+        <textarea
+          name="notes"
+          value={formData.notes}
+          onChange={handleChange}
+          placeholder="Enter any additional education information..."
+          rows={3}
+        />
+      </div>
+
       <div className="education-buttons">
-        <button>Add</button>
-        <button>Cancel</button>
-        <button className="save-btn">Save</button>
+        <button className="save-btn" onClick={handleSave}>
+          Save Education Data
+        </button>
+        <button className="cancel-btn" onClick={handleCancel}>
+          Cancel
+        </button>
       </div>
     </div>
   );

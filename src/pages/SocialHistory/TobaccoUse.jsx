@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useSocialHistory } from "./SocialHistoryContext";
 import "./TobaccoUse.css";
 
 const TobaccoUse = () => {
+  const { updateTobaccoUse } = useSocialHistory();
   const [formData, setFormData] = useState({
     status: "Former Smoker",
     dailyConsumption: 10,
@@ -16,11 +18,27 @@ const TobaccoUse = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleSave = () => {
+    // Prepare the data structure exactly as we want to display it
+    const tobaccoData = {
+      status: formData.status,
+      dailyConsumption: formData.dailyConsumption,
+      duration: formData.duration,
+      durationUnit: formData.durationUnit,
+      quitDate: formData.quitDate,
+      notes: formData.notes
+    };
+    
+    updateTobaccoUse(tobaccoData);
+    console.log("Tobacco data saved:", tobaccoData); // Debug log
+    alert('Tobacco information saved successfully!');
+  };
+
   return (
     <div className="tobacco-use-panel">
       <div className="panel-header">
         <h3>Tobacco Use</h3>
-        <button className="close-btn">X</button>
+        <button className="close-btn">×</button>
       </div>
 
       <div className="form-group">
@@ -72,9 +90,10 @@ const TobaccoUse = () => {
       </div>
 
       <div className="tobacco-buttons">
-        <button>Add</button>
+        <button className="save-btn" onClick={handleSave}>
+          Save Tobacco Data
+        </button>
         <button>Cancel</button>
-        <button className="save-btn">Save</button>
       </div>
     </div>
   );

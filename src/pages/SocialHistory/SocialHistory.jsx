@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useSocialHistory } from "./SocialHistoryContext";
 import "./SocialHistory.css";
-import TobaccoUse from "./TobaccoUse.jsx"; // Adjust path if needed
+import TobaccoUse from "./TobaccoUse.jsx";
 import AlcoholUse from "./AlcoholUse.jsx";
 import FinancialResources from "./FinancialResources.jsx";
 import PhysicalActivity from "./PhysicalActivity.jsx";
@@ -38,13 +39,16 @@ const SocialHistory = () => {
   );
 
   const navigate = useNavigate();
+  const { socialHistoryData } = useSocialHistory();
 
   const handleToggle = (field) => {
     setToggles((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   const handleNext = () => {
-    navigate('/dashboard/preview');
+    navigate('/dashboard/social-history-preview', { 
+      state: { socialHistoryData } 
+    });
   };
 
   return (
@@ -59,7 +63,9 @@ const SocialHistory = () => {
               className={`toggle-switch ${toggles[field] ? "on" : "off"}`}
               onClick={() => handleToggle(field)}
             >
-              {toggles[field] ? "on" : "off"}
+              <div className={`toggle-slider ${toggles[field] ? "on" : "off"}`}>
+                {toggles[field] ? "ON" : "OFF"}
+              </div>
             </div>
           </div>
         ))}
@@ -78,10 +84,20 @@ const SocialHistory = () => {
       {toggles["Nutrients History"] && <NutrientsHistory />}
       {toggles["Education"] && <Education />}
 
-
       <div className="social-history-buttons">
-        <button className="preview-btn" onClick={handleNext}>Preview</button>
-        <button className="next-btn" onClick={handleNext}>Next</button>
+        <button 
+          className="preview-btn" 
+          onClick={handleNext}
+          disabled={!Object.values(toggles).some(Boolean)}
+        >
+          Preview
+        </button>
+        <button 
+          className="next-btn" 
+          onClick={handleNext}
+        >
+          Next
+        </button>
       </div>
     </div>
   );

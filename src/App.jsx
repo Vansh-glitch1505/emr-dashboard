@@ -14,6 +14,7 @@ import SocialHistory from './pages/SocialHistory/SocialHistory';
 import Preview from './pages/Preview/Preview';
 import Consent from './pages/Consent/Consent';
 import MedicalHistory from './pages/MedicalHistory/MedicalHistory';
+import SocialHistoryPreview from './pages/SocialHistory/SocialHistoryPreview';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="social-history" element={<SocialHistory />} />
         <Route path="preview" element={<Preview />} />
         <Route path="consent" element={<Consent />} />
+        <Route path="social-history-preview" element={<SocialHistoryPreview />} />
         
       </Route>
     </Routes>

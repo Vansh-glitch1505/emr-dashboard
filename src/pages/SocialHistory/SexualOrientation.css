@@ -3,11 +3,11 @@
   top: 100px;
   right: 30px;
   background-color: white;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   width: 320px;
   padding: 20px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
   z-index: 1000;
 }
 
@@ -15,7 +15,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
 }
 
 .close-btn {
@@ -23,42 +25,59 @@
   border: none;
   font-size: 18px;
   cursor: pointer;
+  color: #999;
+}
+
+.close-btn:hover {
   color: red;
 }
 
 .form-group {
   margin-bottom: 15px;
-  display: flex;
-  flex-direction: column;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #555;
 }
 
 .form-group select,
 .form-group textarea {
-  padding: 6px;
-  font-size: 14px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  border: 1px solid #ccc;
+  font-size: 14px;
 }
 
-textarea {
+.form-group select {
+  height: 38px;
+}
+
+.form-group textarea {
+  min-height: 80px;
   resize: vertical;
-  min-height: 50px;
 }
 
 .orientation-buttons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-}
-
-.orientation-buttons button {
-  padding: 6px 12px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 
 .save-btn {
-  background-color: #007baf;
+  background-color: #4a89dc;
   color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.save-btn:hover {
+  background-color: #3a70c2;
 }
