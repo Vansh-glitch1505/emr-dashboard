@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import "./Vitals.css";
+import axios from 'axios';
 
 const Vitals = () => {
+  const navigate = useNavigate();
+  const { vitalsData: contextVitals, updatePreviewData, patientId } = useOutletContext();
+  
   const [formData, setFormData] = useState({
+    patient_id: patientId,
     systolic: "",
     diastolic: "",
     pulse: "",
@@ -23,7 +28,8 @@ const Vitals = () => {
 
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     // Calculate BMI when height or weight changes
@@ -52,9 +58,6 @@ const Vitals = () => {
     
     setFormData({ ...formData, [name]: value });
   };
-  const handleNext = () => {
-    navigate('/dashboard/allergies');  // or the next section path
-  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -78,13 +81,70 @@ const Vitals = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      console.log("Form submitted:", formData);
+    if (!validateForm()) return;
+    
+    setIsLoading(true);
+    setErrorMessage('');
+    
+    try {
+      // Prepare data for API
+      const vitalsData = {
+        patient_id: patientId,
+        date: formData.date,
+        time: formData.time,
+        systolic: formData.systolic || null,
+        diastolic: formData.diastolic || null,
+        pulse: formData.pulse || null,
+        respiratory: formData.respiratory || null,
+        temperature: formData.temperature || null,
+        temp_unit: formData.tempUnit,
+        height: formData.height || null,
+        height_unit: formData.heightUnit,
+        weight: formData.weight || null,
+        bmi: formData.bmi || null,
+        pain: formData.pain || null,
+        spo2: formData.spo2 || null,
+        comments: formData.comments || null
+      };
+
+      const response = await axios.post('/api/vitals', vitalsData);
+      
+      updatePreviewData(formData, 'vitals');
       setIsSubmitted(true);
-      // Here you would typically send data to an API
+    } catch (error) {
+      console.error('Error saving vitals:', error);
+      setErrorMessage(error.response?.data?.error || 'Failed to save vitals. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleNext = () => {
+    navigate('/dashboard/allergies');
+  };
+
+  const handleNewEntry = () => {
+    setFormData({
+      patient_id: patientId,
+      systolic: "",
+      diastolic: "",
+      pulse: "",
+      respiratory: "",
+      temperature: "",
+      tempUnit: "Celsius",
+      height: "",
+      heightUnit: "feet",
+      weight: "",
+      bmi: "",
+      pain: "0",
+      spo2: "",
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+      comments: "",
+    });
+    setIsSubmitted(false);
   };
 
   const getPainLevelText = (value) => {
@@ -106,21 +166,28 @@ const Vitals = () => {
 
   return (
     <div className="vitals-container">
-      <h2>Patient Vitals</h2>
+      <h2 className="vitals-title">Patient Vitals</h2>
+      
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
       
       {isSubmitted ? (
         <div className="success-message">
           <h3>Vitals recorded successfully!</h3>
-          <button className="new-entry" onClick={() => setIsSubmitted(false)}>
-            Record New Vitals
-          </button>
+          <div className="form-actions">
+            <button className="save-btn" onClick={handleNewEntry}>
+              Record New Vitals
+            </button>
+            <button className="next-btn" onClick={handleNext}>
+              Continue to Next Section
+            </button>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
-          <div className="form-section">
-            <h3>Date & Time</h3>
+          <fieldset className="vitals-section">
+            <legend className="section-title">Date & Time</legend>
             <div className="form-row">
-              <div className="form-group">
+              <div className="input-group">
                 <label htmlFor="date">Date*</label>
                 <input 
                   type="date" 
@@ -130,9 +197,9 @@ const Vitals = () => {
                   onChange={handleChange}
                   className={errors.date ? "error" : ""}
                 />
-                {errors.date && <span className="error-message">{errors.date}</span>}
+                {errors.date && <span className="error-text">{errors.date}</span>}
               </div>
-              <div className="form-group">
+              <div className="input-group">
                 <label htmlFor="time">Time*</label>
                 <input 
                   type="time" 
@@ -142,15 +209,15 @@ const Vitals = () => {
                   onChange={handleChange}
                   className={errors.time ? "error" : ""}
                 />
-                {errors.time && <span className="error-message">{errors.time}</span>}
+                {errors.time && <span className="error-text">{errors.time}</span>}
               </div>
             </div>
-          </div>
+          </fieldset>
 
-          <div className="form-section">
-            <h3>Vital Signs</h3>
+          <fieldset className="vitals-section">
+            <legend className="section-title">Vital Signs</legend>
             <div className="form-row">
-              <div className="form-group">
+              <div className="input-group">
                 <label htmlFor="systolic">Systolic BP</label>
                 <div className="input-with-unit">
                   <input 
@@ -164,9 +231,9 @@ const Vitals = () => {
                   />
                   <span className="unit">mmHg</span>
                 </div>
-                {errors.systolic && <span className="error-message">{errors.systolic}</span>}
+                {errors.systolic && <span className="error-text">{errors.systolic}</span>}
               </div>
-              <div className="form-group">
+              <div className="input-group">
                 <label htmlFor="diastolic">Diastolic BP</label>
                 <div className="input-with-unit">
                   <input 
@@ -180,12 +247,12 @@ const Vitals = () => {
                   />
                   <span className="unit">mmHg</span>
                 </div>
-                {errors.diastolic && <span className="error-message">{errors.diastolic}</span>}
+                {errors.diastolic && <span className="error-text">{errors.diastolic}</span>}
               </div>
             </div>
 
             <div className="form-row">
-              <div className="form-group">
+              <div className="input-group">
                 <label htmlFor="pulse">Pulse Rate</label>
                 <div className="input-with-unit">
                   <input 
@@ -199,9 +266,9 @@ const Vitals = () => {
                   />
                   <span className="unit">BPM</span>
                 </div>
-                {errors.pulse && <span className="error-message">{errors.pulse}</span>}
+                {errors.pulse && <span className="error-text">{errors.pulse}</span>}
               </div>
-              <div className="form-group">
+              <div className="input-group">
                 <label htmlFor="respiratory">Respiratory Rate</label>
                 <div className="input-with-unit">
                   <input 
@@ -218,7 +285,7 @@ const Vitals = () => {
             </div>
 
             <div className="form-row">
-              <div className="form-group">
+              <div className="input-group">
                 <label htmlFor="temperature">Temperature</label>
                 <div className="input-with-unit">
                   <input 
@@ -248,7 +315,7 @@ const Vitals = () => {
                   </div>
                 </div>
               </div>
-              <div className="form-group">
+              <div className="input-group">
                 <label htmlFor="spo2">SpO₂</label>
                 <div className="input-with-unit">
                   <input 
@@ -265,12 +332,12 @@ const Vitals = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </fieldset>
 
-          <div className="form-section">
-            <h3>Anthropometrics</h3>
+          <fieldset className="vitals-section">
+            <legend className="section-title">Anthropometrics</legend>
             <div className="form-row">
-              <div className="form-group">
+              <div className="input-group">
                 <label htmlFor="height">Height</label>
                 <div className="input-with-unit">
                   <input 
@@ -300,7 +367,7 @@ const Vitals = () => {
                   </div>
                 </div>
               </div>
-              <div className="form-group">
+              <div className="input-group">
                 <label htmlFor="weight">Weight</label>
                 <div className="input-with-unit">
                   <input 
@@ -316,7 +383,7 @@ const Vitals = () => {
                 </div>
               </div>
             </div>
-            <div className="form-group">
+            <div className="input-group">
               <label htmlFor="bmi">BMI</label>
               <div className="input-with-unit">
                 <input 
@@ -329,11 +396,11 @@ const Vitals = () => {
                 <span className="unit">kg/m²</span>
               </div>
             </div>
-          </div>
+          </fieldset>
 
-          <div className="form-section">
-            <h3>Pain Assessment</h3>
-            <div className="form-group">
+          <fieldset className="vitals-section">
+            <legend className="section-title">Pain Assessment</legend>
+            <div className="input-group">
               <label htmlFor="pain">Pain Level: {formData.pain}/10 - {getPainLevelText(formData.pain)}</label>
               <input 
                 type="range" 
@@ -359,11 +426,12 @@ const Vitals = () => {
                 <span>10</span>
               </div>
             </div>
-          </div>
+          </fieldset>
 
-          <div className="form-section">
-            <h3>Additional Notes</h3>
-            <div className="form-group">
+          <fieldset className="vitals-section">
+            <legend className="section-title">Additional Notes</legend>
+            <div className="input-group full-width">
+              <label htmlFor="comments">Comments</label>
               <textarea 
                 id="comments" 
                 name="comments" 
@@ -373,14 +441,18 @@ const Vitals = () => {
                 rows="4"
               />
             </div>
-          </div>
+          </fieldset>
 
           <div className="form-actions">
-            <button type="submit" className="btn-primary" onClick={handleNext}>
-              Save Vitals
+            <button 
+              type="submit" 
+              className="save-btn"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Save Vitals'}
             </button>
-            <button type="button" className="btn-secondary">
-              Cancel
+            <button type="button" className="skip-btn" onClick={handleNext}>
+              Next
             </button>
           </div>
         </form>

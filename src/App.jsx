@@ -1,3 +1,4 @@
+// App.jsx
 import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login/Login';
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -16,10 +17,16 @@ import Consent from './pages/Consent/Consent';
 import MedicalHistory from './pages/MedicalHistory/MedicalHistory';
 import SocialHistoryPreview from './pages/SocialHistory/SocialHistoryPreview';
 
+// ✅ New nurse dashboard import
+import NurseDashboard from './pages/NurseDashboard/NurseDashboard';
+
 function App() {
   return (
     <Routes>
+      {/* Login */}
       <Route path="/" element={<Login />} />
+
+      {/* Dashboard flow for adding new patients */}
       <Route path="/dashboard" element={<Dashboard />}>
         <Route index element={<PatientDemographics />} />
         <Route path="patient-demographics" element={<PatientDemographics />} />
@@ -36,8 +43,10 @@ function App() {
         <Route path="preview" element={<Preview />} />
         <Route path="consent" element={<Consent />} />
         <Route path="social-history-preview" element={<SocialHistoryPreview />} />
-        
       </Route>
+
+      {/* ✅ New nurse dashboard route */}
+      <Route path="/nurse-dashboard" element={<NurseDashboard />} />
     </Routes>
   );
 }

@@ -1,7 +1,6 @@
 /* Login.css */
 .login-bg {
-  background: url('../assets/login-bg.png') no-repeat center center;
-  background-size: cover;
+  background-color: #F5F9FF;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -12,17 +11,19 @@
 .login-form {
   width: 100%;
   max-width: 360px;
-  background: rgba(255, 255, 255, 0.95);
+  background: white;
   padding: 40px;
   border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(13, 71, 161, 0.15);
+  border: 1px solid rgba(13, 71, 161, 0.1);
 }
 
 .login-form h2 {
   text-align: center;
   margin-bottom: 25px;
   font-size: 26px;
-  color: #000;
+  color: #0D47A1;
+  font-weight: 600;
 }
 
 .form-group {
@@ -47,14 +48,15 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #3ccfcf;
+  border-color: #0D47A1;
+  box-shadow: 0 0 0 2px rgba(13, 71, 161, 0.2);
 }
 
 .login-btn {
   width: 100%;
   padding: 12px;
-  background-color: #3ccfcf;
-  color: #000;
+  background-color: #0D47A1;
+  color: white;
   font-weight: bold;
   border: none;
   border-radius: 6px;
@@ -64,5 +66,5 @@
 }
 
 .login-btn:hover {
-  background-color: #2ab4b4;
+  background-color: #08306B;
 }

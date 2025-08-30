@@ -1,10 +1,11 @@
 // src/pages/Consent/Consent.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import './Consent.css';
 
 export default function Consent() {
   const { patientData, contactData } = useOutletContext();
+  const [agreed, setAgreed] = useState(false);
 
   const fullName = [patientData.firstName, patientData.middleName, patientData.lastName]
     .filter(Boolean)
@@ -20,6 +21,15 @@ export default function Consent() {
   ]
     .filter(Boolean)
     .join(', ');
+
+  const handleSave = () => {
+    if (agreed) {
+      alert('Consent saved successfully!');
+      // You can also perform actual save logic here.
+    } else {
+      alert('Please agree to the terms before saving.');
+    }
+  };
 
   return (
     <div className="consent-container">
@@ -39,14 +49,31 @@ export default function Consent() {
         </p>
 
         <ol>
-          <li>
-            <strong>Purpose of EMR:</strong> I understand that the purpose of using EMR systems is to efficiently manage and store my medical information, including but not limited to medical history, diagnoses, treatment plans, medications, and test results.
-          </li>
-          <li>
-            <strong>Confidentiality:</strong> I acknowledge that my health information stored in the EMR will be treated with the utmost confidentiality and will only be accessed by authorized healthcare professionals involved in my care.
-          </li>
+          <li><strong>Purpose of EMR:</strong> I understand that the purpose of using EMR systems is to efficiently manage and store my medical information, including but not limited to medical history, diagnoses, treatment plans, medications, and test results.</li>
+          <li><strong>Confidentiality:</strong> I acknowledge that my health information stored in the EMR will be treated with the utmost confidentiality and will only be accessed by authorized healthcare professionals involved in my care.</li>
+          <li><strong>Security Measures:</strong> I understand that <em>[Healthcare Provider's Name]</em> has implemented security measures to protect the privacy and security of my health information stored in the EMR system.</li>
+          <li><strong>Access and Amendments:</strong> I understand that I have the right to access my medical records stored in the EMR system and request amendments to any inaccuracies or incomplete information.</li>
+          <li><strong>Sharing of Information:</strong> I acknowledge that my health information may be shared with other healthcare providers involved in my treatment, as necessary for continuity of care.</li>
+          <li><strong>Research and Quality Improvement:</strong> I understand that my de-identified health information may be used for research or quality improvement purposes to enhance healthcare services, with appropriate safeguards to protect my privacy.</li>
+          <li><strong>Revocation of Consent:</strong> I understand that I have the right to revoke this consent at any time, except to the extent that action has already been taken in reliance on this consent.</li>
         </ol>
+
+        <div className="consent-confirmation">
+          <p>
+            By checking the box below, I confirm that I have read and understood the contents of this consent form and agree to the use of electronic medical records for managing my health information.
+          </p>
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+            />
+            &nbsp;I agree to the terms outlined above
+          </label>
+        </div>
       </div>
+
+      <button className="save-btn" onClick={handleSave}>Save</button>
     </div>
   );
 }
