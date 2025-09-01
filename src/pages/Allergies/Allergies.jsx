@@ -48,6 +48,9 @@ const Allergies = () => {
 
   return (
     <div className="allergies-container">
+      <header className="fixed-header">
+        <h1 className="header-title"></h1>
+      </header>
       <h2 className="allergies-title">Allergies Information</h2>
       
       <div className="allergies-section">

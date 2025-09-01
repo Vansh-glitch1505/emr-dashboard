@@ -17,12 +17,23 @@ const ContactInformation = () => {
     emergencyLastName: '',
     emergencyRelationship: '',
     emergencyPhone: '',
-    emergencyEmail: ''
+    emergencyEmail: '',
+    preferredContactMethod: []
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     const updatedData = { ...formData, [name]: value };
+    setFormData(updatedData);
+    updatePreviewData(updatedData, 'contact');
+  };
+
+  const handleContactMethodChange = (method) => {
+    const updatedMethods = formData.preferredContactMethod.includes(method)
+      ? formData.preferredContactMethod.filter(m => m !== method)
+      : [...formData.preferredContactMethod, method];
+    
+    const updatedData = { ...formData, preferredContactMethod: updatedMethods };
     setFormData(updatedData);
     updatePreviewData(updatedData, 'contact');
   };
@@ -55,54 +66,90 @@ const ContactInformation = () => {
 
   return (
     <div className="contact-container">
+      <header className="fixed-header">
+        <h1 className="header-title"></h1>
+      </header>
       <h2 className="contact-title">Contact Information</h2>
 
       <fieldset className="contact-section">
         <legend className="section-title">Contact Details</legend>
         <div className="contact-details">
-          <div className="form-row">
-            <div className="input-group">
-              <label htmlFor="mobilePhone">Mobile/Cell Phone</label>
-              <input 
-                id="mobilePhone"
-                type="text" 
-                name="mobilePhone" 
-                value={formData.mobilePhone} 
-                onChange={handleChange} 
-              />
+          <div className="contact-info-left">
+            <div className="contact-row">
+              <label className="contact-label">Mobile/Cell Phone</label>
+              <div className="phone-input">
+                <input className="country-code" value="+1" readOnly />
+                <input 
+                  className="phone-number"
+                  type="text" 
+                  name="mobilePhone" 
+                  value={formData.mobilePhone} 
+                  onChange={handleChange}
+                  placeholder="344-716-6844"
+                />
+              </div>
             </div>
             
-            <div className="input-group">
-              <label htmlFor="homePhone">Home Phone No.</label>
-              <input 
-                id="homePhone"
-                type="text" 
-                name="homePhone" 
-                value={formData.homePhone} 
-                onChange={handleChange} 
-              />
+            <div className="contact-row">
+              <label className="contact-label">Home Phone No.</label>
+              <div className="phone-input">
+                <input className="country-code" value="+1" readOnly />
+                <input 
+                  className="phone-number"
+                  type="text" 
+                  name="homePhone" 
+                  value={formData.homePhone} 
+                  onChange={handleChange}
+                  placeholder="978-960-9691"
+                />
+              </div>
             </div>
             
-            <div className="input-group">
-              <label htmlFor="workPhone">Work Phone No.</label>
-              <input 
-                id="workPhone"
-                type="text" 
-                name="workPhone" 
-                value={formData.workPhone} 
-                onChange={handleChange} 
-              />
+            <div className="contact-row">
+              <label className="contact-label">Work Phone No.</label>
+              <div className="phone-input">
+                <input className="country-code" value="+1" readOnly />
+                <input 
+                  className="phone-number"
+                  type="text" 
+                  name="workPhone" 
+                  value={formData.workPhone} 
+                  onChange={handleChange}
+                  placeholder="401-782-5419"
+                />
+              </div>
             </div>
             
-            <div className="input-group">
-              <label htmlFor="email">E-mail Address</label>
+            <div className="contact-row">
+              <label className="contact-label">E-mail Address</label>
               <input 
-                id="email"
+                className="email-input"
                 type="email" 
                 name="email" 
                 value={formData.email} 
-                onChange={handleChange} 
+                onChange={handleChange}
+                placeholder="abc.emr@gmail.com"
               />
+            </div>
+          </div>
+          
+          <div className="contact-info-right">
+            <div className="preferred-contact-section">
+              <h4 className="preferred-title">Preferred Contact Method</h4>
+              <div className="contact-methods">
+                <div className="contact-method-item" onClick={() => handleContactMethodChange('phone')}>
+                  <div className={`contact-method-checkbox ${formData.preferredContactMethod.includes('phone') ? 'checked' : ''}`}></div>
+                  <label className="contact-method-label">Phone Call</label>
+                </div>
+                <div className="contact-method-item" onClick={() => handleContactMethodChange('messages')}>
+                  <div className={`contact-method-checkbox ${formData.preferredContactMethod.includes('messages') ? 'checked' : ''}`}></div>
+                  <label className="contact-method-label">Messages</label>
+                </div>
+                <div className="contact-method-item" onClick={() => handleContactMethodChange('email')}>
+                  <div className={`contact-method-checkbox ${formData.preferredContactMethod.includes('email') ? 'checked' : ''}`}></div>
+                  <label className="contact-method-label">Email</label>
+                </div>
+              </div>
             </div>
           </div>
         </div>

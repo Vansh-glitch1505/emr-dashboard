@@ -50,7 +50,7 @@ const NurseDashboard = () => {
   return (
     <div className="nurse-dashboard">
       <div className="dashboard-header">
-        <h1>Nurse Dashboard</h1>
+        <h1>SSPD Dashboard</h1>
         <p>Welcome back! Here's today's patient overview.</p>
       </div>
 

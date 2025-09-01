@@ -1,119 +1,64 @@
-import { NavLink } from 'react-router-dom';
-import './Sidebar.css';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import {
+  User,
+  Phone,
+  Shield,
+  Heart,
+  ClipboardList,
+  FileText,
+  Pill,
+  Activity,
+  AlertTriangle,
+  Users,
+} from "lucide-react";
+import "./Sidebar.css";
 
 const Sidebar = () => {
+  const navItems = [
+    { icon: User, text: "Patient Demographics", path: "/dashboard/patient-demographics" },
+    { icon: Phone, text: "Contact Information", path: "/dashboard/contact-information" },
+    { icon: Shield, text: "Insurance Information", path: "/dashboard/insurance-information" },
+    { icon: Heart, text: "Ailments", path: "/dashboard/ailments" },
+    { icon: ClipboardList, text: "Assessment", path: "/dashboard/assessment" },
+    { icon: FileText, text: "Medical History", path: "/dashboard/medical-history" },
+    { icon: Pill, text: "Medication History", path: "/dashboard/medicationhistory" },
+    { icon: Activity, text: "Vitals", path: "/dashboard/vitals" },
+    { icon: AlertTriangle, text: "Allergies", path: "/dashboard/allergies" },
+    { icon: Users, text: "Family History", path: "/dashboard/family-history" },
+    { icon: Users, text: "Social History", path: "/dashboard/social-history" },
+    { icon: FileText, text: "Preview", path: "/dashboard/preview" },
+    { icon: ClipboardList, text: "Consent", path: "/dashboard/consent" },
+  ];
+
   return (
     <div className="sidebar">
-      <h2 style={{ color: "black" }}>Patient Dashboard</h2>
-      <nav>
-        <ul>
-          <li>
-            <NavLink 
-              to="/dashboard/patient-demographics"
-              className={({ isActive }) => isActive ? 'active' : ''}
-            >
-              Patient Demographics
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/contact-information"
-              className={({ isActive }) => isActive ? 'active' : ''}
-            >
-              Contact Information
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/insurance-information"
-              className={({ isActive }) => isActive ? "active" : ""}
-            >
-              Insurance Information
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/ailments"
-              className={({ isActive }) => isActive ? "active" : ""}
-            >
-              Ailments
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/assessment"
-              className={({ isActive }) => isActive ? "active" : ""}
-            >
-              Assessment
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/medical-history"
-              className={({ isActive }) => isActive ? "active" : ""}
-            >
-              Medical History
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/medicationhistory"
-              className={({ isActive }) => isActive ? "active" : ""}
-            >
-              MedicationHistory
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/vitals"
-              className={({ isActive }) => isActive ? "active" : ""}
-            >
-              Vitals
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/allergies"
-              className={({ isActive }) => isActive ? "active" : ""}
-            >
-              Allergies
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/family-history"
-              className={({ isActive }) => isActive ? "active" : ""}
-            >
-              FamilyHistory
-            </NavLink>
-          </li>
+      {/* Header */}
+      <div className="sidebar-header">
+        <div className="logo">SSPD</div>
+        <h2 className="header-title">Patient Details</h2>
+      </div>
 
-          <li>
+      {/* Navigation */}
+      <nav className="sidebar-nav">
+        {navItems.map((item, index) => {
+          const Icon = item.icon;
+          return (
             <NavLink 
-              to="/dashboard/social-history"
-              className={({ isActive }) => isActive ? "active" : ""}
+              key={index} 
+              to={item.path} 
+              className={({ isActive }) => 
+                `nav-item ${isActive ? "active" : ""}`
+              }
             >
-              Social History
+              <div className="icon-box">
+                <Icon size={20} />
+              </div>
+              <span className="nav-text">{item.text}</span>
+              <div className="nav-arrow">&gt;</div>
             </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/preview"
-              className={({ isActive }) => isActive ? "active" : ""}
-            >
-              Preview
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/dashboard/consent"
-              className={({ isActive }) => isActive ? "active" : ""}
-            >
-              Consent
-            </NavLink>
-          </li>
-          
-        </ul>
+          );
+        })}
       </nav>
     </div>
   );

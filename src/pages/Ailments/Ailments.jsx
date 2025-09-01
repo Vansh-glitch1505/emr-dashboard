@@ -77,6 +77,9 @@ const Ailments = () => {
 
   return (
     <div className="ailments-container">
+      <header className="fixed-header">
+        <h1 className="header-title"></h1>
+      </header>
       <h2 className="ailments-title">Ailments</h2>
 
       <fieldset className="ailments-section">

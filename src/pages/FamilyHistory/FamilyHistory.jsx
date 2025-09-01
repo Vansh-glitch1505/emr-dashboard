@@ -107,6 +107,9 @@ const FamilyHistory = () => {
 
   return (
     <div className="family-history-container">
+      <header className="fixed-header">
+        <h1 className="header-title"></h1>
+       </header>
       <h2>Family History</h2>
 
       <form onSubmit={handleSubmit}>

@@ -166,6 +166,9 @@ const Vitals = () => {
 
   return (
     <div className="vitals-container">
+      <header className="fixed-header">
+        <h1 className="header-title"></h1>
+       </header>
       <h2 className="vitals-title">Patient Vitals</h2>
       
       {errorMessage && <div className="error-message">{errorMessage}</div>}

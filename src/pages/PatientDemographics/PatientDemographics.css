@@ -1,46 +1,54 @@
 /* PatientDemographics.css */
 .patient-demographics-container {
   padding: 2rem;
-  background-color: #fff;
+  background-color: #f8f9fa;
   max-width: 900px;
-  margin: auto;
+  margin: 0 auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  position: relative;
 }
 
-.patient-header{
-  color: #1A73E8;
-}
-
-h2 {
-  color: #0D47A1;
-  margin-bottom: 1.5rem;
+.patient-header {
+  color: #333;
+  font-size: 1.5rem;
   font-weight: 600;
+  margin-bottom: 2rem;
 }
 
 .section {
-  border: 1px solid #E3F2FD;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 1.5rem;
   margin-bottom: 2rem;
-  background-color: #F5F9FF;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0;
 }
 
-
-
 legend {
+  background-color: #e3f2fd;
+  color: #333;
   font-weight: 600;
-  color: #0D47A1;
-  padding: 0 0.5rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 7px 7px 0 0;
+}
+
+.section > div {
+  padding: 1.5rem 2rem 2rem 2rem;
 }
 
 .form-row {
   display: flex;
   gap: 1.5rem;
-  margin: 1.5rem 0;
+  margin-bottom: 1.5rem;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
 }
 
 .input-group {
@@ -56,63 +64,183 @@ legend {
 label {
   font-weight: 500;
   margin-bottom: 0.5rem;
-  color: #0D47A1;
+  color: #333;
   font-size: 0.9rem;
 }
 
 input, select {
   padding: 0.75rem;
-  border: 1px solid #BBDEFB;
+  border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.9rem;
   background-color: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input:focus, select:focus {
   outline: none;
-  border-color: #0D47A1;
-  box-shadow: 0 0 0 2px rgba(13, 71, 161, 0.2);
+  border-color: #2196f3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+select {
+  cursor: pointer;
+}
+
+select option {
+  padding: 0.5rem;
 }
 
 .error-message {
-  color: #d32f2f;
+  color: #f44336;
   font-size: 0.8rem;
   margin-top: 0.25rem;
 }
 
+/* Patient image placeholder in top right */
+.patient-demographics-container::after {
+  content: '';
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  width: 120px;
+  height: 120px;
+  background-color: #fff;
+  border: 3px solid #2196f3;
+  border-radius: 8px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="35" r="18" fill="%23333"/><path d="M20 80 Q20 60 35 60 L65 60 Q80 60 80 80 Z" fill="%23333"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 60%;
+}
+
+/* 🔹 Fixed Header */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #236D8B;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 1.25rem;
+  font-weight: bold;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.header-title {
+  margin: 0;
+}
+
+/* 🔹 Push down content so header doesn't overlap */
+.patient-demographics-container {
+  margin-top: 80px; /* slightly more than header height */
+}
+
+
 .form-actions {
   text-align: right;
-  margin-top: auto;
-  padding-top: 2rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
 }
 
 .save-btn {
-  background-color: #0D47A1;
+  background-color: #2196f3;
   color: white;
   padding: 0.75rem 2rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600;
   transition: background-color 0.2s;
+  min-width: 100px;
 }
 
 .save-btn:hover {
-  background-color: #08306B;
+  background-color: #1976d2;
 }
 
+.save-btn:active {
+  transform: translateY(1px);
+}
+
+/* Responsive design */
 @media (max-width: 768px) {
+  .patient-demographics-container {
+    padding: 1rem;
+  }
+  
+  .patient-demographics-container::after {
+    display: none;
+  }
+  
   .form-row {
     flex-direction: column;
     gap: 1rem;
   }
   
-  .patient-demographics-container {
+  .section > div {
     padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .patient-demographics-container {
+    padding: 0.5rem;
   }
   
-  .section {
-    padding: 1rem;
+  .section > div {
+    padding: 0.75rem;
   }
+  
+  legend {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+  padding: 20px 0;
+}
+
+.save-btn {
+  background-color: #1e5aa8;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 1000px;
+}
+
+.save-btn:hover {
+  background-color: #164a8f;
+}
+
+.next-btn {
+  background-color: #b8e6ff;
+  color: #1e5aa8;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.next-btn:hover {
+  background-color: #a3dbff;
 }

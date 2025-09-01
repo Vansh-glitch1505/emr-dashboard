@@ -1,70 +1,196 @@
-/* Login.css */
+/* Login.css - scoped fancy background + panel
+   Replace your current Login.css with this file.
+   All rules are scoped under .login-bg so other sections won't be affected.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Aclonica&display=swap');
+
 .login-bg {
-  background-color: #F5F9FF;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.login-form {
+  position: relative;
+  min-height: 100vh;
   width: 100%;
-  max-width: 360px;
-  background: white;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(13, 71, 161, 0.15);
-  border: 1px solid rgba(13, 71, 161, 0.1);
+  display: flex;
+  justify-content: center;   /* centers the panel horizontally */
+  align-items: center;       /* centers the panel vertically */
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 40px 120px 60px 40px; /* give breathing room similar to original */
+  background: linear-gradient(135deg, #0d47a1 0%, #1976d2 30%, #42a5f5 60%, #81c784 100%);
 }
 
-.login-form h2 {
+/* prominent heartbeat / line svg overlays (two layers) */
+.login-bg::before,
+.login-bg::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background-repeat: repeat-x;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: normal;
+}
+
+/* lower, longer line */
+.login-bg::before {
+  bottom: 40px;
+  height: 160px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 150'><path d='M0,75 L100,75 L120,45 L140,105 L160,30 L180,120 L200,75 L300,75 L320,45 L340,105 L360,30 L380,120 L400,75 L500,75 L520,45 L540,105 L560,30 L580,120 L600,75 L700,75 L720,45 L740,105 L760,30 L780,120 L800,75 L900,75 L920,45 L940,105 L960,30 L980,120 L1000,75 L1200,75' stroke='%23ffffff99' stroke-width='3' fill='none'/></svg>");
+  background-size: 1200px 150px;
+  background-position: bottom;
+  animation: pulse 4s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+/* upper, subtler line */
+.login-bg::after {
+  bottom: 150px;
+  height: 110px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 100'><path d='M0,50 L80,50 L95,25 L110,75 L125,15 L140,85 L155,50 L235,50 L250,25 L265,75 L280,15 L295,85 L310,50 L390,50 L405,25 L420,75 L435,15 L450,85 L465,50 L545,50 L560,25 L575,75 L590,15 L605,85 L620,50 L700,50 L715,25 L730,75 L745,15 L760,85 L775,50 L800,50' stroke='%23ffffff66' stroke-width='2' fill='none'/></svg>");
+  background-size: 800px 100px;
+  background-position: bottom;
+  animation: pulse 3s ease-in-out infinite reverse;
+  opacity: 0.45;
+}
+
+/* pulsing animation for the line overlays */
+@keyframes pulse {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50%     { opacity: 0.9;  transform: translateY(-2px); }
+}
+
+/* LOGIN PANEL - scoped to .login-bg .login-form */
+.login-bg .login-form {
+  position: relative;
+  z-index: 10;               /* sits above the SVG overlays */
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 36px;
+  background: rgba(255,255,255,0.95); /* slightly translucent white for soft look */
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(13, 71, 161, 0.15);
+  border: 1px solid rgba(13,71,161,0.08);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Big branded heading (uses Aclonica) */
+.login-bg .login-form h2 {
+  font-family: 'Aclonica', sans-serif;
+  font-size: 48px;
+  font-weight: 400;
+  color: #0b2e3f;
   text-align: center;
-  margin-bottom: 25px;
-  font-size: 26px;
-  color: #0D47A1;
+  margin: 0 0 10px 0;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+/* optional subheading if you add one */
+.login-bg .login-form p.sub {
+  font-size: 14px;
+  color: #234a5e;
+  text-align: center;
+  margin: 6px 0 20px 0;
+}
+
+/* form groups */
+.login-bg .login-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+/* labels */
+.login-bg .login-form label {
+  font-size: 14px;
+  color: #123241;
+  margin-bottom: 6px;
   font-weight: 600;
 }
 
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #333;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+/* inputs (scoped) */
+.login-bg .login-form input[type="text"],
+.login-bg .login-form input[type="password"],
+.login-bg .login-form input[type="email"] {
+  padding: 12px 14px;
   font-size: 16px;
-  transition: border-color 0.3s;
-}
-
-.form-group input:focus {
+  border: 1px solid #bfcfe0;
+  border-radius: 4px;
+  background: #f3f9ff;
+  transition: box-shadow 0.18s, border-color 0.18s, transform 0.12s;
   outline: none;
-  border-color: #0D47A1;
-  box-shadow: 0 0 0 2px rgba(13, 71, 161, 0.2);
+  box-sizing: border-box;
 }
 
-.login-btn {
-  width: 100%;
-  padding: 12px;
-  background-color: #0D47A1;
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+/* subtle focus styling */
+.login-bg .login-form input:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 6px rgba(25,118,210,0.08);
+  background: #ffffff;
+}
+
+/* login button - gradient & lift */
+.login-bg .login-form .login-btn {
+  margin-top: 18px;
+  align-self: center;
+  width: 220px;
+  padding: 12px 22px;
   font-size: 16px;
-  transition: background-color 0.3s;
+  font-weight: 700;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+  box-shadow: 0 8px 26px rgba(13,71,161,0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.login-btn:hover {
-  background-color: #08306B;
+/* hover and active states */
+.login-bg .login-form .login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(13,71,161,0.35);
+}
+.login-bg .login-form .login-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 18px rgba(13,71,161,0.22);
+}
+
+/* error message (scoped) */
+.login-bg .login-form .error {
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* responsive adjustments */
+@media (max-width: 900px) {
+  .login-bg {
+    padding: 30px 30px;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-bg::before { bottom: 30px; height: 120px; }
+  .login-bg::after  { bottom: 120px; height: 80px; }
+  .login-bg .login-form { max-width: 420px; padding: 28px; }
+  .login-bg .login-form h2 { font-size: 40px; }
+}
+
+@media (max-width: 420px) {
+  .login-bg {
+    padding: 18px;
+  }
+  .login-bg .login-form {
+    width: 100%;
+    padding: 20px;
+    border-radius: 6px;
+  }
+  .login-bg .login-form h2 { font-size: 34px; }
+  .login-bg .login-form .login-btn { width: 100%; }
 }

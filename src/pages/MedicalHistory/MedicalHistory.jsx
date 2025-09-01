@@ -12,6 +12,9 @@ export default function MedicalHistory() {
 
   return (
     <div className="medical-history-container">
+      <header className="fixed-header">
+        <h1 className="header-title"></h1>
+      </header>
       <div className="left-panel">
         <h2>Medical History</h2>
         <button onClick={() => setActiveForm('condition')}>Conditions</button>

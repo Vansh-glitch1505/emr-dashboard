@@ -42,6 +42,9 @@ export default function Preview() {
 
   return (
     <div className="preview-container">
+      <header className="fixed-header">
+        <h1 className="header-title"></h1>
+       </header>
       <h2>Review Your Info</h2>
 
       {/* Demographics Section */}

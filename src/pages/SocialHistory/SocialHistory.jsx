@@ -53,6 +53,9 @@ const SocialHistory = () => {
 
   return (
     <div className="social-history-container">
+      <header className="fixed-header">
+        <h1 className="header-title"></h1>
+       </header>
       <h2>Social History</h2>
 
       <div className="toggle-list">

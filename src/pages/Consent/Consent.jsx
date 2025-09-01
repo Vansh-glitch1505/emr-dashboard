@@ -33,6 +33,9 @@ export default function Consent() {
 
   return (
     <div className="consent-container">
+      <header className="fixed-header">
+        <h1 className="header-title"></h1>
+       </header>
       <h2 className="form-title">Consent Form</h2>
 
       <div className="consent-header">

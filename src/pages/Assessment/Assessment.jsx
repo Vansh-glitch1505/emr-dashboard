@@ -78,6 +78,9 @@ const Assessment = () => {
 
   return (
     <div className="assessment-container">
+      <header className="fixed-header">
+        <h1 className="header-title"></h1>
+      </header>
       <h2 className="assessment-title">Assessment</h2>
 
       <fieldset className="assessment-section">

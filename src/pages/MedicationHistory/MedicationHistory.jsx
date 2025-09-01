@@ -110,6 +110,9 @@ const MedicationHistory = () => {
   return (
     <div className="medication-container">
       <div className="header-section">
+        <header className="fixed-header">
+        <h1 className="header-title"></h1>
+       </header>
         <h2 className="medication-title">Medication History</h2>
         <div className="tabs">
           <button
