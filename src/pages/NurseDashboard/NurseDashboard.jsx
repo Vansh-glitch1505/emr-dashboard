@@ -41,6 +41,14 @@ const NurseDashboard = () => {
     navigate('/dashboard/patient-demographics');
   };
 
+  const handleNewVisit = () => {
+    navigate('/new-visit');
+  };
+
+  const handleNewAppointment = () => {
+    navigate('/dashboard/new-appointment');
+  };
+
   const filteredPatients = patients.filter(patient =>
     `${patient.first_name} ${patient.last_name}`
       .toLowerCase()
@@ -104,10 +112,12 @@ const NurseDashboard = () => {
         <div className="col">
           <div className="card">
             <div className="card-header with-accent">
-              <h2>New Visits</h2>
+              <button className="new-visit-btn" onClick={handleNewVisit}>
+                New Visit
+              </button>
             </div>
             <div className="recent-patients">
-              <h3>Recent Patients</h3>
+              <h3>Recent Patient Encounter</h3>
               <ul>
                 {recentPatients.length > 0 ? (
                   recentPatients.slice(0, 10).map((patient) => (
@@ -135,10 +145,12 @@ const NurseDashboard = () => {
         <div className="col">
           <div className="card">
             <div className="card-header with-accent">
-              <h2>Upcoming Appointments</h2>
+              <button className="new-appointment-btn" onClick={handleNewAppointment}>
+                New Appointment
+              </button>
             </div>
             <div className="appointments">
-              <h3>Today's Schedule</h3>
+              <h3>Upcoming Appointments</h3>
               <ul>
                 <li className="appointment-item">
                   <div className="appointment-time">9:00 AM</div>

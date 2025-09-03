@@ -99,6 +99,25 @@
   background-color: var(--dark-blue);
 }
 
+/* New Visit and New Appointment buttons */
+.new-visit-btn,
+.new-appointment-btn {
+  background-color: #1A73E8;
+  color: var(--white);
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.new-visit-btn:hover,
+.new-appointment-btn:hover {
+  background-color: var(--dark-blue);
+}
+
 .search-container {
   position: relative;
   margin-bottom: 20px;

@@ -19,6 +19,7 @@ import SocialHistoryPreview from './pages/SocialHistory/SocialHistoryPreview';
 
 // ✅ New nurse dashboard import
 import NurseDashboard from './pages/NurseDashboard/NurseDashboard';
+import NewVisit from './pages/NurseDashboard/NewVisit';
 
 function App() {
   return (
@@ -47,6 +48,8 @@ function App() {
 
       {/* ✅ New nurse dashboard route */}
       <Route path="/nurse-dashboard" element={<NurseDashboard />} />
+      <Route path="/new-visit" element={<NewVisit />} />
+
     </Routes>
   );
 }
