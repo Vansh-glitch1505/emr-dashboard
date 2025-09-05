@@ -1,0 +1,269 @@
+.medapp-container {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  color: #333;
+}
+
+.medapp-header {
+  background-color: #236D8B;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.medapp-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.medapp-main-content {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+/* Left Panel Styles */
+.medapp-left-panel {
+  width: 300px;
+  background-color: white;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+}
+
+.medapp-search-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.medapp-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 40px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.medapp-search-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.medapp-patient-list {
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+
+.medapp-patient-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.medapp-patient-item:hover {
+  background-color: #f8f9fa;
+}
+
+.medapp-patient-item.medapp-selected {
+  background-color: #e3f2fd;
+}
+
+.medapp-patient-avatar {
+  width: 32px;
+  height: 32px;
+  background-color: #236D8B;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.medapp-patient-name {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.medapp-arrow {
+  color: #666;
+  font-size: 18px;
+}
+
+/* Right Panel Styles */
+.medapp-right-panel {
+  flex: 1;
+  padding: 20px;
+  background-color: white;
+  overflow-y: auto;
+}
+
+.medapp-form-section {
+  margin-bottom: 30px;
+}
+
+.medapp-section-title {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 15px 0;
+  font-weight: normal;
+  text-align: center;
+  background-color: #f8f9fa;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.medapp-form-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  align-items: end;
+}
+
+.medapp-form-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.medapp-form-group:first-child {
+  flex: 1;
+}
+
+.medapp-form-group:nth-child(2) {
+  flex: 1;
+}
+
+.medapp-form-group:nth-child(3) {
+  flex: 1;
+}
+
+.medapp-contact-group {
+  flex: 2 !important;
+}
+
+.medapp-comments-group {
+  margin-bottom: 20px;
+}
+
+.medapp-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+  font-weight: normal;
+}
+
+.medapp-input,
+.medapp-select,
+.medapp-textarea {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  background-color: white;
+}
+
+.medapp-input:focus,
+.medapp-select:focus,
+.medapp-textarea:focus {
+  outline: none;
+  border-color: #236D8B;
+}
+
+.medapp-age-input {
+  width: 60px;
+}
+
+.medapp-contact-input {
+  width: 100%;
+}
+
+.medapp-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 32px;
+  appearance: none;
+}
+
+.medapp-textarea {
+  resize: vertical;
+  min-height: 80px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.medapp-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.medapp-done-btn {
+  background-color: #236D8B;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.medapp-done-btn:hover {
+  background-color: #236D8B;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .medapp-main-content {
+    flex-direction: column;
+  }
+  
+  .medapp-left-panel {
+    width: 100%;
+    height: 300px;
+  }
+  
+  .medapp-form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .medapp-form-group {
+    width: 100%;
+  }
+}
+
+.medapp-add-patient-container {
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px 0;
+}
+
+.medapp-add-patient-btn {
+  background-color: #236D8B;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.medapp-add-patient-btn:hover {
+  background-color: #236D8B;
+}

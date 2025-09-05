@@ -46,7 +46,7 @@ const NurseDashboard = () => {
   };
 
   const handleNewAppointment = () => {
-    navigate('/dashboard/new-appointment');
+    navigate('/new-appointment');
   };
 
   const filteredPatients = patients.filter(patient =>

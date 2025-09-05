@@ -85,7 +85,7 @@
 }
 
 .add-patient-btn {
-  background-color: var(--primary-blue);
+  background-color: #1A73E8; /* fixed color */
   color: var(--white);
   padding: 10px 16px;
   border: none;
@@ -99,10 +99,11 @@
   background-color: var(--dark-blue);
 }
 
+
 /* New Visit and New Appointment buttons */
 .new-visit-btn,
 .new-appointment-btn {
-  background-color: #1A73E8;
+  background-color: #236D8B;
   color: var(--white);
   padding: 10px 16px;
   border: none;
