@@ -71,6 +71,10 @@ const MedicationHistory = () => {
     });
   };
 
+  const handleNext = async () =>{
+    navigate('/dashboard/vitals');
+  }
+
   const handleSave = async () => {
     if (!userId) {
       alert("No userId found. Please login again.");
@@ -229,6 +233,9 @@ const MedicationHistory = () => {
       <div className="form-actions">
         <button className="save-btn" onClick={handleSave}>
           Save Medications
+        </button>
+        <button className="next-btn" onClick={handleNext}>
+          Next
         </button>
       </div>
     </div>
