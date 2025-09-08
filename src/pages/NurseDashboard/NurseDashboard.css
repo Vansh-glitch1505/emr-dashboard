@@ -1,4 +1,3 @@
-/* NurseDashboard.css */
 :root {
   --primary-blue: #1a73e8;
   --dark-blue: #0d47a1;
@@ -26,17 +25,20 @@
 
 .dashboard-header {
   margin-bottom: 24px;
+  text-align: center;
 }
 
 .dashboard-header h1 {
   color: var(--dark-blue);
-  font-size: 28px;
-  margin-bottom: 8px;
+  font-size: 40px;
+  margin-bottom: 10px;
 }
 
 .dashboard-header p {
-  color: var(--text-light);
-  font-size: 16px;
+  color: var(--text-dark);
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .dashboard-content {
@@ -66,6 +68,72 @@
   flex-direction: column;
 }
 
+/* Patient Directory header */
+.patient-directory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 3px solid var(--primary-blue);
+  margin-bottom: 12px;
+}
+
+.patient-directory-header h2 {
+  color: var(--dark-blue);
+  font-size: 20px;
+}
+
+/* Generic button style for dashboard */
+.add-patient-btn,
+.new-visit-btn,
+.new-appointment-btn,
+.view-btn,
+.view-schedule-btn {
+  background-color: #236D8B; /* default */
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Smaller Add Patient button */
+.add-patient-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  box-shadow: 0 3px 8px rgba(13, 71, 161, 0.25);
+}
+
+.add-patient-btn:hover {
+  background-color: #0D47A1; /* hover */
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(13, 71, 161, 0.3);
+}
+
+/* Other buttons */
+.new-visit-btn,
+.new-appointment-btn,
+.view-schedule-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+.view-btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: 1px solid #236D8B;
+}
+
+.new-visit-btn:hover,
+.new-appointment-btn:hover,
+.view-btn:hover,
+.view-schedule-btn:hover {
+  background-color: #0D47A1;
+  color: #fff;
+  border-color: #0D47A1;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -77,46 +145,13 @@
 
 .card-header.with-accent {
   border-bottom: 3px solid var(--primary-blue);
+  display: flex;
+  justify-content: center;
 }
 
 .card-header h2 {
   color: var(--dark-blue);
   font-size: 20px;
-}
-
-.add-patient-btn {
-  background-color: #1A73E8; /* fixed color */
-  color: var(--white);
-  padding: 10px 16px;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.2s ease;
-}
-
-.add-patient-btn:hover {
-  background-color: var(--dark-blue);
-}
-
-
-/* New Visit and New Appointment buttons */
-.new-visit-btn,
-.new-appointment-btn {
-  background-color: #236D8B;
-  color: var(--white);
-  padding: 10px 16px;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: background-color 0.2s ease;
-}
-
-.new-visit-btn:hover,
-.new-appointment-btn:hover {
-  background-color: var(--dark-blue);
 }
 
 .search-container {
@@ -136,14 +171,6 @@
   outline: none;
   border-color: var(--primary-blue);
   box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
-}
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-light);
 }
 
 .patient-list-container {
@@ -207,22 +234,6 @@ ul {
 
 .patient-actions {
   margin-left: auto;
-}
-
-.view-btn {
-  background-color: transparent;
-  color: var(--primary-blue);
-  border: 1px solid var(--primary-blue);
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
-}
-
-.view-btn:hover {
-  background-color: var(--primary-blue);
-  color: white;
 }
 
 .recent-patients h3,
@@ -294,24 +305,6 @@ ul {
   margin-top: 4px;
 }
 
-.view-schedule-btn {
-  width: 100%;
-  background-color: transparent;
-  color: var(--primary-blue);
-  border: 1px solid var(--primary-blue);
-  padding: 10px;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  margin-top: 15px;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-.view-schedule-btn:hover {
-  background-color: var(--primary-blue);
-  color: white;
-}
-
 /* Scrollbar styling */
 .patient-list-container::-webkit-scrollbar {
   width: 6px;
@@ -321,6 +314,23 @@ ul {
   background: #f1f1f1;
   border-radius: 10px;
 }
+
+.add-patient-btn {
+  background-color: #236D8B;
+  color: white;
+  padding: 12px 24px;   /* Standard size */
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-patient-btn:hover {
+  background-color: #0D47A1;
+}
+
 
 .patient-list-container::-webkit-scrollbar-thumb {
   background: #c1c1c1;

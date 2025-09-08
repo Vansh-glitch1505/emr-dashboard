@@ -72,13 +72,10 @@ const NewVisit = () => {
   const displayBalance = formData.balanceAmount === '' ? computedBalance : formData.balanceAmount;
 
   return (
-    <div className="visit-container">
-      {/* top header */}
+    <div className="new-visit">
       <div className="visit-header" />
 
-      {/* layout under header */}
       <div className="visit-layout">
-        {/* NOTE: class name intentionally different (nv-sidebar) so we DON'T clash with your global Sidebar.css */}
         <aside className="nv-sidebar">
           <div className="nv-sidebar-header">
             <button className="add-patient-btn" onClick={handleAddPatient}>
@@ -111,7 +108,6 @@ const NewVisit = () => {
           </div>
         </aside>
 
-        {/* main content */}
         <main className="main-content">
           <h2 className="page-title">New Visit</h2>
 
@@ -150,9 +146,8 @@ const NewVisit = () => {
                 <div className="form-group">
                   <h3>Vitals</h3>
                   <div className="vitals-grid">
-                    {/* vitals fields (kept same) */}
                     <div className="vital-item">
-                      <label>Ht</label>
+                      <label>Height</label>
                       <div className="input-unit">
                         <input type="text" value={formData.height} onChange={(e) => handleInputChange('height', e.target.value)} />
                         <span>ft</span>
@@ -166,25 +161,25 @@ const NewVisit = () => {
                       </div>
                     </div>
                     <div className="vital-item">
-                      <label>Wt</label>
+                      <label>Weightt</label>
                       <div className="input-unit">
                         <input type="text" value={formData.weight} onChange={(e) => handleInputChange('weight', e.target.value)} />
                         <span>kg</span>
                       </div>
                     </div>
                     <div className="vital-item">
-                      <label>O2Sat</label>
+                      <label>Oxygen%</label>
                       <div className="input-unit">
                         <input type="text" value={formData.oxygenSaturation} onChange={(e) => handleInputChange('oxygenSaturation', e.target.value)} />
                         <span>%</span>
                       </div>
                     </div>
                     <div className="vital-item">
-                      <label>BP</label>
+                      <label>Blood pressure</label>
                       <input type="text" value={formData.bloodPressure} onChange={(e) => handleInputChange('bloodPressure', e.target.value)} />
                     </div>
                     <div className="vital-item">
-                      <label>T</label>
+                      <label>Temperatue</label>
                       <div className="input-unit">
                         <input type="text" value={formData.temperature} onChange={(e) => handleInputChange('temperature', e.target.value)} />
                         <span>F</span>
@@ -246,15 +241,6 @@ const NewVisit = () => {
           {/* STEP 3 */}
           {currentStep === 3 && (
             <div className="form-card">
-              <div className="form-group followup-row">
-                <label>Send Follow-up</label>
-                <div className="followup-buttons">
-                  <button type="button" className={`pill ${formData.sendFollowUp === 'Tonight' ? 'active' : ''}`} onClick={() => handleInputChange('sendFollowUp', 'Tonight')}>Tonight</button>
-                  <button type="button" className={`pill ${formData.sendFollowUp === 'After 3 Days' ? 'active' : ''}`} onClick={() => handleInputChange('sendFollowUp', 'After 3 Days')}>After 3 Days</button>
-                  <button type="button" className={`pill ${formData.sendFollowUp === 'Custom' ? 'active' : ''}`} onClick={() => handleInputChange('sendFollowUp', 'Custom')}>+</button>
-                </div>
-              </div>
-
               <div className="form-group">
                 <label>Follow-up Appointment</label>
                 <input type="date" value={formData.followUpDate} onChange={(e) => handleInputChange('followUpDate', e.target.value)} />
@@ -282,7 +268,6 @@ const NewVisit = () => {
             </div>
           )}
 
-          {/* navigation */}
           <div className="form-nav">
             {currentStep > 1 && <button className="btn-outline" onClick={prevStep}>Previous</button>}
             <div className="spacer" />

@@ -108,7 +108,7 @@ const NewAppointment = () => {
             
             <div className="medapp-form-row">
               <div className="medapp-form-group">
-                <label className="medapp-label">Name</label>
+                <label className="medapp-label">First Name</label>
                 <input
                   type="text"
                   name="name"
@@ -119,7 +119,7 @@ const NewAppointment = () => {
                 />
               </div>
               <div className="medapp-form-group">
-                <label className="medapp-label">Foley</label>
+                <label className="medapp-label">Middle Name</label>
                 <input
                   type="text"
                   className="medapp-input"
@@ -127,7 +127,7 @@ const NewAppointment = () => {
                 />
               </div>
               <div className="medapp-form-group">
-                <label className="medapp-label">John</label>
+                <label className="medapp-label">Last Name</label>
                 <input
                   type="text"
                   className="medapp-input"
@@ -222,7 +222,7 @@ const NewAppointment = () => {
 
             <div className="medapp-form-row">
               <div className="medapp-form-group">
-                <label className="medapp-label">Urgency Dropdown</label>
+                <label className="medapp-label">Urgency</label>
                 <select
                   name="urgencyDropdown"
                   value={formData.urgencyDropdown}
@@ -241,16 +241,16 @@ const NewAppointment = () => {
                   onChange={handleInputChange}
                   className="medapp-select"
                 >
-                  <option>Dr. Smith</option>
-                  <option>Dr. Johnson</option>
-                  <option>Dr. Williams</option>
-                  <option>Dr. Brown</option>
+                  <option>Dr. Ram Shah</option>
+                  <option>Dr. Rohan Sharma</option>
+                  <option>Dr. Sanjay Williams</option>
+                  <option>Dr. Ajay Patil</option>
                 </select>
               </div>
             </div>
 
             <div className="medapp-form-group medapp-comments-group">
-              <label className="medapp-label">Comments</label>
+              <label className="medapp-label">Notes</label>
               <textarea
                 name="comments"
                 value={formData.comments}
@@ -263,7 +263,7 @@ const NewAppointment = () => {
           </div>
 
           <div className="medapp-form-actions">
-            <button className="medapp-done-btn" onClick={handleDone} >Done</button>
+            <button className="medapp-done-btn" onClick={handleDone} >Submit</button>
           </div>
         </div>
       </div>

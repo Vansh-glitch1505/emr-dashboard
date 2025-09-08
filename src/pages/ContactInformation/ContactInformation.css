@@ -326,6 +326,65 @@ input[type="email"]:focus {
   .contact-label {
     min-width: auto;
   }
+
+
+  /* Emergency contact styles */
+.emergency-contact-group {
+  position: relative;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.emergency-contact-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.remove-contact-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.remove-contact-btn:hover {
+  background: #ff3742;
+}
+
+.add-contact-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.add-contact-btn {
+  background-color: transparent;
+  color: #2196f3;
+  border: 1px dashed #2196f3;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.add-contact-btn:hover {
+  background-color: #e3f2fd;
+  border-style: solid;
+}
   
   .phone-input,
   .email-input {

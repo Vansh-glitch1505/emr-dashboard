@@ -12,20 +12,40 @@ const ContactInformation = () => {
     homePhone: '',
     workPhone: '',
     email: '',
-    emergencyFirstName: '',
-    emergencyMiddleName: '',
-    emergencyLastName: '',
-    emergencyRelationship: '',
-    emergencyPhone: '',
-    emergencyEmail: '',
-    preferredContactMethod: []
+    preferredContactMethod: [],
+    emergencyContacts: [
+      {
+        firstName: '',
+        middleName: '',
+        lastName: '',
+        relationship: '',
+        phone: '',
+        email: ''
+      }
+    ]
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e, index = null) => {
     const { name, value } = e.target;
-    const updatedData = { ...formData, [name]: value };
-    setFormData(updatedData);
-    updatePreviewData(updatedData, 'contact');
+    
+    if (index !== null && name.startsWith("emergency")) {
+      // Handle emergency contact fields
+      const fieldName = name.replace("emergency", "").charAt(0).toLowerCase() + name.replace("emergency", "").slice(1);
+      const updatedContacts = [...formData.emergencyContacts];
+      updatedContacts[index] = {
+        ...updatedContacts[index],
+        [fieldName]: value
+      };
+      
+      const updatedData = { ...formData, emergencyContacts: updatedContacts };
+      setFormData(updatedData);
+      updatePreviewData(updatedData, 'contact');
+    } else {
+      // Handle regular fields
+      const updatedData = { ...formData, [name]: value };
+      setFormData(updatedData);
+      updatePreviewData(updatedData, 'contact');
+    }
   };
 
   const handleContactMethodChange = (method) => {
@@ -34,6 +54,40 @@ const ContactInformation = () => {
       : [...formData.preferredContactMethod, method];
     
     const updatedData = { ...formData, preferredContactMethod: updatedMethods };
+    setFormData(updatedData);
+    updatePreviewData(updatedData, 'contact');
+  };
+
+  const addEmergencyContact = () => {
+    const newContact = {
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      relationship: '',
+      phone: '',
+      email: ''
+    };
+    
+    const updatedData = {
+      ...formData, 
+      emergencyContacts: [...formData.emergencyContacts, newContact]
+    };
+    
+    setFormData(updatedData);
+    updatePreviewData(updatedData, 'contact');
+  };
+
+  const removeEmergencyContact = (index) => {
+    if (formData.emergencyContacts.length <= 1) return;
+    
+    const updatedContacts = [...formData.emergencyContacts];
+    updatedContacts.splice(index, 1);
+    
+    const updatedData = {
+      ...formData, 
+      emergencyContacts: updatedContacts
+    };
+    
     setFormData(updatedData);
     updatePreviewData(updatedData, 'contact');
   };
@@ -78,7 +132,7 @@ const ContactInformation = () => {
             <div className="contact-row">
               <label className="contact-label">Mobile/Cell Phone</label>
               <div className="phone-input">
-                <input className="country-code" value="+1" readOnly />
+                <input className="country-code" value="+91" readOnly />
                 <input 
                   className="phone-number"
                   type="text" 
@@ -93,7 +147,7 @@ const ContactInformation = () => {
             <div className="contact-row">
               <label className="contact-label">Home Phone No.</label>
               <div className="phone-input">
-                <input className="country-code" value="+1" readOnly />
+                
                 <input 
                   className="phone-number"
                   type="text" 
@@ -108,7 +162,7 @@ const ContactInformation = () => {
             <div className="contact-row">
               <label className="contact-label">Work Phone No.</label>
               <div className="phone-input">
-                <input className="country-code" value="+1" readOnly />
+                <input className="country-code" value="+91" readOnly />
                 <input 
                   className="phone-number"
                   type="text" 
@@ -158,74 +212,98 @@ const ContactInformation = () => {
       <fieldset className="contact-section">
         <legend className="section-title">Emergency Contact Information</legend>
         
-        <div className="form-row">
-          <div className="input-group">
-            <label htmlFor="emergencyFirstName">First Name</label>
-            <input 
-              id="emergencyFirstName"
-              type="text" 
-              name="emergencyFirstName" 
-              value={formData.emergencyFirstName} 
-              onChange={handleChange} 
-            />
+        {formData.emergencyContacts.map((contact, index) => (
+          <div key={index} className="emergency-contact-group">
+            {index > 0 && (
+              <button 
+                type="button" 
+                className="remove-contact-btn"
+                onClick={() => removeEmergencyContact(index)}
+                aria-label="Remove contact"
+              >
+                ×
+              </button>
+            )}
+            
+            <div className="form-row">
+              <div className="input-group">
+                <label htmlFor={`emergencyFirstName-${index}`}>First Name</label>
+                <input 
+                  id={`emergencyFirstName-${index}`}
+                  type="text" 
+                  name="emergencyFirstName" 
+                  value={contact.firstName} 
+                  onChange={(e) => handleChange(e, index)} 
+                />
+              </div>
+              
+              <div className="input-group">
+                <label htmlFor={`emergencyMiddleName-${index}`}>Middle Name</label>
+                <input 
+                  id={`emergencyMiddleName-${index}`}
+                  type="text" 
+                  name="emergencyMiddleName" 
+                  value={contact.middleName} 
+                  onChange={(e) => handleChange(e, index)} 
+                />
+              </div>
+              
+              <div className="input-group">
+                <label htmlFor={`emergencyLastName-${index}`}>Last Name</label>
+                <input 
+                  id={`emergencyLastName-${index}`}
+                  type="text" 
+                  name="emergencyLastName" 
+                  value={contact.lastName} 
+                  onChange={(e) => handleChange(e, index)} 
+                />
+              </div>
+            </div>
+            
+            <div className="form-row">
+              <div className="input-group">
+                <label htmlFor={`emergencyRelationship-${index}`}>Relationship to Patient</label>
+                <input 
+                  id={`emergencyRelationship-${index}`}
+                  type="text" 
+                  name="emergencyRelationship" 
+                  value={contact.relationship} 
+                  onChange={(e) => handleChange(e, index)} 
+                />
+              </div>
+              <div className="input-group phone-group">
+                <label htmlFor={`emergencyPhone-${index}`}>Emergency Contact No.</label>
+                <div className="phone-wrapper">
+                  <span className="phone-prefix">+91</span>
+                  <input 
+                    id={`emergencyPhone-${index}`}
+                    type="tel"
+                    name="emergencyPhone"
+                    value={contact.phone}
+                    onChange={(e) => handleChange(e, index)}
+                    placeholder="Enter number"
+                  />
+                </div>
+              </div>
+              
+              <div className="input-group">
+                <label htmlFor={`emergencyEmail-${index}`}>Emergency Email Address</label>
+                <input 
+                  id={`emergencyEmail-${index}`}
+                  type="email" 
+                  name="emergencyEmail" 
+                  value={contact.email} 
+                  onChange={(e) => handleChange(e, index)} 
+                />
+              </div>
+            </div>
           </div>
-          
-          <div className="input-group">
-            <label htmlFor="emergencyMiddleName">Middle Name</label>
-            <input 
-              id="emergencyMiddleName"
-              type="text" 
-              name="emergencyMiddleName" 
-              value={formData.emergencyMiddleName} 
-              onChange={handleChange} 
-            />
-          </div>
-          
-          <div className="input-group">
-            <label htmlFor="emergencyLastName">Last Name</label>
-            <input 
-              id="emergencyLastName"
-              type="text" 
-              name="emergencyLastName" 
-              value={formData.emergencyLastName} 
-              onChange={handleChange} 
-            />
-          </div>
-        </div>
+        ))}
         
-        <div className="form-row">
-          <div className="input-group">
-            <label htmlFor="emergencyRelationship">Relationship to Patient</label>
-            <input 
-              id="emergencyRelationship"
-              type="text" 
-              name="emergencyRelationship" 
-              value={formData.emergencyRelationship} 
-              onChange={handleChange} 
-            />
-          </div>
-          
-          <div className="input-group">
-            <label htmlFor="emergencyPhone">Emergency Contact No.</label>
-            <input 
-              id="emergencyPhone"
-              type="text" 
-              name="emergencyPhone" 
-              value={formData.emergencyPhone} 
-              onChange={handleChange} 
-            />
-          </div>
-          
-          <div className="input-group">
-            <label htmlFor="emergencyEmail">Emergency Email Address</label>
-            <input 
-              id="emergencyEmail"
-              type="email" 
-              name="emergencyEmail" 
-              value={formData.emergencyEmail} 
-              onChange={handleChange} 
-            />
-          </div>
+        <div className="add-contact-container">
+          <button type="button" className="add-contact-btn" onClick={addEmergencyContact}>
+            + Add Another Emergency Contact
+          </button>
         </div>
       </fieldset>
 

@@ -1,4 +1,3 @@
-// NurseDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './NurseDashboard.css';
@@ -29,7 +28,6 @@ const NurseDashboard = () => {
       { id: 10, first_name: 'Noah', last_name: 'Wilson', visitTime: '2025-08-30T12:15:00' },
     ];
 
-    // Sort in descending order (latest first)
     const sortedVisits = visits.sort(
       (a, b) => new Date(b.visitTime) - new Date(a.visitTime)
     );
@@ -50,9 +48,7 @@ const NurseDashboard = () => {
   };
 
   const filteredPatients = patients.filter(patient =>
-    `${patient.first_name} ${patient.last_name}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+    `${patient.first_name} ${patient.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -66,13 +62,13 @@ const NurseDashboard = () => {
         {/* Column 1: Add patient + All Patients */}
         <div className="col patient-list">
           <div className="card">
-            <div className="card-header">
+            <div className="patient-directory-header">
               <h2>Patient Directory</h2>
               <button className="add-patient-btn" onClick={handleAddPatient}>
                 + Add New Patient
               </button>
             </div>
-            
+
             <div className="search-container">
               <input
                 type="text"

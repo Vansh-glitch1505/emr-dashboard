@@ -146,6 +146,27 @@ select {
   gap: 1rem;
 }
 
+.phone-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.phone-prefix {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.phone-input input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+
 .date-input-group {
   flex: 1;
   display: flex;
