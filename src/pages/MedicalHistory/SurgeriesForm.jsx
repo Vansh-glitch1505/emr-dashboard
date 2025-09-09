@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./MedicalHistory.css"; // Reuse the same CSS file
 
-const SurgeriesForm = ({ closeForm }) => {
+// ⬇️ Added onSave to props
+const SurgeriesForm = ({ closeForm, onSave }) => {
   const [surgeryType, setSurgeryType] = useState("");
   const [surgeryDate, setSurgeryDate] = useState("");
   const [surgeonName, setSurgeonName] = useState("");
@@ -21,6 +22,11 @@ const SurgeriesForm = ({ closeForm }) => {
     setSavedData(formData);
     setShowPreview(true);
     console.log(formData);
+
+    // ⬇️ NEW: Pass data to parent
+    if (onSave) {
+      onSave(formData);
+    }
   };
 
   const handleEdit = () => {
@@ -29,7 +35,6 @@ const SurgeriesForm = ({ closeForm }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    // If it's already a formatted date, return as is
     if (dateString.includes('/') || dateString.includes('-')) {
       return dateString;
     }
@@ -41,7 +46,7 @@ const SurgeriesForm = ({ closeForm }) => {
       <div className="slide-panel">
         <div className="panel-header">
           <h2>Surgery Preview</h2>
-          <span className="close-btn" onClick={closeForm}>✕</span> {/* fixed here */}
+          <span className="close-btn" onClick={closeForm}>✕</span>
         </div>
 
         <div className="form-content">
@@ -67,7 +72,7 @@ const SurgeriesForm = ({ closeForm }) => {
     <div className="slide-panel">
       <div className="panel-header">
         <h2>Surgeries</h2>
-        <span className="close-btn" onClick={closeForm}>✕</span> {/* fixed here */}
+        <span className="close-btn" onClick={closeForm}>✕</span>
       </div>
 
       <div className="form-content">
@@ -80,7 +85,7 @@ const SurgeriesForm = ({ closeForm }) => {
 
         <label>Surgery Date</label>
         <input
-          type="text"
+          type="date"
           value={surgeryDate}
           onChange={(e) => setSurgeryDate(e.target.value)}
         />

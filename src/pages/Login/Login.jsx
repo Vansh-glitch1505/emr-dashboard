@@ -101,6 +101,17 @@ const Login = () => {
         {showReset && (
           <form className="reset-panel" onSubmit={handleResetSubmit}>
             <div className="form-group">
+              <label>Email address</label>
+              <input
+                type="email"
+                placeholder="Enter email address"
+                required
+              />
+            </div>
+
+
+
+            <div className="form-group">
               <label htmlFor="newPassword">New Password</label>
               <input
                 type="password"

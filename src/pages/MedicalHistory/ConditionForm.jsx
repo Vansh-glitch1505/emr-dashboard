@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './MedicalHistory.css';
 
-export default function ConditionForm({ closeForm }) {
+// ⬇️ Added onSave to props
+export default function ConditionForm({ closeForm, onSave }) { 
   const [formData, setFormData] = useState({
     condition: '',
     diagnosisDate: '',
@@ -18,8 +19,14 @@ export default function ConditionForm({ closeForm }) {
 
   const handleSave = () => {
     // Save the data and show preview
-    setSavedData({ ...formData });
+    const dataToSave = { ...formData }; // ⬅️ made this a variable for reuse
+    setSavedData(dataToSave);
     setShowPreview(true);
+
+    // ⬇️ NEW: Pass data back to parent if onSave exists
+    if (onSave) {
+      onSave(dataToSave);
+    }
   };
 
   const handleEdit = () => {
@@ -79,9 +86,9 @@ export default function ConditionForm({ closeForm }) {
       </div>
 
       <div className="button-group-right">
-          <button onClick={closeForm}>Cancel</button>
-          <button onClick={handleSave}>Save</button>
-        </div>
+        <button onClick={closeForm}>Cancel</button>
+        <button onClick={handleSave}>Save</button>
+      </div>
     </div>
   );
 }

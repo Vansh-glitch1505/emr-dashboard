@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './MedicalHistory.css';
 
-export default function AllergiesForm({ closeForm }) {
+// ✅ Added onSave in props
+export default function AllergiesForm({ closeForm, onSave }) {
   const [formData, setFormData] = useState({
     allergyType: '',
     substance: '',
@@ -38,6 +39,11 @@ export default function AllergiesForm({ closeForm }) {
     // Save the data and show preview
     setSavedData([...addedAllergies]);
     setShowPreview(true);
+
+    // ✅ Pass data back to parent
+    if (onSave) {
+      onSave([...addedAllergies]);
+    }
   };
 
   const handleEdit = () => {

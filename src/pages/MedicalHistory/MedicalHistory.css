@@ -475,6 +475,8 @@ textarea {
   background: var(--primary-dark);
 }
 
+
+
 .btn-danger {
   background: var(--danger);
   color: white;

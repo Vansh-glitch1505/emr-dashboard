@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import "./MedicalHistory.css";
 
-export default function ImmunizationForm({ closeForm }) {
+// ⬇️ Added onSave to props
+export default function ImmunizationForm({ closeForm, onSave }) {
   const [vaccineName, setVaccineName] = useState('');
   const [dateAdministered, setDateAdministered] = useState('');
   const [reactions, setReactions] = useState('');
@@ -29,27 +30,28 @@ export default function ImmunizationForm({ closeForm }) {
   };
 
   const handleSave = () => {
-    // If there's current form data, add it to the list first
+    let finalList = [...immunizationList];
+
+    // If there's current form data, add it before saving
     if (vaccineName || dateAdministered || reactions) {
-      handleAdd();
-      // Use setTimeout to ensure state is updated before showing preview
-      setTimeout(() => {
-        const finalList = [...immunizationList, {
-          id: Date.now(),
-          vaccineName,
-          dateAdministered,
-          reactions
-        }];
-        setSavedData(finalList);
-        setShowPreview(true);
-      }, 100);
-    } else {
-      // Just show preview of existing list
-      setSavedData(immunizationList);
-      setShowPreview(true);
+      const newItem = {
+        id: Date.now(),
+        vaccineName,
+        dateAdministered,
+        reactions
+      };
+      finalList.push(newItem);
     }
-    
-    console.log("Saved immunizations:", immunizationList);
+
+    setSavedData(finalList);
+    setShowPreview(true);
+
+    // ⬇️ NEW: Pass data to parent
+    if (onSave) {
+      onSave(finalList);
+    }
+
+    console.log("Saved immunizations:", finalList);
   };
 
   const handleEdit = () => {
@@ -137,7 +139,7 @@ export default function ImmunizationForm({ closeForm }) {
       <div className="form-group">
         <label>Date Administered</label>
         <input
-          type="text"
+          type="date"
           value={dateAdministered}
           onChange={(e) => setDateAdministered(e.target.value)}
           placeholder="e.g. October 2, 2022"

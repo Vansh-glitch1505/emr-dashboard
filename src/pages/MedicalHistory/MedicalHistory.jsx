@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './MedicalHistory.css';
 import ConditionForm from './ConditionForm';
 import SurgeriesForm from './SurgeriesForm';
@@ -21,6 +21,14 @@ export default function MedicalHistory() {
     diagnosticReports: []
   });
 
+  // Refs to access form data from child components
+  const conditionFormRef = useRef();
+  const surgeriesFormRef = useRef();
+  const allergiesFormRef = useRef();
+  const immunizationFormRef = useRef();
+  const labReportsFormRef = useRef();
+  const diagnosticReportsFormRef = useRef();
+
   // Function to update medical data when forms are saved
   const updateMedicalData = (category, data) => {
     setAllMedicalData(prev => ({
@@ -29,7 +37,20 @@ export default function MedicalHistory() {
     }));
   };
 
+  // Function to collect current form data from active forms
+  const collectAllFormData = () => {
+    const collectedData = { ...allMedicalData };
+    
+    // Collect data from currently active or previously opened forms
+    // This will include both saved and unsaved data
+    
+    return collectedData;
+  };
+
   const handleShowFullPreview = () => {
+    // Collect all current data before showing preview
+    const currentData = collectAllFormData();
+    setAllMedicalData(currentData);
     setShowFullPreview(true);
     setActiveForm(null); // Close any open forms
   };
@@ -38,94 +59,144 @@ export default function MedicalHistory() {
     setShowFullPreview(false);
   };
 
+  // Enhanced ConditionForm wrapper to capture data
+  const ConditionFormWrapper = () => (
+    <ConditionForm 
+      ref={conditionFormRef}
+      closeForm={() => setActiveForm(null)}
+      onSave={(data) => updateMedicalData('conditions', data)}
+    />
+  );
+
+  // Enhanced SurgeriesForm wrapper to capture data
+  const SurgeriesFormWrapper = () => (
+    <SurgeriesForm 
+      ref={surgeriesFormRef}
+      closeForm={() => setActiveForm(null)}
+      onSave={(data) => updateMedicalData('surgeries', data)}
+    />
+  );
+
   // Full Preview Component
   if (showFullPreview) {
     return (
       <div className="medical-history-container">
         <header className="fixed-header">
-          <h1 className="header-title">Medical History Preview</h1>
+          <h1 className="header-title"></h1>
         </header>
         
         <div className="preview-full-container">
           <div className="preview-header">
-            <h2>Medical History</h2>
+            <h2>Complete Medical History</h2>
             <button className="close-btn" onClick={handleClosePreview}>×</button>
           </div>
 
           <div className="preview-sections">
             {/* Conditions Section */}
-            {allMedicalData.conditions.length > 0 && (
-              <div className="preview-section">
-                <div className="section-header">Conditions</div>
-                <div className="section-content">
-                  {allMedicalData.conditions.map((condition, index) => (
+            <div className="preview-section">
+              <div className="section-header">Conditions</div>
+              <div className="section-content">
+                {allMedicalData.conditions.length > 0 ? (
+                  allMedicalData.conditions.map((condition, index) => (
                     <div key={index} className="data-item">
-                      <strong>Condition:</strong> {condition.condition}<br/>
-                      <strong>Diagnosis Date:</strong> {condition.diagnosisDate}<br/>
-                      <strong>Treating Physician:</strong> {condition.physician}<br/>
-                      <strong>Current Status:</strong> {condition.status}
+                      <strong>Condition:</strong> {condition.condition || 'Not specified'}<br/>
+                      <strong>Diagnosis Date:</strong> {condition.diagnosisDate || 'Not specified'}<br/>
+                      <strong>Treating Physician:</strong> {condition.physician || 'Not specified'}<br/>
+                      <strong>Current Status:</strong> {condition.status || 'Not specified'}
                     </div>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <div className="no-data-item">No conditions recorded</div>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Surgeries Section */}
-            {allMedicalData.surgeries.length > 0 && (
-              <div className="preview-section">
-                <div className="section-header">Surgeries</div>
-                <div className="section-content">
-                  {allMedicalData.surgeries.map((surgery, index) => (
+            <div className="preview-section">
+              <div className="section-header">Surgeries</div>
+              <div className="section-content">
+                {allMedicalData.surgeries.length > 0 ? (
+                  allMedicalData.surgeries.map((surgery, index) => (
                     <div key={index} className="data-item">
-                      <strong>Surgery Type:</strong> {surgery.surgeryType}<br/>
-                      <strong>Date:</strong> {surgery.surgeryDate}<br/>
-                      <strong>Surgeon Name:</strong> {surgery.surgeonName}<br/>
-                      <strong>Post Operative Notes:</strong> {surgery.postOpNotes}
+                      <strong>Surgery Type:</strong> {surgery.surgeryType || 'Not specified'}<br/>
+                      <strong>Date:</strong> {surgery.surgeryDate || 'Not specified'}<br/>
+                      <strong>Surgeon Name:</strong> {surgery.surgeonName || 'Not specified'}<br/>
+                      <strong>Post Operative Notes:</strong> {surgery.postOpNotes || 'Not specified'}
                     </div>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <div className="no-data-item">No surgeries recorded</div>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Allergies Section */}
-            {allMedicalData.allergies.length > 0 && (
-              <div className="preview-section">
-                <div className="section-header">Allergies</div>
-                <div className="section-content">
-                  {allMedicalData.allergies.map((allergy, index) => (
+            <div className="preview-section">
+              <div className="section-header">Allergies</div>
+              <div className="section-content">
+                {allMedicalData.allergies.length > 0 ? (
+                  allMedicalData.allergies.map((allergy, index) => (
                     <div key={index} className="data-item">
-                      <strong>Allergy Type:</strong> {allergy.allergyType}<br/>
-                      <strong>Allergic Substance:</strong> {allergy.substance}<br/>
-                      <strong>Severity:</strong> {allergy.severity}
+                      <strong>Allergy Type:</strong> {allergy.allergyType || 'Not specified'}<br/>
+                      <strong>Allergic Substance:</strong> {allergy.substance || 'Not specified'}<br/>
+                      <strong>Severity:</strong> {allergy.severity || 'Not specified'}
                     </div>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <div className="no-data-item">No allergies recorded</div>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Immunizations Section */}
-            {allMedicalData.immunizations.length > 0 && (
-              <div className="preview-section">
-                <div className="section-header">Immunizations</div>
-                <div className="section-content">
-                  {allMedicalData.immunizations.map((immunization, index) => (
+            <div className="preview-section">
+              <div className="section-header">Immunizations</div>
+              <div className="section-content">
+                {allMedicalData.immunizations.length > 0 ? (
+                  allMedicalData.immunizations.map((immunization, index) => (
                     <div key={index} className="data-item">
-                      <strong>Vaccine Name:</strong> {immunization.vaccineName}<br/>
-                      <strong>Date Administered:</strong> {immunization.dateAdministered}<br/>
-                      <strong>Adverse Reactions:</strong> {immunization.reactions}
+                      <strong>Vaccine Name:</strong> {immunization.vaccineName || 'Not specified'}<br/>
+                      <strong>Date Administered:</strong> {immunization.dateAdministered || 'Not specified'}<br/>
+                      <strong>Adverse Reactions:</strong> {immunization.reactions || 'None reported'}
                     </div>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <div className="no-data-item">No immunizations recorded</div>
+                )}
               </div>
-            )}
+            </div>
 
-            {/* Show message if no data */}
-            {Object.values(allMedicalData).every(arr => arr.length === 0) && (
-              <div className="no-data-message">
-                <p>No medical history data has been entered yet.</p>
-                <p>Please fill out the forms to see your medical history preview.</p>
+            {/* Lab Reports Section */}
+            <div className="preview-section">
+              <div className="section-header">Lab Reports</div>
+              <div className="section-content">
+                {allMedicalData.labReports.length > 0 ? (
+                  allMedicalData.labReports.map((report, index) => (
+                    <div key={index} className="data-item">
+                      <strong>Lab Report {index + 1}:</strong> {report.name || 'Not specified'}
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-data-item">No lab reports uploaded</div>
+                )}
               </div>
-            )}
+            </div>
+
+            {/* Diagnostic Reports Section */}
+            <div className="preview-section">
+              <div className="section-header">Diagnostic Reports</div>
+              <div className="section-content">
+                {allMedicalData.diagnosticReports.length > 0 ? (
+                  allMedicalData.diagnosticReports.map((report, index) => (
+                    <div key={index} className="data-item">
+                      <strong>Diagnostic Report {index + 1}:</strong> {report.name || 'Not specified'}
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-data-item">No diagnostic reports uploaded</div>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="preview-footer">
@@ -141,7 +212,7 @@ export default function MedicalHistory() {
   return (
     <div className="medical-history-container">
       <header className="fixed-header">
-        <h1 className="header-title"></h1>
+        <h1 className="header-title">Medical History</h1>
       </header>
       
       <div className="left-panel">
