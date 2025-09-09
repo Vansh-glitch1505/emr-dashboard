@@ -137,6 +137,39 @@ body {
   color: var(--gray-600);
 }
 
+
+/* Add these styles to your existing MedicalHistory.css file */
+
+.preview-container {
+  border: 2px solid #4A90E2;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #f0f8ff;
+  margin: 15px 0;
+}
+
+.preview-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.preview-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.preview-list li:last-child {
+  border-bottom: none;
+}
+
+.preview-list li strong {
+  color: #333;
+  font-weight: 600;
+}
+
 .fixed-header {
   position: fixed;
   top: 0;
@@ -218,6 +251,228 @@ textarea {
 
 .btn-outline:hover {
   background: var(--gray-100);
+}
+
+/* Add these styles to your existing MedicalHistory.css file */
+
+/* Allergies Preview Table Styles */
+.allergies-preview {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.allergies-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.allergies-table th {
+  background-color: #f8f9fa;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 0.875rem;
+}
+
+.allergies-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gray-200);
+  color: var(--gray-700);
+  font-size: 0.875rem;
+}
+
+.allergies-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.allergies-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.allergies-table .remove-btn {
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.allergies-table .remove-btn:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+/* Blue button styling if not already defined */
+.blue-btn {
+  background: var(--primary);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9375rem;
+}
+
+.blue-btn:hover {
+  background: var(--primary-dark);
+}
+
+.cancel-btn {
+  background: white;
+  color: var(--gray-600);
+  border: 1px solid var(--gray-200);
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9375rem;
+}
+
+.cancel-btn:hover {
+  background: var(--gray-100);
+}
+
+/* Add these styles to your existing MedicalHistory.css file */
+
+.added-immunizations {
+  background: #f8f9fa;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.added-immunizations h3 {
+  margin-bottom: 0.75rem;
+  color: var(--gray-800);
+  font-size: 1rem;
+}
+
+.immunization-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.immunization-item:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.immunization-details {
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.immunization-details strong {
+  color: var(--gray-800);
+}
+
+.reaction-note {
+  color: var(--gray-600);
+  font-size: 0.85rem;
+}
+
+.remove-btn {
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-btn:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+.immunization-preview-item {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.immunization-preview-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.immunization-preview-item h4 {
+  color: var(--primary);
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+
+/* Add these styles to your existing MedicalHistory.css file */
+
+.button-group-right {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.button-group-right button {
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-size: 0.9375rem;
+}
+
+.button-group-right button:first-child {
+  background: white;
+  color: var(--gray-600);
+  border: 1px solid var(--gray-200);
+}
+
+.button-group-right button:first-child:hover {
+  background: var(--gray-100);
+}
+
+.button-group-right button:last-child {
+  background: var(--primary);
+  color: white;
+}
+
+.button-group-right button:last-child:hover {
+  background: var(--primary-dark);
 }
 
 .btn-danger {

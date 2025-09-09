@@ -5,16 +5,93 @@ export default function ImmunizationForm({ closeForm }) {
   const [vaccineName, setVaccineName] = useState('');
   const [dateAdministered, setDateAdministered] = useState('');
   const [reactions, setReactions] = useState('');
+  
+  const [immunizationList, setImmunizationList] = useState([]);
+  const [showPreview, setShowPreview] = useState(false);
+  const [savedData, setSavedData] = useState(null);
 
   const handleAdd = () => {
-    // Add to list logic (optional)
-    console.log("Added:", { vaccineName, dateAdministered, reactions });
+    if (vaccineName || dateAdministered || reactions) {
+      const newImmunization = {
+        id: Date.now(),
+        vaccineName,
+        dateAdministered,
+        reactions
+      };
+      
+      setImmunizationList(prev => [...prev, newImmunization]);
+      
+      // Clear form after adding
+      setVaccineName('');
+      setDateAdministered('');
+      setReactions('');
+    }
   };
 
   const handleSave = () => {
-    // Save logic here
-    closeForm();
+    // If there's current form data, add it to the list first
+    if (vaccineName || dateAdministered || reactions) {
+      handleAdd();
+      // Use setTimeout to ensure state is updated before showing preview
+      setTimeout(() => {
+        const finalList = [...immunizationList, {
+          id: Date.now(),
+          vaccineName,
+          dateAdministered,
+          reactions
+        }];
+        setSavedData(finalList);
+        setShowPreview(true);
+      }, 100);
+    } else {
+      // Just show preview of existing list
+      setSavedData(immunizationList);
+      setShowPreview(true);
+    }
+    
+    console.log("Saved immunizations:", immunizationList);
   };
+
+  const handleEdit = () => {
+    setShowPreview(false);
+  };
+
+  const removeImmunization = (id) => {
+    setImmunizationList(prev => prev.filter(item => item.id !== id));
+  };
+
+  if (showPreview) {
+    return (
+      <div className="right-panel">
+        <div className="form-header">
+          <h2 className="form-title">Immunizations Preview</h2>
+          <button className="close-btn" onClick={closeForm}>×</button>
+        </div>
+
+        <div className="preview-container">
+          {savedData && savedData.length > 0 ? (
+            savedData.map((immunization, index) => (
+              <div key={immunization.id} className="immunization-preview-item">
+                <h4>Immunization {index + 1}</h4>
+                <ul className="preview-list">
+                  <li><strong>Vaccine Name:</strong> {immunization.vaccineName}</li>
+                  <li><strong>Date Administered:</strong> {immunization.dateAdministered}</li>
+                  <li><strong>Adverse Reactions:</strong> {immunization.reactions}</li>
+                </ul>
+              </div>
+            ))
+          ) : (
+            <p>No immunizations added.</p>
+          )}
+        </div>
+
+        <div className="button-group-right">
+          <button onClick={handleEdit}>Edit</button>
+          <button onClick={closeForm}>Done</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="right-panel">
@@ -22,6 +99,30 @@ export default function ImmunizationForm({ closeForm }) {
         <h2 className="form-title">Immunizations</h2>
         <button className="close-btn" onClick={closeForm}>×</button>
       </div>
+
+      {/* Show added immunizations list */}
+      {immunizationList.length > 0 && (
+        <div className="added-immunizations">
+          <h3>Added Immunizations:</h3>
+          {immunizationList.map((immunization, index) => (
+            <div key={immunization.id} className="immunization-item">
+              <div className="immunization-details">
+                <strong>{immunization.vaccineName}</strong> - {immunization.dateAdministered}
+                {immunization.reactions && (
+                  <span className="reaction-note"> (Reactions: {immunization.reactions})</span>
+                )}
+              </div>
+              <button 
+                className="remove-btn" 
+                onClick={() => removeImmunization(immunization.id)}
+                title="Remove immunization"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="form-group">
         <label>Vaccine Name</label>
@@ -53,7 +154,7 @@ export default function ImmunizationForm({ closeForm }) {
         />
       </div>
 
-      <div className="form-actions">
+      <div className="button-group-right">
         <button type="button" onClick={handleAdd}>Add</button>
         <button type="submit" onClick={handleSave}>Save</button>
       </div>

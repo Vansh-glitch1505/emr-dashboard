@@ -8,10 +8,58 @@ export default function ConditionForm({ closeForm }) {
     physician: '',
     status: '',
   });
+  
+  const [showPreview, setShowPreview] = useState(false);
+  const [savedData, setSavedData] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const handleSave = () => {
+    // Save the data and show preview
+    setSavedData({ ...formData });
+    setShowPreview(true);
+  };
+
+  const handleEdit = () => {
+    setShowPreview(false);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
+
+  if (showPreview && savedData) {
+    return (
+      <div className="condition-form">
+        <div className="form-header">
+          <h3>Condition Preview</h3>
+          <button onClick={closeForm} className="close-btn">X</button>
+        </div>
+        
+        <div className="preview-container">
+          <ul className="preview-list">
+            <li><strong>Condition:</strong> {savedData.condition}</li>
+            <li><strong>Diagnosis Date:</strong> {formatDate(savedData.diagnosisDate)}</li>
+            <li><strong>Treating Physician:</strong> {savedData.physician}</li>
+            <li><strong>Current Status:</strong> {savedData.status}</li>
+          </ul>
+        </div>
+
+        <div className="form-actions">
+          <button onClick={handleEdit}>Edit</button>
+          <button onClick={closeForm}>Done</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="condition-form">
@@ -30,10 +78,10 @@ export default function ConditionForm({ closeForm }) {
         </ul>
       </div>
 
-      <div className="form-actions">
-        <button onClick={closeForm}>Cancel</button>
-        <button>Save</button>
-      </div>
+      <div className="button-group-right">
+          <button onClick={closeForm}>Cancel</button>
+          <button onClick={handleSave}>Save</button>
+        </div>
     </div>
   );
 }

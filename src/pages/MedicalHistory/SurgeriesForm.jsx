@@ -1,28 +1,73 @@
 import React, { useState } from "react";
 import "./MedicalHistory.css"; // Reuse the same CSS file
 
-const SurgeriesForm = ({ onClose }) => {
+const SurgeriesForm = ({ closeForm }) => {
   const [surgeryType, setSurgeryType] = useState("");
   const [surgeryDate, setSurgeryDate] = useState("");
   const [surgeonName, setSurgeonName] = useState("");
   const [postOpNotes, setPostOpNotes] = useState("");
+  
+  const [showPreview, setShowPreview] = useState(false);
+  const [savedData, setSavedData] = useState(null);
 
   const handleSave = () => {
-    // handle save logic (e.g., send to backend or context)
-    console.log({
+    // Save the data and show preview
+    const formData = {
       surgeryType,
       surgeryDate,
       surgeonName,
       postOpNotes,
-    });
-    onClose();
+    };
+    setSavedData(formData);
+    setShowPreview(true);
+    console.log(formData);
   };
+
+  const handleEdit = () => {
+    setShowPreview(false);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    // If it's already a formatted date, return as is
+    if (dateString.includes('/') || dateString.includes('-')) {
+      return dateString;
+    }
+    return dateString;
+  };
+
+  if (showPreview && savedData) {
+    return (
+      <div className="slide-panel">
+        <div className="panel-header">
+          <h2>Surgery Preview</h2>
+          <span className="close-btn" onClick={closeForm}>✕</span> {/* fixed here */}
+        </div>
+
+        <div className="form-content">
+          <div className="preview-container">
+            <ul className="preview-list">
+              <li><strong>Surgery Type:</strong> {savedData.surgeryType}</li>
+              <li><strong>Surgery Date:</strong> {formatDate(savedData.surgeryDate)}</li>
+              <li><strong>Surgeon Name:</strong> {savedData.surgeonName}</li>
+              <li><strong>Post-operative Notes:</strong> {savedData.postOpNotes}</li>
+            </ul>
+          </div>
+
+          <div className="button-group-right">
+            <button onClick={handleEdit}>Edit</button>
+            <button onClick={closeForm}>Done</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="slide-panel">
       <div className="panel-header">
         <h2>Surgeries</h2>
-        <span className="close-btn" onClick={onClose}>✕</span>
+        <span className="close-btn" onClick={closeForm}>✕</span> {/* fixed here */}
       </div>
 
       <div className="form-content">
@@ -53,8 +98,8 @@ const SurgeriesForm = ({ onClose }) => {
           onChange={(e) => setPostOpNotes(e.target.value)}
         />
 
-        <div className="button-group">
-          <button onClick={onClose}>Cancel</button>
+        <div className="button-group-right">
+          <button onClick={closeForm}>Cancel</button>
           <button onClick={handleSave}>Save</button>
         </div>
       </div>

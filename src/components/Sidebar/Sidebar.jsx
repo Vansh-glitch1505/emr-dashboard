@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import {
   User,
   Phone,
@@ -35,7 +35,9 @@ const Sidebar = () => {
     <div className="sidebar">
       {/* Header */}
       <div className="sidebar-header">
-        <div className="logo">SSPD</div>
+        <Link to="/nurse-dashboard" className="logo">
+      SSPD
+    </Link>
         <h2 className="header-title">Patient Details</h2>
       </div>
 
