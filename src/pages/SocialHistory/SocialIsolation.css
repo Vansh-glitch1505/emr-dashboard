@@ -1,6 +1,6 @@
 .social-panel {
-  position: absolute;
-  top: 100px;
+  position: fixed;
+  top: 120px;
   right: 30px;
   background-color: white;
   border: 1px solid #ccc;
@@ -9,6 +9,8 @@
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   z-index: 1000;
+  max-height: calc(100vh - 140px); /* Prevent panel from going off-screen */
+  overflow-y: auto; /* Add scrolling if content is too long */
 }
 
 .panel-header {

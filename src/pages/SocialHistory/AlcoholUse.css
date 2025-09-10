@@ -1,6 +1,6 @@
 .alcohol-use-panel {
-  position: absolute;
-  top: 100px;
+  position: fixed; /* Changed from absolute to fixed */
+  top: 120px; /* Increased from 100px to give more space for header */
   right: 30px;
   background-color: white;
   border: 1px solid #ccc;
@@ -9,6 +9,8 @@
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   z-index: 1000;
+  max-height: calc(100vh - 140px); /* Prevent panel from going off-screen */
+  overflow-y: auto; /* Add scrolling if content is too long */
 }
 
 .panel-header {

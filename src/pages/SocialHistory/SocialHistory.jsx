@@ -45,6 +45,11 @@ const SocialHistory = () => {
     setToggles((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
+  // Function to close any panel by turning off its toggle
+  const handleClosePanel = (fieldName) => {
+    setToggles((prev) => ({ ...prev, [fieldName]: false }));
+  };
+
   const handleNext = () => {
     navigate('/dashboard/social-history-preview', { 
       state: { socialHistoryData } 
@@ -74,18 +79,42 @@ const SocialHistory = () => {
         ))}
       </div>
 
-      {toggles["Tobacco use"] && <TobaccoUse />}
-      {toggles["Alcohol use"] && <AlcoholUse />}
-      {toggles["Social History (free text)"] && <SocialText />}
-      {toggles["Financial Resources"] && <FinancialResources />}
-      {toggles["Physical activity"] && <PhysicalActivity />}
-      {toggles["Gender identity"] && <GenderIdentity />}
-      {toggles["Sexual orientation"] && <SexualOrientation />}
-      {toggles["Stress"] && <Stress />}
-      {toggles["Social isolation & connection"] && <SocialIsolation />}
-      {toggles["Exposure to violence"] && <ExposureToViolence />}
-      {toggles["Nutrients History"] && <NutrientsHistory />}
-      {toggles["Education"] && <Education />}
+      {toggles["Tobacco use"] && (
+        <TobaccoUse onClose={() => handleClosePanel("Tobacco use")} />
+      )}
+      {toggles["Alcohol use"] && (
+        <AlcoholUse onClose={() => handleClosePanel("Alcohol use")} />
+      )}
+      {toggles["Social History (free text)"] && (
+        <SocialText onClose={() => handleClosePanel("Social History (free text)")} />
+      )}
+      {toggles["Financial Resources"] && (
+        <FinancialResources onClose={() => handleClosePanel("Financial Resources")} />
+      )}
+      {toggles["Physical activity"] && (
+        <PhysicalActivity onClose={() => handleClosePanel("Physical activity")} />
+      )}
+      {toggles["Gender identity"] && (
+        <GenderIdentity onClose={() => handleClosePanel("Gender identity")} />
+      )}
+      {toggles["Sexual orientation"] && (
+        <SexualOrientation onClose={() => handleClosePanel("Sexual orientation")} />
+      )}
+      {toggles["Stress"] && (
+        <Stress onClose={() => handleClosePanel("Stress")} />
+      )}
+      {toggles["Social isolation & connection"] && (
+        <SocialIsolation onClose={() => handleClosePanel("Social isolation & connection")} />
+      )}
+      {toggles["Exposure to violence"] && (
+        <ExposureToViolence onClose={() => handleClosePanel("Exposure to violence")} />
+      )}
+      {toggles["Nutrients History"] && (
+        <NutrientsHistory onClose={() => handleClosePanel("Nutrients History")} />
+      )}
+      {toggles["Education"] && (
+        <Education onClose={() => handleClosePanel("Education")} />
+      )}
 
       <div className="social-history-buttons">
         <button 

@@ -1,6 +1,6 @@
 .physical-activity-panel {
-  position: absolute;
-  top: 100px;
+  position: fixed;
+  top: 120px;
   right: 30px;
   background-color: white;
   border: 1px solid #ccc;
@@ -9,8 +9,11 @@
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   z-index: 1000;
+  max-height: calc(100vh - 140px); /* Prevent panel from going off-screen */
+  overflow-y: auto; /* Add scrolling if content is too long */
 }
 
+/* panel header */
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -26,6 +29,7 @@
   color: red;
 }
 
+/* form groups */
 .form-group {
   margin-bottom: 15px;
   display: flex;
@@ -35,24 +39,51 @@
 .form-group.rowed {
   flex-direction: row;
   align-items: center;
-  gap: 6px;
+  gap: 8px; /* Increased gap for better spacing */
 }
 
+.form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+/* inputs, selects, textareas */
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 6px;
+  padding: 8px;               /* fixed padding */
   font-size: 14px;
   border-radius: 4px;
   border: 1px solid #ccc;
   flex: 1;
+  min-width: 20px;
 }
 
+/* textareas */
 textarea {
   resize: vertical;
-  min-height: 50px;
+  min-height: 80px;
 }
 
+/* duration row specific */
+.form-group.rowed input {
+  width: 70px;       /* Number input width */
+  flex: 0 0 auto;
+  margin-right: 0; /* Removed margin as we have gap now */
+  height: 36px;      /* Match height with select */
+}
+
+.form-group.rowed select {
+  width: 65px;       /* Reasonable width for min/hr dropdown */
+  flex: 0 0 auto;
+  min-width: 65px;   /* Ensure minimum width */
+  height: 36px;      /* Increased height for better text visibility */
+  padding: 8px 6px;  /* Adjusted padding for better text positioning */
+  line-height: 1.2;  /* Better line height for text readability */
+}
+
+/* buttons */
 .activity-buttons {
   display: flex;
   justify-content: space-between;
@@ -66,12 +97,6 @@ textarea {
   cursor: pointer;
 }
 
-.save-btn {
-  background-color: #007baf;
-  color: white;
-}
-
-/* Add to PhysicalActivity.css */
 .save-btn {
   background-color: #007baf;
   color: white;
@@ -91,17 +116,4 @@ textarea {
 
 .cancel-btn:hover {
   background-color: #e1e1e1;
-}
-
-.form-group.rowed input {
-  width: 60px;
-  margin-right: 8px;
-}
-
-.form-group.rowed select {
-  width: 80px;
-}
-
-textarea {
-  min-height: 80px;
 }

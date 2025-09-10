@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSocialHistory } from "./SocialHistoryContext";
 import "./TobaccoUse.css";
 
-const TobaccoUse = () => {
+const TobaccoUse = ({ onClose }) => {
   const { updateTobaccoUse } = useSocialHistory();
   const [formData, setFormData] = useState({
     status: "Former Smoker",
@@ -17,6 +17,20 @@ const TobaccoUse = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handleClose = () => {
+    console.log("Close button clicked!"); // Debug log
+    console.log("onClose prop:", onClose); // Check if onClose exists
+    
+    if (onClose) {
+      console.log("Calling onClose function"); // Debug log
+      onClose();
+    } else {
+      console.log("No onClose function provided!"); // Debug log
+      alert("Close function not provided by parent component");
+    }
+  };
+
 
   const handleSave = () => {
     // Prepare the data structure exactly as we want to display it
@@ -38,7 +52,7 @@ const TobaccoUse = () => {
     <div className="tobacco-use-panel">
       <div className="panel-header">
         <h3>Tobacco Use</h3>
-        <button className="close-btn">×</button>
+        <button className="close-btn" onClick={handleClose}>×</button>
       </div>
 
       <div className="form-group">
@@ -93,7 +107,6 @@ const TobaccoUse = () => {
         <button className="save-btn" onClick={handleSave}>
           Save Tobacco Data
         </button>
-        <button>Cancel</button>
       </div>
     </div>
   );

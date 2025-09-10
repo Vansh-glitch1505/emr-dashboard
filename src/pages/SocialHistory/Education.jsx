@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSocialHistory } from "./SocialHistoryContext";
 import "./Education.css";
 
-const Education = () => {
+const Education = ({ onClose }) => {
   const { updateEducation, socialHistoryData } = useSocialHistory();
   const [formData, setFormData] = useState({
     highestEducation: socialHistoryData?.education?.highestEducation || "",
@@ -13,6 +13,20 @@ const Education = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  const handleClose = () => {
+    console.log("Close button clicked!"); // Debug log
+    console.log("onClose prop:", onClose); // Check if onClose exists
+    
+    if (onClose) {
+      console.log("Calling onClose function"); // Debug log
+      onClose();
+    } else {
+      console.log("No onClose function provided!"); // Debug log
+      alert("Close function not provided by parent component");
+    }
+  };
+
 
   const handleSave = () => {
     if (!formData.highestEducation) {
@@ -41,7 +55,7 @@ const Education = () => {
     <div className="education-panel">
       <div className="panel-header">
         <h3>Education</h3>
-        <button className="close-btn">×</button>
+        <button className="close-btn" onClick={handleClose}>×</button>
       </div>
 
       <div className="form-group">
@@ -77,9 +91,6 @@ const Education = () => {
       <div className="education-buttons">
         <button className="save-btn" onClick={handleSave}>
           Save Education Data
-        </button>
-        <button className="cancel-btn" onClick={handleCancel}>
-          Cancel
         </button>
       </div>
     </div>

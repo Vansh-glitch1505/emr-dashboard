@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSocialHistory } from "./SocialHistoryContext";
 import "./PhysicalActivity.css";
 
-const PhysicalActivity = () => {
+const PhysicalActivity = ({ onClose }) => {
   const { updatePhysicalActivity, socialHistoryData } = useSocialHistory();
   const [formData, setFormData] = useState({
     frequency: socialHistoryData?.physicalActivity?.frequency || "3 times/week",
@@ -17,6 +17,20 @@ const PhysicalActivity = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  const handleClose = () => {
+    console.log("Close button clicked!"); // Debug log
+    console.log("onClose prop:", onClose); // Check if onClose exists
+    
+    if (onClose) {
+      console.log("Calling onClose function"); // Debug log
+      onClose();
+    } else {
+      console.log("No onClose function provided!"); // Debug log
+      alert("Close function not provided by parent component");
+    }
+  };
+
 
   const handleSave = () => {
     const activityData = {
@@ -48,7 +62,7 @@ const PhysicalActivity = () => {
     <div className="physical-activity-panel">
       <div className="panel-header">
         <h3>Physical Activity</h3>
-        <button className="close-btn">×</button>
+        <button className="close-btn" onClick={handleClose}>×</button>
       </div>
 
       <div className="form-group">
@@ -122,9 +136,6 @@ const PhysicalActivity = () => {
       <div className="activity-buttons">
         <button className="save-btn" onClick={handleSave}>
           Save Activity Data
-        </button>
-        <button className="cancel-btn" onClick={handleCancel}>
-          Cancel
         </button>
       </div>
     </div>

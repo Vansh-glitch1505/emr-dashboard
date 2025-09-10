@@ -521,6 +521,37 @@
   left: 100%;
 }
 
+/* Logo styling for sidebar header - matches Sidebar component */
+.nv-sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Space between logo and button */
+  padding: 0 0 20px 0;
+}
+
+.nv-logo {
+  display: block;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.nv-logo:hover {
+  transform: scale(1.05);
+}
+
+.nv-logo-image {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(35, 109, 139, 0.2);
+  transition: all 0.3s ease;
+}
+
+.nv-logo-image:hover {
+  box-shadow: 0 4px 12px rgba(35, 109, 139, 0.3);
+}
+
 .spacer {
   flex: 1;
 }

@@ -143,7 +143,7 @@ const FamilyHistory = () => {
           <div className="form-row">
             <label>Date of Birth</label>
             <input
-              type="text"
+              type="date"
               name="dob"
               placeholder="DD/MM/YYYY"
               value={currentMember.dob}

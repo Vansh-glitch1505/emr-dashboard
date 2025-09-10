@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './NewAppointment.css';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import logo from "../../assets/logo.jpg";
 
 const NewAppointment = () => {
   const navigate = useNavigate();
@@ -70,6 +71,9 @@ const NewAppointment = () => {
           
           {/* Add New Patient button here */}
           <div className="medapp-add-patient-container">
+            <Link to="/nurse-dashboard" className="nv-logo">
+              <img src={logo} alt="Logo" className="nv-logo-image" />
+            </Link>
             <button className="medapp-add-patient-btn" onClick={handleAddPatient} >+Add New Patient</button>
           </div>
 

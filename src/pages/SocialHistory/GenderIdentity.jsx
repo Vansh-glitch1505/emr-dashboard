@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSocialHistory } from "./SocialHistoryContext";
 import "./GenderIdentity.css";
 
-const GenderIdentity = () => {
+const GenderIdentity = ({ onClose }) => {
   const { updateGenderIdentity } = useSocialHistory();
   const [formData, setFormData] = useState({
     identity: "Male",
@@ -13,6 +13,20 @@ const GenderIdentity = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  const handleClose = () => {
+    console.log("Close button clicked!"); // Debug log
+    console.log("onClose prop:", onClose); // Check if onClose exists
+    
+    if (onClose) {
+      console.log("Calling onClose function"); // Debug log
+      onClose();
+    } else {
+      console.log("No onClose function provided!"); // Debug log
+      alert("Close function not provided by parent component");
+    }
+  };
+
 
   const handleSave = () => {
     const genderData = {
@@ -27,7 +41,7 @@ const GenderIdentity = () => {
     <div className="gender-identity-panel">
       <div className="panel-header">
         <h3>Gender Identity</h3>
-        <button className="close-btn">×</button>
+        <button className="close-btn" onClick={handleClose}>×</button>
       </div>
 
       <div className="form-group">

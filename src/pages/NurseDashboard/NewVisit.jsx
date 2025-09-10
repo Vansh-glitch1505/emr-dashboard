@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './NewVisit.css';
+import logo from "../../assets/logo.jpg";
 
 const NewVisit = () => {
   const navigate = useNavigate();
@@ -78,6 +79,9 @@ const NewVisit = () => {
       <div className="visit-layout">
         <aside className="nv-sidebar">
           <div className="nv-sidebar-header">
+            <Link to="/nurse-dashboard" className="nv-logo">
+              <img src={logo} alt="Logo" className="nv-logo-image" />
+            </Link>
             <button className="add-patient-btn" onClick={handleAddPatient}>
               + Add New Patient
             </button>

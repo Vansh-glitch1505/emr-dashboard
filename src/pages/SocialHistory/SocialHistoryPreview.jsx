@@ -33,6 +33,9 @@ const SocialHistoryPreview = () => {
   return (
     <div className="social-history-preview-container">
       <div className="preview-header">
+        <header className="fixed-header">
+          <h1 className="header-title"></h1>
+        </header>
         <h2>Social History Preview</h2>
         <button onClick={handleBack} className="back-button">
           ← Back to Edit

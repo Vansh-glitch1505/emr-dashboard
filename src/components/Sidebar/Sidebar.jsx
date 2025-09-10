@@ -13,6 +13,9 @@ import {
   Users,
 } from "lucide-react";
 import "./Sidebar.css";
+import logo from "../../assets/logo.jpg";
+
+
 
 const Sidebar = () => {
   const navItems = [
@@ -36,8 +39,8 @@ const Sidebar = () => {
       {/* Header */}
       <div className="sidebar-header">
         <Link to="/nurse-dashboard" className="logo">
-      SSPD
-    </Link>
+          <img src={logo} alt="Logo" className="logo-image" />
+        </Link>
         <h2 className="header-title">Patient Details</h2>
       </div>
 

@@ -132,7 +132,7 @@ const ContactInformation = () => {
             <div className="contact-row">
               <label className="contact-label">Mobile/Cell Phone</label>
               <div className="phone-input">
-                <input className="country-code" value="+91" readOnly />
+                <span className="phone-prefix">+91</span>
                 <input 
                   className="phone-number"
                   type="text" 
@@ -162,7 +162,7 @@ const ContactInformation = () => {
             <div className="contact-row">
               <label className="contact-label">Work Phone No.</label>
               <div className="phone-input">
-                <input className="country-code" value="+91" readOnly />
+                <span className="phone-prefix">+91</span>
                 <input 
                   className="phone-number"
                   type="text" 
@@ -273,7 +273,7 @@ const ContactInformation = () => {
               </div>
               <div className="input-group phone-group">
                 <label htmlFor={`emergencyPhone-${index}`}>Emergency Contact No.</label>
-                <div className="phone-wrapper">
+                <div className="phone-input">
                   <span className="phone-prefix">+91</span>
                   <input 
                     id={`emergencyPhone-${index}`}
@@ -282,6 +282,7 @@ const ContactInformation = () => {
                     value={contact.phone}
                     onChange={(e) => handleChange(e, index)}
                     placeholder="Enter number"
+                    className="phone-number"
                   />
                 </div>
               </div>
