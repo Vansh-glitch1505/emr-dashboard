@@ -452,7 +452,7 @@ const PatientDemographics = () => {
             </div>
           </fieldset>
 
-          <div className="form-actions">
+          <div className="form-actions-center">
             <button type="button" className="save-btn" onClick={handleSave}>
               Save
             </button>

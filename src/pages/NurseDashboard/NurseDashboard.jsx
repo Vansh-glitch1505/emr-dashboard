@@ -47,6 +47,10 @@ const NurseDashboard = () => {
     navigate('/new-appointment');
   };
 
+  const handleViewPatient = (patientId) => {
+    navigate(`/patient/${patientId}`);
+  };
+
   const filteredPatients = patients.filter(patient =>
     `${patient.first_name} ${patient.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -95,7 +99,12 @@ const NurseDashboard = () => {
                       <span className="patient-id">ID: {patient.id}</span>
                     </div>
                     <div className="patient-actions">
-                      <button className="view-btn">View</button>
+                      <button 
+                        className="view-btn"
+                        onClick={() => handleViewPatient(patient.id)}
+                      >
+                        View
+                      </button>
                     </div>
                   </li>
                 ))}

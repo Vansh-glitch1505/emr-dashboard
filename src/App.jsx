@@ -21,7 +21,9 @@ import SocialHistoryPreview from './pages/SocialHistory/SocialHistoryPreview';
 import NurseDashboard from './pages/NurseDashboard/NurseDashboard';
 import NewVisit from './pages/NurseDashboard/NewVisit';
 import NewAppointment from './pages/NurseDashboard/NewAppointment';
+import PatientDetail from './pages/NurseDashboard/PatientDetail';
 import TableDashboard from './pages/NurseDashboard/TableDashboard';
+import PatientEdit from './pages/NurseDashboard/PatientEdit';
 
 function App() {
   return (
@@ -53,7 +55,8 @@ function App() {
       <Route path="/new-visit" element={<NewVisit />} />
       <Route path="/new-appointment" element={<NewAppointment />} />
       <Route path="/table-dashboard" element={<TableDashboard />} />
-      
+      <Route path="/patient/:id" element={<PatientDetail />} />
+      <Route path="/patient/:id/edit" element={<PatientEdit />} />
 
     </Routes>
   );

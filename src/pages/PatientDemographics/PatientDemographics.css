@@ -207,16 +207,24 @@ select option {
   background-color: #e6e6e6;
 }
 
-/* form-actions aligned right, spacing reduced */
-.form-actions {
+/* -------- Save & Next buttons -------- */
+
+/* OLD style (right aligned) */
+
+
+/* FIXED: Center both buttons (matches JSX: className="form-actions-center") */
+.patient-demographics-container .form-actions-center {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;   /* center Save + Next */
+  align-items: center;
   gap: 12px;
   margin-top: 1.25rem;
   padding: 0.5rem 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* Save & Next btn styles better aligned */
+/* Save & Next button styles */
 .save-btn {
   background-color: var(--brand);
   color: white;
@@ -266,4 +274,10 @@ select option {
   .form-row { flex-direction: column; gap: 0.75rem; }
   .section > .section-inner { padding: 0.9rem; }
   .avatar-uploader { display: none; } /* hide on small screens */
+
+  /* On small screens, align buttons right instead of center */
+  .patient-demographics-container .form-actions-center {
+    justify-content: flex-end;
+    padding-right: 0;
+  }
 }

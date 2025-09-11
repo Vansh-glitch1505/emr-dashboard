@@ -1,0 +1,189 @@
+:root{
+  --teal:#1182a8;
+  --accent:#1f83a5;
+  --card-bg:#ffffff;
+  --page-bg:#f2f8fb;
+  --muted:#6b6b6b;
+  --shadow: 0 4px 10px rgba(24,39,56,0.06);
+  --pill-shadow: 0 2px 6px rgba(17,130,168,0.15);
+}
+
+.pd-container {
+  min-height:100vh;
+  background: var(--page-bg);
+  padding: 20px 28px;
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Header card (white box with big avatar left, actions right) */
+.pd-header-card{
+  background: var(--card-bg);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding: 22px;
+  gap: 20px;
+  margin-bottom: 22px;
+  border: 1px solid rgba(28,63,85,0.06);
+}
+
+/* left area: avatar + info */
+.pd-header-left{
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+}
+
+/* avatar circle with thick teal ring */
+.pd-avatar-circle{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border: 6px solid var(--teal);
+  background: #fff;
+  flex-shrink:0;
+}
+
+.pd-avatar-letter{
+  font-size:48px;
+  color:var(--teal);
+  font-weight:700;
+  line-height:1;
+}
+
+/* patient name and details */
+.pd-header-info{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.pd-header-name{
+  font-size:28px;
+  margin:0;
+  color:#0b2b36;
+  font-weight:600;
+}
+
+.pd-header-details{
+  color:var(--muted);
+  margin-top:6px;
+  line-height:1.6;
+  font-size:15px;
+}
+
+.pd-label-inline{
+  font-weight:600;
+  color:#111;
+  margin-right:6px;
+}
+
+/* edit link */
+.pd-edit-link{
+  margin-top:8px;
+  background:none;
+  border:none;
+  color:var(--accent);
+  text-decoration:underline;
+  cursor:pointer;
+  padding:0;
+  font-size:14px;
+}
+
+.pd-edit-link:hover,
+.pd-edit-link:focus {
+  color: var(--accent);
+  background: none;   /* ✅ prevent blue bubble */
+  outline: none;      /* ✅ remove dotted outline */
+  text-decoration: underline;
+}
+
+
+
+/* actions (right side): pills stacked vertically */
+.pd-header-actions{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  align-items:flex-end;
+}
+
+.pd-pill{
+  background: linear-gradient(180deg,var(--accent),var(--teal));
+  color:#fff;
+  border:none;
+  padding:12px 28px;
+  border-radius:999px;
+  font-weight:600;
+  box-shadow: var(--pill-shadow);
+  cursor:pointer;
+  min-width:180px;
+  text-align:center;
+  transition: transform .08s ease;
+}
+
+.pd-pill:active{ transform: translateY(1px); }
+.pd-pill:hover{ filter:brightness(.95); }
+
+/* Overview card (below header) */
+.pd-overview-card{
+  background:var(--card-bg);
+  border-radius:6px;
+  box-shadow: var(--shadow);
+  padding:22px 26px;
+  max-width:920px;
+  width:100%;
+  margin: 0 auto 40px;
+  border: 1px solid rgba(28,63,85,0.06);
+}
+
+/* Titles */
+.pd-overview-card h2{
+  margin:0 0 14px;
+  font-size:22px;
+  color:#0b2b36;
+  font-weight:600;
+}
+
+.pd-allergy-title{
+  color: var(--accent);
+  font-size:18px;
+  margin: 12px 0;
+  font-weight:600;
+}
+
+/* bullet list styling like screenshot */
+.pd-allergy-list{
+  margin:6px 0 18px 22px;
+  padding:0;
+  font-size:15px;
+  color:#111;
+  list-style: disc;
+}
+
+.pd-allergy-list li{
+  margin-bottom:8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px){
+  .pd-header-card{ flex-direction:column; align-items:stretch; }
+  .pd-header-actions{ flex-direction:row; justify-content:flex-end; gap:12px; margin-top:8px; }
+  .pd-avatar-circle{ width:86px; height:86px; border-width:5px; }
+  .pd-avatar-letter{ font-size:36px; }
+  .pd-header-name{ font-size:22px; }
+  .pd-overview-card{ padding:18px; }
+}
+
+@media (max-width: 640px){
+  .pd-header-left{ gap:12px; }
+  .pd-avatar-circle{ width:76px; height:76px; border-width:4px; }
+  .pd-header-actions{ align-items:center; }
+  .pd-pill{ min-width:140px; padding:10px 18px; }
+  .pd-container{ padding:12px; }
+}
