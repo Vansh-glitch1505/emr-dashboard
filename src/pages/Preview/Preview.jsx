@@ -1,50 +1,67 @@
 import React from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import './Preview.css';
 
 export default function Preview() {
+  // protect against undefined outlet context
+  const outlet = useOutletContext() || {};
   const {
-    patientData,
-    contactData,
-    insuranceData,
-    ailmentsData,
-    assessmentData,
-    medicationHistory,
-    vitalsData
-  } = useOutletContext();
+    patientData = {},
+    contactData = {},
+    insuranceData = {},
+    ailmentsData = [],
+    assessmentData = {},
+    medicationHistory = [],
+    vitalsData = []
+  } = outlet;
+
+  const navigate = useNavigate();
+
+  const handleNext = () => {
+    navigate('/dashboard/consent');
+  };
 
   const getPainLevelText = (value) => {
     const painLevels = [
-      "No pain",
-      "Very mild",
-      "Mild",
-      "Moderate",
-      "Moderately severe",
-      "Severe",
-      "Very severe",
-      "Intense",
-      "Very intense",
-      "Excruciating",
-      "Unimaginable"
+      'No pain',
+      'Very mild',
+      'Mild',
+      'Moderate',
+      'Moderately severe',
+      'Severe',
+      'Very severe',
+      'Intense',
+      'Very intense',
+      'Excruciating',
+      'Unimaginable'
     ];
-    return painLevels[parseInt(value)] || "";
+
+    const idx = parseInt(value, 10);
+    if (Number.isNaN(idx)) return '';
+    return painLevels[idx] || '';
   };
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
+    try {
+      const date = new Date(dateString);
+      if (Number.isNaN(date.getTime())) return '';
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    } catch (e) {
+      return '';
+    }
   };
 
   return (
     <div className="preview-container">
       <header className="fixed-header">
         <h1 className="header-title"></h1>
-       </header>
+      </header>
+
       <h2>Review Your Info</h2>
 
       {/* Demographics Section */}
@@ -56,7 +73,7 @@ export default function Preview() {
             {[
               patientData.firstName,
               patientData.middleName,
-              patientData.lastName,
+              patientData.lastName
             ]
               .filter(Boolean)
               .join(' ')}
@@ -72,7 +89,7 @@ export default function Preview() {
                 patientData.city,
                 patientData.postalCode,
                 patientData.state,
-                patientData.country,
+                patientData.country
               ]
                 .filter(Boolean)
                 .join(', ')}
@@ -99,7 +116,7 @@ export default function Preview() {
               {[
                 contactData.emergencyFirstName,
                 contactData.emergencyMiddleName,
-                contactData.emergencyLastName,
+                contactData.emergencyLastName
               ]
                 .filter(Boolean)
                 .join(' ')}
@@ -117,7 +134,7 @@ export default function Preview() {
       {insuranceData && Object.keys(insuranceData).length > 0 && (
         <section>
           <h3>Insurance Information</h3>
-          
+
           <div className="insurance-section">
             <h4>Primary Insurance</h4>
             {insuranceData.primaryCompanyName && <p><strong>Insurance Company Name:</strong> {insuranceData.primaryCompanyName}</p>}
@@ -126,7 +143,7 @@ export default function Preview() {
             {insuranceData.primaryPlanType && <p><strong>Plan Type:</strong> {insuranceData.primaryPlanType}</p>}
             <p>
               <strong>Insurance Effective Dates:</strong>{' '}
-              {insuranceData.primaryStartDate && insuranceData.primaryEndDate 
+              {insuranceData.primaryStartDate && insuranceData.primaryEndDate
                 ? `${formatDate(insuranceData.primaryStartDate)} - ${formatDate(insuranceData.primaryEndDate)}`
                 : 'N/A'}
             </p>
@@ -141,7 +158,7 @@ export default function Preview() {
               {insuranceData.secondaryPlanType && <p><strong>Plan Type:</strong> {insuranceData.secondaryPlanType}</p>}
               <p>
                 <strong>Insurance Effective Dates:</strong>{' '}
-                {insuranceData.secondaryStartDate && insuranceData.secondaryEndDate 
+                {insuranceData.secondaryStartDate && insuranceData.secondaryEndDate
                   ? `${formatDate(insuranceData.secondaryStartDate)} - ${formatDate(insuranceData.secondaryEndDate)}`
                   : 'N/A'}
               </p>
@@ -212,34 +229,34 @@ export default function Preview() {
       {medicationHistory?.length > 0 && (
         <section>
           <h3>Medication History</h3>
-          
+
           {/* Current Medications */}
-          {medicationHistory.some(med => med.status) && (
+          {medicationHistory?.some((med) => med.status) && (
             <div className="medication-section">
               <h4>Current Medications</h4>
-              {medicationHistory.filter(med => med.status).map((med, index) => (
+              {medicationHistory?.filter((med) => med.status).map((med, index) => (
                 <div key={`current-${index}`} className="medication-item">
                   {med.problem && <p><strong>Problem:</strong> {med.problem}</p>}
                   <p><strong>Medicines:</strong> {med.medicine} {med.mg && `${med.mg}mg`}</p>
                   {med.doseTime && <p><strong>Frequency:</strong> {med.doseTime}</p>}
                   {med.timePeriod && <p><strong>Duration:</strong> {med.timePeriod}</p>}
-                  {index < medicationHistory.filter(med => med.status).length - 1 && <hr />}
+                  {index < medicationHistory.filter((med) => med.status).length - 1 && <hr />}
                 </div>
               ))}
             </div>
           )}
 
           {/* Past Medications */}
-          {medicationHistory.some(med => !med.status) && (
+          {medicationHistory?.some((med) => !med.status) && (
             <div className="medication-section">
               <h4>Past Medications</h4>
-              {medicationHistory.filter(med => !med.status).map((med, index) => (
+              {medicationHistory?.filter((med) => !med.status).map((med, index) => (
                 <div key={`past-${index}`} className="medication-item">
                   {med.problem && <p><strong>Problem:</strong> {med.problem}</p>}
                   <p><strong>Medicines:</strong> {med.medicine} {med.mg && `${med.mg}mg`}</p>
                   {med.doseTime && <p><strong>Frequency:</strong> {med.doseTime}</p>}
                   {med.timePeriod && <p><strong>Duration:</strong> {med.timePeriod}</p>}
-                  {index < medicationHistory.filter(med => !med.status).length - 1 && <hr />}
+                  {index < medicationHistory.filter((med) => !med.status).length - 1 && <hr />}
                 </div>
               ))}
             </div>
@@ -253,68 +270,68 @@ export default function Preview() {
           <h3>Vital Signs</h3>
           {vitalsData.map((vitals, index) => (
             <div key={index} className="vitals-item">
-              <h4>Vitals Record {index + 1} - {vitals.date} {vitals.time}</h4>
-              
+              <h4>Vitals Record {index + 1} - {formatDate(vitals.date)} {vitals.time || ''}</h4>
+
               <div className="vitals-grid">
                 {vitals.systolic && vitals.diastolic && (
                   <div className="vitals-card">
                     <strong>Blood Pressure:</strong> {vitals.systolic}/{vitals.diastolic} mmHg
                   </div>
                 )}
-                
+
                 {vitals.pulse && (
                   <div className="vitals-card">
                     <strong>Pulse:</strong> {vitals.pulse} BPM
                   </div>
                 )}
-                
+
                 {vitals.respiratory && (
                   <div className="vitals-card">
                     <strong>Respiratory Rate:</strong> {vitals.respiratory} BPM
                   </div>
                 )}
-                
+
                 {vitals.temperature && (
                   <div className="vitals-card">
-                    <strong>Temperature:</strong> {vitals.temperature}°{vitals.tempUnit === "Celsius" ? "C" : "F"}
+                    <strong>Temperature:</strong> {vitals.temperature}°{vitals.tempUnit === 'Celsius' ? 'C' : 'F'}
                   </div>
                 )}
-                
+
                 {vitals.spo2 && (
                   <div className="vitals-card">
                     <strong>SpO₂:</strong> {vitals.spo2}%
                   </div>
                 )}
-                
+
                 {vitals.height && (
                   <div className="vitals-card">
-                    <strong>Height:</strong> {vitals.height} {vitals.heightUnit === "feet" ? "ft" : "in"}
+                    <strong>Height:</strong> {vitals.height} {vitals.heightUnit === 'feet' ? 'ft' : 'in'}
                   </div>
                 )}
-                
+
                 {vitals.weight && (
                   <div className="vitals-card">
                     <strong>Weight:</strong> {vitals.weight} kg
                   </div>
                 )}
-                
+
                 {vitals.bmi && (
                   <div className="vitals-card">
                     <strong>BMI:</strong> {vitals.bmi} kg/m²
                   </div>
                 )}
-                
+
                 <div className="vitals-card">
                   <strong>Pain Level:</strong> {vitals.pain}/10 - {getPainLevelText(vitals.pain)}
                 </div>
               </div>
-              
+
               {vitals.comments && (
                 <div className="vitals-comments">
                   <strong>Notes:</strong> {vitals.comments}
                 </div>
               )}
-              
+
               {index < vitalsData.length - 1 && <hr />}
             </div>
           ))}
@@ -333,6 +350,13 @@ export default function Preview() {
       ) && (
         <p>No data yet. Fill in the forms to preview.</p>
       )}
+
+      {/* Next Button */}
+      <div className="preview-footer">
+        <button onClick={handleNext} className="preview-next-button">
+          Next →
+        </button>
+      </div>
     </div>
   );
 }

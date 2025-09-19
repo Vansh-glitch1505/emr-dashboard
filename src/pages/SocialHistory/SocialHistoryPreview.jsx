@@ -24,6 +24,7 @@ const SocialHistoryPreview = () => {
   } = state?.socialHistoryData || {};
 
   const handleBack = () => navigate(-1);
+  const handleNext = () => navigate('/dashboard/preview');
 
   const formatDate = (dateString) => {
     if (!dateString) return "Not specified";
@@ -315,8 +316,13 @@ const SocialHistoryPreview = () => {
             <p className="no-data">No nutrients history information provided</p>
           )}
        </section>
-       
-      
+      </div>
+
+      {/* Next Button */}
+      <div className="preview-footer">
+        <button onClick={handleNext} className="next-button">
+          Next →
+        </button>
       </div>
     </div>
   );        
