@@ -315,10 +315,12 @@ input[type="email"]:focus {
   border-style: solid;
 }
 
+/* Updated form actions to position buttons side by side on the right */
 .form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center;
+  gap: 8px; /* add space between buttons */
   margin-top: 2rem;
   padding-top: 1rem;
 }
@@ -328,12 +330,13 @@ input[type="email"]:focus {
   color: #2196f3;
   border: 1px solid #2196f3;
   padding: 0.75rem 2rem;
-  border-radius: 4px;
+  border-radius: 4px !important; /* full rounded corners */
   font-size: 1rem;
   cursor: pointer;
   font-weight: 600;
   transition: background-color 0.2s;
   min-width: 80px;
+  margin: 0 !important; /* remove any margins */
 }
 
 .save-btn:hover {
@@ -345,12 +348,13 @@ input[type="email"]:focus {
   color: white;
   border: none;
   padding: 0.75rem 2rem;
-  border-radius: 4px;
+  border-radius: 4px !important; /* full rounded corners */
   font-size: 1rem;
   cursor: pointer;
   font-weight: 600;
   transition: background-color 0.2s;
   min-width: 80px;
+  margin: 0 !important; /* remove any margins */
 }
 
 .next-btn:hover {

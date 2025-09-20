@@ -25,6 +25,12 @@ const Allergies = () => {
     navigate('/dashboard/family-history');
   };
 
+  const handleSave = () => {
+    // Add save logic here - could be API call to save allergy data
+    console.log("Saving allergy data:", allergyData);
+    alert("Allergy information saved successfully!");
+  };
+
   const handleAddRow = () => {
     setAllergyData([
       ...allergyData,
@@ -152,6 +158,9 @@ const Allergies = () => {
           + Add Allergy
         </button>
         <div className="nav-buttons">
+          <button className="save-btn" onClick={handleSave}>
+            Save
+          </button>
           <button className="next-btn" onClick={handleNext}>
             Next
           </button>

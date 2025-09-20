@@ -161,7 +161,7 @@
 }
 
 .add-btn {
-  background-color: var(--primary-blue);
+  background-color: #236D8B;
   color: var(--white);
   border: none;
   padding: 0.9rem 1.8rem; /* Increased padding */
