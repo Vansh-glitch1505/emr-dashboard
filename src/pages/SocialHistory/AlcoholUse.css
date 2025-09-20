@@ -1,7 +1,7 @@
 .alcohol-use-panel {
   position: fixed; /* Changed from absolute to fixed */
   top: 120px; /* Increased from 100px to give more space for header */
-  right: 30px;
+  right: 350px; /* Shifted further left from 30px */
   background-color: white;
   border: 1px solid #ccc;
   width: 320px;
