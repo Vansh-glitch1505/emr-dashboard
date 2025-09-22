@@ -274,7 +274,6 @@ const ContactInformation = () => {
               <div className="input-group phone-group">
                 <label htmlFor={`emergencyPhone-${index}`}>Emergency Contact No.</label>
                 <div className="phone-input">
-                  <span className="phone-prefix">+91</span>
                   <input 
                     id={`emergencyPhone-${index}`}
                     type="tel"

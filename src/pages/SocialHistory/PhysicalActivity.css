@@ -4,13 +4,13 @@
   right: 30px;
   background-color: white;
   border: 1px solid #ccc;
-  width: 320px;
-  padding: 20px;
+  width: 480px; /* Same as tobacco panel */
+  padding: 15px; /* Same as tobacco panel */
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   z-index: 1000;
-  max-height: calc(100vh - 140px); /* Prevent panel from going off-screen */
-  overflow-y: auto; /* Add scrolling if content is too long */
+  max-height: 400px; /* Same as tobacco panel */
+  overflow-y: auto;
 }
 
 /* panel header */
@@ -18,7 +18,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px; /* Same as tobacco panel */
 }
 
 .close-btn {
@@ -31,67 +31,78 @@
 
 /* form groups */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Same vertical layout as tobacco */
 }
 
 .form-group.rowed {
   flex-direction: row;
   align-items: center;
-  gap: 8px; /* Increased gap for better spacing */
+  gap: 8px;
 }
 
 .form-group label {
-  font-size: 14px;
   font-weight: 500;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
+  font-size: 14px;
 }
 
 /* inputs, selects, textareas */
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 8px;               /* fixed padding */
+  width: 100%; /* Full width */
+  height: 38px; /* Same height for all */
+  padding: 8px;
   font-size: 14px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  flex: 1;
-  min-width: 20px;
+  box-sizing: border-box;
+  background-color: white;
 }
 
-/* textareas */
-textarea {
+.form-group textarea {
+  height: 70px; /* Taller for textarea */
   resize: vertical;
-  min-height: 80px;
+  font-family: inherit; /* Match font family */
 }
 
-/* duration row specific */
+/* Duration group - keep inputs on same line but same size */
+.duration-group {
+  display: flex;
+  gap: 8px;
+}
+
+.duration-group input,
+.duration-group select {
+  flex: 1; /* Equal width for both */
+  height: 38px; /* Same height */
+}
+
+/* duration row specific - for rowed class */
 .form-group.rowed input {
-  width: 70px;       /* Number input width */
-  flex: 0 0 auto;
-  margin-right: 0; /* Removed margin as we have gap now */
-  height: 36px;      /* Match height with select */
+  width: auto;
+  flex: 1;
+  height: 38px;
 }
 
 .form-group.rowed select {
-  width: 65px;       /* Reasonable width for min/hr dropdown */
-  flex: 0 0 auto;
-  min-width: 65px;   /* Ensure minimum width */
-  height: 36px;      /* Increased height for better text visibility */
-  padding: 8px 6px;  /* Adjusted padding for better text positioning */
-  line-height: 1.2;  /* Better line height for text readability */
+  width: auto;
+  flex: 1;
+  height: 38px;
+  padding: 8px;
 }
 
 /* buttons */
 .activity-buttons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
+  justify-content: center; /* Center the button like tobacco */
+  margin-top: 10px; /* Same as tobacco panel */
 }
 
 .activity-buttons button {
-  padding: 6px 12px;
+  padding: 8px 16px; /* Same as tobacco panel */
   border-radius: 4px;
   border: none;
   cursor: pointer;
@@ -100,8 +111,6 @@ textarea {
 .save-btn {
   background-color: #007baf;
   color: white;
-  border: none;
-  padding: 8px 16px;
 }
 
 .save-btn:hover {

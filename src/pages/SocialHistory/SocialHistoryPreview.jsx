@@ -9,6 +9,7 @@ const SocialHistoryPreview = () => {
   // Extract all data with null fallbacks
   const {
     tobaccoUse = null,
+    tobaccoConsumption = null,
     alcoholUse = null,
     socialText = null,
     financialResources = null,
@@ -46,7 +47,7 @@ const SocialHistoryPreview = () => {
       <div className="preview-sections">
         {/* Tobacco Use Section */}
         <section className="preview-section">
-          <h3>Tobacco Use</h3>
+          <h3>Tobacco Use (Smoking)</h3>
           <div className="preview-grid">
             <div className="preview-item">
               <strong>Status:</strong> {tobaccoUse?.status || "Not specified"}
@@ -64,6 +65,30 @@ const SocialHistoryPreview = () => {
             </div>
             <div className="preview-item notes">
               <strong>Notes:</strong> {tobaccoUse?.notes || "No notes provided"}
+            </div>
+          </div>
+        </section>
+
+        {/* Tobacco Consumption Section */}
+        <section className="preview-section">
+          <h3>Tobacco Consumption</h3>
+          <div className="preview-grid">
+            <div className="preview-item">
+              <strong>Status:</strong> {tobaccoConsumption?.status || "Not specified"}
+            </div>
+            <div className="preview-item">
+              <strong>Daily Consumption:</strong> 
+              {tobaccoConsumption?.dailyConsumption ? `${tobaccoConsumption.dailyConsumption} units/day` : "Not specified"}
+            </div>
+            <div className="preview-item">
+              <strong>Duration:</strong> 
+              {tobaccoConsumption?.duration ? `${tobaccoConsumption.duration} ${tobaccoConsumption.durationUnit || "years"}` : "Not specified"}
+            </div>
+            <div className="preview-item">
+              <strong>Quit Date:</strong> {tobaccoConsumption?.quitDate ? formatDate(tobaccoConsumption.quitDate) : "Not specified"}
+            </div>
+            <div className="preview-item notes">
+              <strong>Notes:</strong> {tobaccoConsumption?.notes || "No notes provided"}
             </div>
           </div>
         </section>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSocialHistory } from "./SocialHistoryContext";
-import "./TobaccoUse.css";
+import "./TobaccoConsumption.css"; // Use the new CSS file
 
-const TobaccoUse = ({ onClose }) => {
+const TobaccoConsumption = ({ onClose }) => {
   const { socialHistoryData, updateSocialHistoryData } = useSocialHistory();
   
   const [formData, setFormData] = useState({
-    status: "Never Smoked",
+    status: "Never used",
     dailyConsumption: "",
     duration: "",
     durationUnit: "years",
@@ -15,10 +15,10 @@ const TobaccoUse = ({ onClose }) => {
   });
 
   useEffect(() => {
-    if (socialHistoryData.tobaccoUse) {
-      setFormData(socialHistoryData.tobaccoUse);
+    if (socialHistoryData.tobaccoConsumption) {
+      setFormData(socialHistoryData.tobaccoConsumption);
     }
-  }, [socialHistoryData.tobaccoUse]);
+  }, [socialHistoryData.tobaccoConsumption]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,17 +27,17 @@ const TobaccoUse = ({ onClose }) => {
 
   const handleSave = () => {
     updateSocialHistoryData({
-      tobaccoUse: formData
+      tobaccoConsumption: formData
     });
     onClose();
   };
 
   const handleCancel = () => {
-    if (socialHistoryData.tobaccoUse) {
-      setFormData(socialHistoryData.tobaccoUse);
+    if (socialHistoryData.tobaccoConsumption) {
+      setFormData(socialHistoryData.tobaccoConsumption);
     } else {
       setFormData({
-        status: "Never Smoked",
+        status: "Never used",
         dailyConsumption: "",
         duration: "",
         durationUnit: "years",
@@ -49,52 +49,55 @@ const TobaccoUse = ({ onClose }) => {
   };
 
   return (
-    <div className="tobacco-use-panel">
+    <div className="tobacco-consumption-panel">
       <div className="panel-header">
-        <h3>Tobacco Use(Smoking)</h3>
+        <h3>Tobacco Consumption</h3>
         <button className="close-btn" onClick={onClose}>×</button>
       </div>
-
+      
       <div className="form-group">
-        <label>Current Status</label>
+        <label>Status:</label>
         <select name="status" value={formData.status} onChange={handleInputChange}>
-          <option>Current Smoker</option>
-          <option>Former Smoker</option>
-          <option>Never Smoked</option>
+          <option value="Never used">Never used</option>
+          <option value="Current user">Current user</option>
+          <option value="Former user">Former user</option>
+          <option value="Social user">Social user</option>
         </select>
       </div>
 
-      {(formData.status === "Current Smoker" || formData.status === "Former Smoker") && (
+      {(formData.status === "Current user" || formData.status === "Former user" || formData.status === "Social user") && (
         <>
           <div className="form-group">
-            <label>Average Daily Consumption</label>
+            <label>Daily Consumption (units per day):</label>
             <input
               type="number"
               name="dailyConsumption"
               value={formData.dailyConsumption}
               onChange={handleInputChange}
+              placeholder="e.g., 5"
             />
           </div>
 
           <div className="form-group duration-group">
-            <label>Duration of Use</label>
+            <label>Duration:</label>
             <div style={{ display: 'flex', gap: '8px' }}>
               <input
                 type="number"
                 name="duration"
                 value={formData.duration}
                 onChange={handleInputChange}
+                placeholder="Duration"
               />
               <select name="durationUnit" value={formData.durationUnit} onChange={handleInputChange}>
-                <option>months</option>
-                <option>years</option>
+                <option value="years">Years</option>
+                <option value="months">Months</option>
               </select>
             </div>
           </div>
 
-          {formData.status === "Former Smoker" && (
+          {formData.status === "Former user" && (
             <div className="form-group">
-              <label>Quit Date</label>
+              <label>Quit Date:</label>
               <input
                 type="date"
                 name="quitDate"
@@ -107,19 +110,20 @@ const TobaccoUse = ({ onClose }) => {
       )}
 
       <div className="form-group">
-        <label>Notes</label>
+        <label>Notes:</label>
         <textarea
           name="notes"
           value={formData.notes}
           onChange={handleInputChange}
+          placeholder="Additional notes about tobacco consumption..."
         />
       </div>
 
-      <div className="tobacco-buttons">
-        <button onClick={handleSave} className="save-btn">Save Tobacco Data</button>
+      <div className="tobacco-consumption-buttons">
+        <button onClick={handleSave} className="save-btn">Save</button>
       </div>
     </div>
   );
 };
 
-export default TobaccoUse;
+export default TobaccoConsumption;

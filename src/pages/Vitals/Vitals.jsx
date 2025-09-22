@@ -19,7 +19,6 @@ const Vitals = () => {
     heightUnit: "feet",
     weight: "",
     bmi: "",
-    pain: "0",
     spo2: "",
     date: new Date().toISOString().split('T')[0],
     time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
@@ -104,7 +103,6 @@ const Vitals = () => {
         height_unit: formData.heightUnit,
         weight: formData.weight || null,
         bmi: formData.bmi || null,
-        pain: formData.pain || null,
         spo2: formData.spo2 || null,
         comments: formData.comments || null
       };
@@ -138,30 +136,12 @@ const Vitals = () => {
       heightUnit: "feet",
       weight: "",
       bmi: "",
-      pain: "0",
       spo2: "",
       date: new Date().toISOString().split('T')[0],
       time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
       comments: "",
     });
     setIsSubmitted(false);
-  };
-
-  const getPainLevelText = (value) => {
-    const painLevels = [
-      "No pain",
-      "Very mild",
-      "Mild",
-      "Moderate",
-      "Moderately severe",
-      "Severe",
-      "Very severe",
-      "Intense",
-      "Very intense",
-      "Excruciating",
-      "Unimaginable"
-    ];
-    return painLevels[parseInt(value)] || "";
   };
 
   return (
@@ -397,36 +377,6 @@ const Vitals = () => {
                   readOnly
                 />
                 <span className="unit">kg/m²</span>
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset className="vitals-section">
-            <legend className="section-title">Pain Assessment</legend>
-            <div className="input-group">
-              <label htmlFor="pain">Pain Level: {formData.pain}/10 - {getPainLevelText(formData.pain)}</label>
-              <input 
-                type="range" 
-                id="pain" 
-                name="pain" 
-                min="0" 
-                max="10" 
-                value={formData.pain} 
-                onChange={handleChange}
-                className="pain-slider"
-              />
-              <div className="pain-scale">
-                <span>0</span>
-                <span>1</span>
-                <span>2</span>
-                <span>3</span>
-                <span>4</span>
-                <span>5</span>
-                <span>6</span>
-                <span>7</span>
-                <span>8</span>
-                <span>9</span>
-                <span>10</span>
               </div>
             </div>
           </fieldset>

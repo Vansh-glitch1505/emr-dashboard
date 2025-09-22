@@ -4,20 +4,20 @@
   right: 30px;
   background-color: white;
   border: 1px solid #ccc;
-  width: 320px;
-  padding: 20px;
+  width: 480px; /* Increased from 320px */
+  padding: 15px; /* Reduced from 20px */
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   z-index: 1000;
-  max-height: calc(100vh - 140px); /* Prevent panel from going off-screen */
-  overflow-y: auto; /* Add scrolling if content is too long */
+  max-height: 400px; /* Reduced from calc(100vh - 140px) */
+  overflow-y: auto;
 }
 
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px; /* Reduced from 10px */
 }
 
 .close-btn {
@@ -29,28 +29,61 @@
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Back to vertical layout for consistency */
+}
+
+.form-group label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  font-size: 14px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 6px;
+  width: 100%; /* Full width */
+  height: 38px; /* Same height for all */
+  padding: 8px;
   font-size: 14px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
+  background-color: white;
+  line-height: 1.6; /* Better line height for text alignment */
+}
+.form-group select {
+  padding: 6px 8px; /* Slightly less vertical padding for selects */
+  line-height: 0.8; /* Better line height for select text */
+}
+
+.form-group textarea {
+  height: 70px; /* Taller for textarea */
+  resize: vertical;
+  font-family: inherit; /* Match font family */
+}
+
+/* Duration group - keep inputs on same line but same size */
+.duration-group {
+  display: flex;
+  gap: 8px;
+}
+
+.duration-group input,
+.duration-group select {
+  flex: 1; /* Equal width for both */
+  height: 38px; /* Same height */
 }
 
 .tobacco-buttons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
+  justify-content: center; /* Center the button */
+  margin-top: 10px; /* Reduced from 15px */
 }
 
 .tobacco-buttons button {
-  padding: 6px 12px;
+  padding: 8px 16px; /* Slightly larger button */
   border-radius: 4px;
   border: none;
   cursor: pointer;

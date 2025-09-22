@@ -64,7 +64,7 @@ export default function Assessment() {
   };
 
   const handleNext = () => {
-    navigate('/preview');
+    navigate('/dashboard/medical-history');
   };
 
   return (

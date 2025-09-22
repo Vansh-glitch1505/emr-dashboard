@@ -81,9 +81,7 @@ export default function MedicalHistory() {
   if (showFullPreview) {
     return (
       <div className="medical-history-container">
-        <header className="fixed-header">
-          <h1 className="header-title"></h1>
-        </header>
+        <header className="fixed-header"></header>
         
         <div className="preview-full-container">
           <div className="preview-header">

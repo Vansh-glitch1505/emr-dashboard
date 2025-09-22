@@ -13,6 +13,7 @@ const Ailments = () => {
     status: 'Select',
     severity: 'Select',
     dateOfOnset: '',
+    pain: '0',
     riskFactor: '',
     comorbidities: '',
     sideEffects: '',
@@ -26,6 +27,23 @@ const Ailments = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const getPainLevelText = (value) => {
+    const painLevels = [
+      "No pain",
+      "Very mild",
+      "Mild",
+      "Moderate",
+      "Moderately severe",
+      "Severe",
+      "Very severe",
+      "Intense",
+      "Very intense",
+      "Excruciating",
+      "Unimaginable"
+    ];
+    return painLevels[parseInt(value)] || "";
   };
 
   const handleSave = async () => {
@@ -53,6 +71,7 @@ const Ailments = () => {
           status: 'Select',
           severity: 'Select',
           dateOfOnset: '',
+          pain: '0',
           riskFactor: '',
           comorbidities: '',
           sideEffects: '',
@@ -136,22 +155,7 @@ const Ailments = () => {
               <option value="Resolved">Resolved</option>
             </select>
           </div>
-          
-          <div className="input-group">
-            <label htmlFor="severity">Severity</label>
-            <select 
-              id="severity"
-              name="severity"
-              value={ailment.severity}
-              onChange={handleChange}
-            >
-              <option value="Select">Select</option>
-              <option value="Mild">Mild</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Severe">Severe</option>
-            </select>
-          </div>
-          
+
           <div className="input-group">
             <label htmlFor="dateOfOnset">Date of Onset</label>
             <input 
@@ -161,6 +165,38 @@ const Ailments = () => {
               value={ailment.dateOfOnset}
               onChange={handleChange}
             />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset className="ailments-section">
+        <legend className="section-title">Pain Assessment</legend>
+        <div className="form-row">
+          <div className="input-group full-width">
+            <label htmlFor="pain">Pain Level: {ailment.pain}/10 - {getPainLevelText(ailment.pain)}</label>
+            <input 
+              type="range" 
+              id="pain" 
+              name="pain" 
+              min="0" 
+              max="10" 
+              value={ailment.pain} 
+              onChange={handleChange}
+              className="pain-slider"
+            />
+            <div className="pain-scale">
+              <span>0</span>
+              <span>1</span>
+              <span>2</span>
+              <span>3</span>
+              <span>4</span>
+              <span>5</span>
+              <span>6</span>
+              <span>7</span>
+              <span>8</span>
+              <span>9</span>
+              <span>10</span>
+            </div>
           </div>
         </div>
       </fieldset>

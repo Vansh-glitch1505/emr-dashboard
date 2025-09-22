@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSocialHistory } from "./SocialHistoryContext";
 import "./SocialHistory.css";
 import TobaccoUse from "./TobaccoUse.jsx";
+import TobaccoConsumption from "./TobaccoConsumption.jsx";
 import AlcoholUse from "./AlcoholUse.jsx";
 import FinancialResources from "./FinancialResources.jsx";
 import PhysicalActivity from "./PhysicalActivity.jsx";
@@ -17,7 +18,8 @@ import Education from "./Education.jsx";
 
 const SocialHistory = () => {
   const fields = [
-    "Tobacco use",
+    "Tobacco use (Smoking)",
+    "Tobacco (consumption)",
     "Alcohol use",
     "Social History (free text)",
     "Financial Resources",
@@ -79,8 +81,11 @@ const SocialHistory = () => {
         ))}
       </div>
 
-      {toggles["Tobacco use"] && (
-        <TobaccoUse onClose={() => handleClosePanel("Tobacco use")} />
+      {toggles["Tobacco use (Smoking)"] && (
+        <TobaccoUse onClose={() => handleClosePanel("Tobacco use (Smoking)")} />
+      )}
+      {toggles["Tobacco (consumption)"] && (
+        <TobaccoConsumption onClose={() => handleClosePanel("Tobacco (consumption)")} />
       )}
       {toggles["Alcohol use"] && (
         <AlcoholUse onClose={() => handleClosePanel("Alcohol use")} />

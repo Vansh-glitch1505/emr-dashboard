@@ -268,7 +268,6 @@ const InsuranceInformation = () => {
           <div className="input-group">
             <label htmlFor="contactNumber">Contact Number</label>
             <div className="phone-input">
-              <span className="phone-prefix">+91</span>
               <input
                 id="contactNumber"
                 type="tel"
