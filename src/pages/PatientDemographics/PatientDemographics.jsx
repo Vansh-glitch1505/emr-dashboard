@@ -106,6 +106,8 @@ const PatientDemographics = () => {
     navigate('/dashboard/contact-information');
   };
 
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -120,55 +122,39 @@ const PatientDemographics = () => {
     }
   };
 
-  const handleSave = async () => {
+const handleSave = async () => {
     if (validateForm()) {
-      try {
-        // If you need to send file, use FormData on server side
-        const response = await fetch("http://localhost:5000/api/patient-demographics", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user_id: 1,
-            ...formData,
-            // note: photo is not sent here as File; change to FormData if you want to send file
-          })
-        });
+        try {
+            const formDataToSend = new FormData();
+            
+            // Append all form fields
+            Object.keys(formData).forEach(key => {
+                if (key === 'photo' && formData[key]) {
+                    formDataToSend.append('photo', formData[key]);
+                } else if (formData[key]) {
+                    formDataToSend.append(key, formData[key]);
+                }
+            });
 
-        if (response.ok) {
-          alert("Patient demographics saved successfully!");
-          updatePreviewData(formData, "patient");
-          setFormData({
-            firstName: "",
-            middleName: "",
-            lastName: "",
-            dob: "",
-            gender: "",
-            address1: "",
-            address2: "",
-            city: "",
-            postalCode: "",
-            district: "",
-            state: "",
-            country: "",
-            bloodGroup: "",
-            occupation: "",
-            aadharNumber: "",
-            panNumber: "",
-            photo: null
-          });
-          if (imagePreview && imagePreview.startsWith("blob:")) {
-            URL.revokeObjectURL(imagePreview);
-          }
-          setImagePreview(null);
-        } else {
-          alert("Failed to save patient demographics");
+            const response = await fetch("http://localhost:5000/api/patient-demographics", {
+                method: "POST",
+                body: formDataToSend // Don't set Content-Type header for FormData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert("Patient demographics saved successfully!");
+                updatePreviewData(formData, "patient");
+                // Reset form...
+            } else {
+                alert("Failed to save patient demographics");
+            }
+        } catch (error) {
+            console.error("Error saving data:", error);
+            alert("Error saving data.");
         }
-      } catch (error) {
-        console.error("Error saving data:", error);
-        alert("Error saving data.");
-      }
     }
-  };
+};
 
   // Upload handlers
   const handleUploadClick = () => {
