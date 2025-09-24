@@ -23,6 +23,9 @@ const InsuranceInformation = () => {
     contactNumber: "",
   });
 
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [uploadStatus, setUploadStatus] = useState("");
+
   // Load existing data from context if available
   useEffect(() => {
     if (contextInsuranceData && Object.keys(contextInsuranceData).length > 0) {
@@ -45,8 +48,21 @@ const InsuranceInformation = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedFiles(files);
+    
+    // Update the display input with selected file names
+    const fileNames = files.map(file => file.name).join(', ');
+    const displayInput = document.querySelector('.upload-input');
+    if (displayInput) {
+      displayInput.value = fileNames;
+    }
+  };
+
   const handleSave = async () => {
     try {
+      // Save insurance data first
       updatePreviewData(insuranceData, "insurance");
 
       const res = await fetch("http://localhost:5000/api/insurance", {
@@ -58,8 +74,14 @@ const InsuranceInformation = () => {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Insurance Information saved successfully!");
         console.log("Saved Insurance Data:", data);
+        
+        // Upload files if any are selected
+        if (selectedFiles.length > 0) {
+          await handleFileUpload();
+        }
+        
+        alert("Insurance Information saved successfully!");
       } else {
         alert("Failed to save Insurance Information: " + data.error);
       }
@@ -69,12 +91,42 @@ const InsuranceInformation = () => {
     }
   };
 
+  const handleFileUpload = async () => {
+    if (selectedFiles.length === 0) return;
+
+    try {
+      setUploadStatus("Uploading...");
+      
+      const formData = new FormData();
+      selectedFiles.forEach(file => {
+        formData.append('insuranceCards', file);
+      });
+
+      const uploadRes = await fetch("http://localhost:5000/api/insurance/1/upload-card", {
+        method: "POST",
+        body: formData,
+      });
+
+      const uploadData = await uploadRes.json();
+
+      if (uploadRes.ok) {
+        setUploadStatus("Files uploaded successfully!");
+        console.log("Uploaded files:", uploadData);
+      } else {
+        setUploadStatus("File upload failed: " + uploadData.error);
+      }
+    } catch (error) {
+      console.error("Error uploading files:", error);
+      setUploadStatus("File upload error occurred.");
+    }
+  };
+
   const handleNext = () => {
     updatePreviewData(insuranceData, "insurance");
     navigate("/dashboard/ailments");
   };
 
-  const handleFileUpload = () => {
+  const handleBrowseClick = () => {
     document.getElementById("insuranceCard").click();
   };
 
@@ -292,7 +344,7 @@ const InsuranceInformation = () => {
               <button
                 className="upload-btn"
                 type="button"
-                onClick={handleFileUpload}
+                onClick={handleBrowseClick}
               >
                 Browse
               </button>
@@ -302,7 +354,14 @@ const InsuranceInformation = () => {
               type="file"
               style={{ display: "none" }}
               accept="image/*"
+              multiple
+              onChange={handleFileChange}
             />
+            {uploadStatus && (
+              <div className="upload-status">
+                {uploadStatus}
+              </div>
+            )}
           </div>
         </div>
       </fieldset>
