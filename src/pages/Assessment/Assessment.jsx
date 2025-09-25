@@ -59,9 +59,44 @@ export default function Assessment() {
     setTests(updatedTests);
   };
 
-  const handleSave = () => {
-    alert('Assessment saved successfully!');
-  };
+  // Replace your handleSave function in Assessment.jsx with this:
+
+const handleSave = async () => {
+  try {
+    // Prepare data to send to backend
+    const assessmentData = {
+      ...assessment,
+      tests: tests
+    };
+
+    const res = await fetch('http://localhost:5000/api/assessment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(assessmentData)
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert('Assessment saved successfully!');
+      // Optionally reset form after successful save
+      // setAssessment({
+      //   chiefComplaints: '',
+      //   historyOfPresentIllness: '',
+      //   pastMedicalHistory: '',
+      //   medicationHistory: '',
+      //   remindersAlerts: '',
+      //   planCare: ''
+      // });
+      // setTests([]);
+    } else {
+      alert(data.message || 'Failed to save assessment');
+    }
+  } catch (err) {
+    console.error('Error saving assessment:', err);
+    alert('Error saving assessment');
+  }
+};
 
   const handleNext = () => {
     navigate('/dashboard/medical-history');

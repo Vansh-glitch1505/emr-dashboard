@@ -1,4 +1,4 @@
-import express from 'express';
+/*import express from 'express';
 import Assessment from '../models/Assessment.js';
 
 const router = express.Router();
@@ -231,4 +231,4 @@ router.get('/search/:query', async (req, res) => {
   }
 });
 
-export default router;
+export default router; */

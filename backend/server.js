@@ -4,11 +4,13 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import patientDemographicsRoutes from "./routes/patientDemographics.js";
-import insuranceRoutes from "./routes/insurance.js";
-import ailmentsRoutes from "./routes/ailments.js";
-import assessmentRoutes from "./routes/assessment.js";
-import medicationHistoryRoutes from "./routes/medicationHistory.js";
-import vitalsRoutes from "./routes/vitals.js";
+
+// Comment out other routes temporarily to avoid import errors
+// import insuranceRoutes from "./routes/insurance.js";
+// import ailmentsRoutes from "./routes/ailments.js";
+// import assessmentRoutes from "./routes/assessment.js";
+// import medicationHistoryRoutes from "./routes/medicationHistory.js";
+// import vitalsRoutes from "./routes/vitals.js";
 
 dotenv.config();
 
@@ -22,13 +24,15 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files (for uploaded images)
 app.use('/uploads', express.static('uploads'));
 
-// Routes
+// Routes - only patient demographics for now
 app.use('/api/patient-demographics', patientDemographicsRoutes);
-app.use('/api/insurance', insuranceRoutes);
-app.use('/api/ailments', ailmentsRoutes);
-app.use('/api/assessment', assessmentRoutes);
-app.use('/api/medication-history', medicationHistoryRoutes);
-app.use('/api/vitals', vitalsRoutes);
+
+// Comment out other routes temporarily
+// app.use('/api/insurance', insuranceRoutes);
+// app.use('/api/ailments', ailmentsRoutes);
+// app.use('/api/assessment', assessmentRoutes);
+// app.use('/api/medication-history', medicationHistoryRoutes);
+// app.use('/api/vitals', vitalsRoutes);
 
 app.get('/', (req, res) => res.send("Server is running"));
 

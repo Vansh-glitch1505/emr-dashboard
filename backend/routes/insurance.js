@@ -1,5 +1,5 @@
 import express from 'express';
-import Insurance from '../models/Insurance.js';
+import Patient from '../models/patients.js'; // Changed from Insurance to Patient
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -67,7 +67,7 @@ router.post('/', async (req, res) => {
     }
 
     // Check if insurance information already exists for this user
-    let insurance = await Insurance.findOne({ user_id });
+    let insurance = await Patient.findOne({ user_id }); // Changed from Insurance to Patient
 
     if (insurance) {
       // Update existing insurance information
@@ -93,7 +93,7 @@ router.post('/', async (req, res) => {
       });
     } else {
       // Create new insurance information
-      insurance = new Insurance({
+      insurance = new Patient({ // Changed from Insurance to Patient
         user_id,
         primaryCompanyName,
         primaryPolicyNumber,
@@ -132,7 +132,7 @@ router.get('/:user_id', async (req, res) => {
   try {
     const { user_id } = req.params;
 
-    const insurance = await Insurance.findOne({ user_id });
+    const insurance = await Patient.findOne({ user_id }); // Changed from Insurance to Patient
 
     if (!insurance) {
       return res.status(404).json({ 
@@ -166,7 +166,7 @@ router.post('/:user_id/upload-card', upload.array('insuranceCards', 5), async (r
     const filePaths = req.files.map(file => file.path);
 
     // Update insurance record with uploaded file paths
-    const insurance = await Insurance.findOne({ user_id });
+    const insurance = await Patient.findOne({ user_id }); // Changed from Insurance to Patient
     
     if (!insurance) {
       return res.status(404).json({ 
@@ -201,7 +201,7 @@ router.delete('/:user_id', async (req, res) => {
   try {
     const { user_id } = req.params;
 
-    const insurance = await Insurance.findOneAndDelete({ user_id });
+    const insurance = await Patient.findOneAndDelete({ user_id }); // Changed from Insurance to Patient
 
     if (!insurance) {
       return res.status(404).json({ 

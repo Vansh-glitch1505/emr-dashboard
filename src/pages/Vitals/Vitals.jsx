@@ -80,44 +80,57 @@ const Vitals = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    setErrorMessage('');
-    
-    try {
-      // Prepare data for API
-      const vitalsData = {
-        patient_id: patientId,
-        date: formData.date,
-        time: formData.time,
-        systolic: formData.systolic || null,
-        diastolic: formData.diastolic || null,
-        pulse: formData.pulse || null,
-        respiratory: formData.respiratory || null,
-        temperature: formData.temperature || null,
-        temp_unit: formData.tempUnit,
-        height: formData.height || null,
-        height_unit: formData.heightUnit,
-        weight: formData.weight || null,
-        bmi: formData.bmi || null,
-        spo2: formData.spo2 || null,
-        comments: formData.comments || null
-      };
+  // Replace your handleSubmit function in Vitals.jsx with this:
 
-      const response = await axios.post('/api/vitals', vitalsData);
-      
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateForm()) return;
+  
+  setIsLoading(true);
+  setErrorMessage('');
+  
+  try {
+    // Prepare data for API
+    const vitalsData = {
+      patient_id: patientId,
+      date: formData.date,
+      time: formData.time,
+      systolic: formData.systolic || null,
+      diastolic: formData.diastolic || null,
+      pulse: formData.pulse || null,
+      respiratory: formData.respiratory || null,
+      temperature: formData.temperature || null,
+      temp_unit: formData.tempUnit,
+      height: formData.height || null,
+      height_unit: formData.heightUnit,
+      weight: formData.weight || null,
+      bmi: formData.bmi || null,
+      spo2: formData.spo2 || null,
+      comments: formData.comments || null
+    };
+
+    // Use fetch instead of axios for consistency with your other components
+    const response = await fetch('http://localhost:5000/api/vitals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(vitalsData)
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
       updatePreviewData(formData, 'vitals');
       setIsSubmitted(true);
-    } catch (error) {
-      console.error('Error saving vitals:', error);
-      setErrorMessage(error.response?.data?.error || 'Failed to save vitals. Please try again.');
-    } finally {
-      setIsLoading(false);
+    } else {
+      setErrorMessage(data.message || 'Failed to save vitals. Please try again.');
     }
-  };
+  } catch (error) {
+    console.error('Error saving vitals:', error);
+    setErrorMessage('Failed to save vitals. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleNext = () => {
     navigate('/dashboard/allergies');

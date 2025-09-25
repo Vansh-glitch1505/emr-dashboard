@@ -1,4 +1,4 @@
-import express from 'express';
+/*import express from 'express';
 import Vitals from '../models/Vitals.js';
 
 const router = express.Router();
@@ -378,4 +378,4 @@ router.get('/patient/:patientId/range', async (req, res) => {
   }
 });
 
-export default router;
+export default router; */

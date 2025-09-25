@@ -1,6 +1,6 @@
 // backend/routes/ailments.js
 import express from 'express';
-import Ailments from '../models/Ailments.js';
+import Patient from '../models/patients.js'; // Changed from Ailments to Patient
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.get('/ping', (req, res) => {
 router.get('/status/:status', async (req, res) => {
   try {
     const { status } = req.params;
-    const ailments = await Ailments.find({ status }).sort({ createdAt: -1 });
+    const ailments = await Patient.find({ status }).sort({ createdAt: -1 }); // Changed from Ailments to Patient
     return res.status(200).json({ success: true, count: ailments.length, data: ailments });
   } catch (error) {
     console.error('Error fetching ailments by status:', error);
@@ -24,7 +24,7 @@ router.get('/status/:status', async (req, res) => {
 // 🔹 Get all ailments
 router.get('/', async (req, res) => {
   try {
-    const ailments = await Ailments.find().sort({ createdAt: -1 });
+    const ailments = await Patient.find().sort({ createdAt: -1 }); // Changed from Ailments to Patient
     return res.status(200).json({ success: true, count: ailments.length, data: ailments });
   } catch (error) {
     console.error('Error fetching ailments:', error);
@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
 // 🔹 Get single ailment by ID (keep after the specific routes)
 router.get('/:id', async (req, res) => {
   try {
-    const ailment = await Ailments.findById(req.params.id);
+    const ailment = await Patient.findById(req.params.id); // Changed from Ailments to Patient
     if (!ailment) {
       return res.status(404).json({ success: false, message: 'Ailment not found' });
     }
@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Problem name is required' });
     }
 
-    const newAilment = new Ailments({
+    const newAilment = new Patient({ // Changed from Ailments to Patient
       problemName: problemName.trim(),
       icdCode: icdCode?.trim() || '',
       description: description?.trim() || '',
@@ -104,7 +104,7 @@ router.post('/', async (req, res) => {
 // 🔹 Update ailment
 router.put('/:id', async (req, res) => {
   try {
-    const updatedAilment = await Ailments.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const updatedAilment = await Patient.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }); // Changed from Ailments to Patient
     if (!updatedAilment) return res.status(404).json({ success: false, message: 'Ailment not found' });
     return res.status(200).json({ success: true, message: 'Ailment updated successfully', data: updatedAilment });
   } catch (error) {
@@ -116,7 +116,7 @@ router.put('/:id', async (req, res) => {
 // 🔹 Delete ailment
 router.delete('/:id', async (req, res) => {
   try {
-    const deletedAilment = await Ailments.findByIdAndDelete(req.params.id);
+    const deletedAilment = await Patient.findByIdAndDelete(req.params.id); // Changed from Ailments to Patient
     if (!deletedAilment) return res.status(404).json({ success: false, message: 'Ailment not found' });
     return res.status(200).json({ success: true, message: 'Ailment deleted successfully', data: deletedAilment });
   } catch (error) {
@@ -126,4 +126,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 export default router;
-

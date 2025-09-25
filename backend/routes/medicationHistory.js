@@ -1,12 +1,12 @@
 import express from 'express';
-import MedicationHistory from '../models/MedicationHistory.js';
+import Patient from '../models/patients.js'; // Changed from MedicationHistory to Patient
 
 const router = express.Router();
 
 // GET all medication histories
 router.get('/', async (req, res) => {
   try {
-    const medicationHistories = await MedicationHistory.find().sort({ createdAt: -1 });
+    const medicationHistories = await Patient.find().sort({ createdAt: -1 }); // Changed from MedicationHistory to Patient
     res.status(200).json({
       success: true,
       count: medicationHistories.length,
@@ -32,7 +32,7 @@ router.get('/:userId/active', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid userId format' });
     }
 
-    const medicationHistory = await MedicationHistory.findOne({ userId: userIdNumber });
+    const medicationHistory = await Patient.findOne({ userId: userIdNumber }); // Changed from MedicationHistory to Patient
     if (!medicationHistory) {
       return res.status(200).json({ success: true, data: [] });
     }
@@ -64,7 +64,7 @@ router.get('/:userId/inactive', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid userId format' });
     }
 
-    const medicationHistory = await MedicationHistory.findOne({ userId: userIdNumber });
+    const medicationHistory = await Patient.findOne({ userId: userIdNumber }); // Changed from MedicationHistory to Patient
     if (!medicationHistory) {
       return res.status(200).json({ success: true, data: [] });
     }
@@ -96,7 +96,7 @@ router.get('/:userId', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid userId format' });
     }
 
-    const medicationHistory = await MedicationHistory.findOne({ userId: userIdNumber });
+    const medicationHistory = await Patient.findOne({ userId: userIdNumber }); // Changed from MedicationHistory to Patient
     if (!medicationHistory) {
       return res.status(200).json([]); // empty array if not found
     }
@@ -132,14 +132,14 @@ router.post('/', async (req, res) => {
       status: Boolean(med.status)
     }));
 
-    let medicationHistory = await MedicationHistory.findOne({ userId: userIdNumber });
+    let medicationHistory = await Patient.findOne({ userId: userIdNumber }); // Changed from MedicationHistory to Patient
 
     if (medicationHistory) {
       medicationHistory.medications = processedMedications;
       await medicationHistory.save();
       res.status(200).json({ success: true, message: 'Medication history updated successfully', data: medicationHistory });
     } else {
-      const newMedicationHistory = new MedicationHistory({ userId: userIdNumber, medications: processedMedications });
+      const newMedicationHistory = new Patient({ userId: userIdNumber, medications: processedMedications }); // Changed from MedicationHistory to Patient
       const saved = await newMedicationHistory.save();
       res.status(201).json({ success: true, message: 'Medication history created successfully', data: saved });
     }
@@ -172,7 +172,7 @@ router.put('/:userId', async (req, res) => {
       status: Boolean(med.status)
     }));
 
-    const updated = await MedicationHistory.findOneAndUpdate(
+    const updated = await Patient.findOneAndUpdate( // Changed from MedicationHistory to Patient
       { userId: userIdNumber },
       { medications: processedMedications },
       { new: true, runValidators: true, upsert: true }
@@ -196,7 +196,7 @@ router.delete('/:userId', async (req, res) => {
     const userIdNumber = parseInt(userId, 10);
     if (isNaN(userIdNumber)) return res.status(400).json({ success: false, message: 'Invalid userId format' });
 
-    const deleted = await MedicationHistory.findOneAndDelete({ userId: userIdNumber });
+    const deleted = await Patient.findOneAndDelete({ userId: userIdNumber }); // Changed from MedicationHistory to Patient
     if (!deleted) return res.status(404).json({ success: false, message: 'Medication history not found' });
 
     res.status(200).json({ success: true, message: 'Medication history deleted successfully', data: deleted });
