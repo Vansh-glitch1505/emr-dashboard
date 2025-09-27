@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import "./FamilyHistory.css";
 
 const FamilyHistory = () => {
   const [familyMembers, setFamilyMembers] = useState([]);
   const [geneticConditions, setGeneticConditions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('');
   const navigate = useNavigate();
+  const { patientId } = useParams(); // Get patientId from URL params
   const [hasAddedMembers, setHasAddedMembers] = useState(false);
   const [currentMember, setCurrentMember] = useState({
     firstName: "",
@@ -23,7 +26,6 @@ const FamilyHistory = () => {
     affectedMember: "Select",
     testResults: ""
   });
-  
 
   const handleMemberChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -40,8 +42,6 @@ const FamilyHistory = () => {
       [name]: value
     }));
   };
-
-  
 
   const addMedicalCondition = () => {
     if (currentMember.newCondition.trim()) {
@@ -100,9 +100,63 @@ const FamilyHistory = () => {
     }
   };
 
-  
-  const handleNext = () => {
-    navigate('/dashboard/social-history');
+  // Save to database function
+  const saveToDatabase = async () => {
+    if (!patientId) {
+      setSaveStatus('Error: Patient ID not found');
+      return false;
+    }
+
+    if (familyMembers.length === 0) {
+      setSaveStatus('Please add at least one family member before saving');
+      return false;
+    }
+
+    setIsLoading(true);
+    setSaveStatus('Saving...');
+    
+    try {
+      const response = await fetch(`/api/family-history/${patientId}`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          familyMembers: familyMembers,
+          geneticConditions: geneticConditions
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to save family history');
+      }
+
+      setSaveStatus('Family history saved successfully!');
+      setTimeout(() => setSaveStatus(''), 3000);
+      return true;
+    } catch (error) {
+      console.error('Error saving family history:', error);
+      setSaveStatus(`Error: ${error.message}`);
+      setTimeout(() => setSaveStatus(''), 5000);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle save button click
+  const handleSave = async () => {
+    await saveToDatabase();
+  };
+
+  // Handle next button click
+  const handleNext = async () => {
+    const saved = await saveToDatabase();
+    if (saved) {
+      navigate('/dashboard/social-history');
+    }
   };
 
   return (
@@ -111,6 +165,13 @@ const FamilyHistory = () => {
         <h1 className="header-title"></h1>
        </header>
       <h2>Family History</h2>
+
+      {/* Save Status Message */}
+      {saveStatus && (
+        <div className={`save-status ${saveStatus.includes('Error') ? 'error' : 'success'}`}>
+          {saveStatus}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <div className="section">
@@ -258,8 +319,16 @@ const FamilyHistory = () => {
           </button>
           <button
             type="button" 
+            className="save-btn"
+            onClick={handleSave}
+            disabled={isLoading || familyMembers.length === 0}
+          >
+            {isLoading ? 'Saving...' : 'Save'}
+          </button>
+          <button
+            type="button" 
             className="next-btn"
-            disabled={!hasAddedMembers}
+            disabled={!hasAddedMembers || isLoading}
             onClick={handleNext} 
           >
             Next

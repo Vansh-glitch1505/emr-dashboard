@@ -6,6 +6,7 @@ import "./ContactInformation.css";
 const ContactInformation = () => {
   const { updatePreviewData } = useOutletContext();
   const navigate = useNavigate();
+  const [showPreview, setShowPreview] = useState(false);
 
   const [formData, setFormData] = useState({
     mobilePhone: '',
@@ -92,6 +93,10 @@ const ContactInformation = () => {
     updatePreviewData(updatedData, 'contact');
   };
 
+  const handlePreview = () => {
+    setShowPreview(true);
+  };
+
   const handleSave = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/contact-information', {
@@ -105,6 +110,7 @@ const ContactInformation = () => {
 
       if (response.ok) {
         alert("Contact Information saved successfully!");
+        setShowPreview(false);
       } else {
         alert("Failed to save Contact Information.");
       }
@@ -116,6 +122,18 @@ const ContactInformation = () => {
 
   const handleNext = () => {
     navigate('/dashboard/insurance-information');
+  };
+
+  const closePreview = () => {
+    setShowPreview(false);
+  };
+
+  const formatPhoneNumber = (phone) => {
+    return phone ? phone : 'Not provided';
+  };
+
+  const formatPreferredMethods = (methods) => {
+    return methods.length > 0 ? methods.join(', ') : 'None selected';
   };
 
   return (
@@ -308,9 +326,72 @@ const ContactInformation = () => {
       </fieldset>
 
       <div className="form-actions">
-        <button className="save-btn" onClick={handleSave}>Save</button>
+        <button className="preview-btn" onClick={handlePreview}>Preview</button>
         <button className="next-btn" onClick={handleNext}>Next</button>
       </div>
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Contact Information Preview</h3>
+              <button className="close-btn" onClick={closePreview}>×</button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="preview-section">
+                <h4>Contact Details</h4>
+                <div className="preview-grid">
+                  <div className="preview-item">
+                    <strong>Mobile Phone:</strong> {formatPhoneNumber(formData.mobilePhone)}
+                  </div>
+                  <div className="preview-item">
+                    <strong>Home Phone:</strong> {formatPhoneNumber(formData.homePhone)}
+                  </div>
+                  <div className="preview-item">
+                    <strong>Work Phone:</strong> {formatPhoneNumber(formData.workPhone)}
+                  </div>
+                  <div className="preview-item">
+                    <strong>Email:</strong> {formData.email || 'Not provided'}
+                  </div>
+                  <div className="preview-item">
+                    <strong>Preferred Contact:</strong> {formatPreferredMethods(formData.preferredContactMethod)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="preview-section">
+                <h4>Emergency Contacts</h4>
+                {formData.emergencyContacts.map((contact, index) => (
+                  <div key={index} className="emergency-preview-item">
+                    <h5>Contact {index + 1}</h5>
+                    <div className="preview-grid">
+                      <div className="preview-item">
+                        <strong>Name:</strong> {`${contact.firstName} ${contact.middleName} ${contact.lastName}`.trim() || 'Not provided'}
+                      </div>
+                      <div className="preview-item">
+                        <strong>Relationship:</strong> {contact.relationship || 'Not provided'}
+                      </div>
+                      <div className="preview-item">
+                        <strong>Phone:</strong> {contact.phone || 'Not provided'}
+                      </div>
+                      <div className="preview-item">
+                        <strong>Email:</strong> {contact.email || 'Not provided'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="modal-cancel-btn" onClick={closePreview}>Cancel</button>
+              <button className="modal-save-btn" onClick={handleSave}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

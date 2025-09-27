@@ -1,9 +1,10 @@
-// server.js (safe version)
+// server.js (with family history routes added)
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import patientDemographicsRoutes from "./routes/patientDemographics.js";
+import familyHistoryRoutes from "./routes/familyHistory.js";
 
 // Comment out other routes temporarily to avoid import errors
 // import insuranceRoutes from "./routes/insurance.js";
@@ -24,8 +25,9 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files (for uploaded images)
 app.use('/uploads', express.static('uploads'));
 
-// Routes - only patient demographics for now
+// Routes
 app.use('/api/patient-demographics', patientDemographicsRoutes);
+app.use('/api/family-history', familyHistoryRoutes);
 
 // Comment out other routes temporarily
 // app.use('/api/insurance', insuranceRoutes);
@@ -53,16 +55,24 @@ connectDB()
               mounted.push(`${Object.keys(layer.route.methods).join(',').toUpperCase()} ${layer.route.path}`);
             } else if (layer.name === 'router' && layer.handle && Array.isArray(layer.handle.stack)) {
               // router-level middleware: iterate its stack
+              const basePath = layer.regexp.source
+                .replace(/\\\//g, '/')
+                .replace(/\$.*/, '')
+                .replace(/^\\?\^/, '')
+                .replace(/\?\(\?\=/g, '');
+              
               layer.handle.stack.forEach((l) => {
                 if (l.route && l.route.path) {
-                  mounted.push(`${Object.keys(l.route.methods).join(',').toUpperCase()} ${l.route.path}`);
+                  const fullPath = basePath + l.route.path;
+                  mounted.push(`${Object.keys(l.route.methods).join(',').toUpperCase()} ${fullPath}`);
                 }
               });
             }
           });
         }
         if (mounted.length) {
-          console.log('Mounted routes:\n', mounted.join('\n'));
+          console.log('Mounted routes:');
+          mounted.forEach(route => console.log(`  ${route}`));
         } else {
           console.log('No routes discovered via app._router (this is fine if you only have mounted routers).');
         }

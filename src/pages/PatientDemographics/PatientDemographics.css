@@ -207,18 +207,7 @@ select option {
   background-color: #e6e6e6;
 }
 
-/* -------- Save & Next buttons side by side -------- */
-.patient-demographics-container .form-actions-center {
-  display: flex;
-  justify-content: flex-end;   /* align buttons to the right */
-  align-items: center;
-  margin-top: 1.25rem;
-  padding: 0.5rem 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* -------- Save & Next buttons side by side -------- */
+/* -------- Preview & Next buttons side by side -------- */
 .patient-demographics-container .form-actions-center {
   display: flex !important;
   justify-content: flex-end !important;   /* force align buttons to the right */
@@ -230,8 +219,8 @@ select option {
   gap: 8px; /* add space between buttons */
 }
 
-/* Save & Next button styles - positioned side by side with gap */
-.save-btn {
+/* Preview & Next button styles - positioned side by side with gap */
+.preview-btn {
   background-color: var(--brand);
   color: white;
   border: none;
@@ -245,11 +234,11 @@ select option {
   margin: 0 !important; /* remove any margins */
 }
 
-.save-btn:hover { 
+.preview-btn:hover { 
   background-color: var(--brand-dark); 
 }
 
-.save-btn:active { 
+.preview-btn:active { 
   transform: translateY(1px); 
 }
 
@@ -269,6 +258,180 @@ select option {
 
 .next-btn:hover {
   background-color: #d9f0fb;
+}
+
+/* --- Preview Modal Styles --- */
+.preview-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.preview-modal {
+  background-color: var(--white);
+  border-radius: 12px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-header {
+  background-color: var(--brand);
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  position: relative;
+}
+
+.preview-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 1.5rem;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.15s ease;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.preview-content {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.preview-photo-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.preview-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 3px solid var(--brand);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.preview-section {
+  margin-bottom: 1.5rem;
+}
+
+.preview-section:last-child {
+  margin-bottom: 0;
+}
+
+.preview-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--brand);
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid #e3f2fd;
+}
+
+.preview-section-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.preview-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.preview-field-label {
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.preview-field-value {
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.preview-actions {
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.preview-cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.preview-cancel-btn:hover {
+  background-color: #e6e6e6;
+}
+
+.preview-save-btn {
+  background-color: var(--brand);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.06s;
+}
+
+.preview-save-btn:hover {
+  background-color: var(--brand-dark);
+}
+
+.preview-save-btn:active {
+  transform: translateY(1px);
 }
 
 /* Responsive behavior */
@@ -297,7 +460,7 @@ select option {
   }
   
   /* Restore some gap on mobile for better touch targets */
-  .save-btn {
+  .preview-btn {
     border-radius: 8px;
     border-right: none;
     margin-right: 8px;
@@ -306,5 +469,26 @@ select option {
   .next-btn {
     border-radius: 8px;
     border-left: 1px solid #d0eef6;
+  }
+
+  /* Modal responsive adjustments */
+  .preview-modal {
+    max-width: 95%;
+    margin: 10px;
+  }
+
+  .preview-section-content {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .preview-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .preview-cancel-btn,
+  .preview-save-btn {
+    width: 100%;
   }
 }

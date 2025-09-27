@@ -31,6 +31,7 @@ const PatientDemographics = () => {
   const [errors, setErrors] = useState({});
   const [isLoadingPostal, setIsLoadingPostal] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   // cleanup object URLs
   useEffect(() => {
@@ -106,7 +107,11 @@ const PatientDemographics = () => {
     navigate('/dashboard/contact-information');
   };
 
-
+  const handlePreview = () => {
+    if (validateForm()) {
+      setShowPreview(true);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -122,39 +127,40 @@ const PatientDemographics = () => {
     }
   };
 
-const handleSave = async () => {
+  const handleSave = async () => {
     if (validateForm()) {
-        try {
-            const formDataToSend = new FormData();
-            
-            // Append all form fields
-            Object.keys(formData).forEach(key => {
-                if (key === 'photo' && formData[key]) {
-                    formDataToSend.append('photo', formData[key]);
-                } else if (formData[key]) {
-                    formDataToSend.append(key, formData[key]);
-                }
-            });
+      try {
+        const formDataToSend = new FormData();
+        
+        // Append all form fields
+        Object.keys(formData).forEach(key => {
+          if (key === 'photo' && formData[key]) {
+            formDataToSend.append('photo', formData[key]);
+          } else if (formData[key]) {
+            formDataToSend.append(key, formData[key]);
+          }
+        });
 
-            const response = await fetch("http://localhost:5000/api/patient-demographics", {
-                method: "POST",
-                body: formDataToSend // Don't set Content-Type header for FormData
-            });
+        const response = await fetch("http://localhost:5000/api/patient-demographics", {
+          method: "POST",
+          body: formDataToSend // Don't set Content-Type header for FormData
+        });
 
-            if (response.ok) {
-                const result = await response.json();
-                alert("Patient demographics saved successfully!");
-                updatePreviewData(formData, "patient");
-                // Reset form...
-            } else {
-                alert("Failed to save patient demographics");
-            }
-        } catch (error) {
-            console.error("Error saving data:", error);
-            alert("Error saving data.");
+        if (response.ok) {
+          const result = await response.json();
+          alert("Patient demographics saved successfully!");
+          updatePreviewData(formData, "patient");
+          setShowPreview(false);
+          // Reset form if needed...
+        } else {
+          alert("Failed to save patient demographics");
         }
+      } catch (error) {
+        console.error("Error saving data:", error);
+        alert("Error saving data.");
+      }
     }
-};
+  };
 
   // Upload handlers
   const handleUploadClick = () => {
@@ -184,12 +190,85 @@ const handleSave = async () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // Format data for preview display
+  const formatPreviewData = () => {
+    return {
+      "Personal Information": {
+        "Name": `${formData.firstName} ${formData.middleName} ${formData.lastName}`.trim(),
+        "Date of Birth": formData.dob,
+        "Gender": formData.gender,
+      },
+      "Address Information": {
+        "Address Line 1": formData.address1,
+        "Address Line 2": formData.address2,
+        "Postal Code": formData.postalCode,
+        "District": formData.city,
+        "City": formData.district,
+        "State": formData.state,
+        "Country": formData.country,
+      },
+      "Other Details": {
+        "Blood Group": formData.bloodGroup,
+        "Occupation": formData.occupation,
+        "Aadhar Number": formData.aadharNumber,
+        "PAN Number": formData.panNumber,
+      }
+    };
+  };
+
   return (
     <div>
       {/* Fixed Header */}
       <header className="fixed-header">
         <h1 className="header-title"></h1>
       </header>
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="preview-modal-overlay" onClick={() => setShowPreview(false)}>
+          <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="preview-header">
+              <h2>Patient Demographics Preview</h2>
+              <button className="close-btn" onClick={() => setShowPreview(false)}>×</button>
+            </div>
+            
+            <div className="preview-content">
+              {/* Patient Photo */}
+              {imagePreview && (
+                <div className="preview-photo-section">
+                  <img src={imagePreview} alt="Patient" className="preview-photo" />
+                </div>
+              )}
+
+              {/* Data Sections */}
+              {Object.entries(formatPreviewData()).map(([sectionName, sectionData]) => (
+                <div key={sectionName} className="preview-section">
+                  <h3 className="preview-section-title">{sectionName}</h3>
+                  <div className="preview-section-content">
+                    {Object.entries(sectionData).map(([key, value]) => (
+                      value && (
+                        <div key={key} className="preview-field">
+                          <span className="preview-field-label">{key}:</span>
+                          <span className="preview-field-value">{value}</span>
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="preview-actions">
+              <button className="preview-cancel-btn" onClick={() => setShowPreview(false)}>
+                Cancel
+              </button>
+              <button className="preview-save-btn" onClick={handleSave}>
+                Save Patient Demographics
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Page Content */}
       <div className="patient-demographics-container">
@@ -439,8 +518,8 @@ const handleSave = async () => {
           </fieldset>
 
           <div className="form-actions-center">
-            <button type="button" className="save-btn" onClick={handleSave}>
-              Save
+            <button type="button" className="preview-btn" onClick={handlePreview}>
+              Preview
             </button>
             <button type="button" className="next-btn" onClick={handleNext}>
               Next

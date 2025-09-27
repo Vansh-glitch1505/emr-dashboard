@@ -25,6 +25,7 @@ const InsuranceInformation = () => {
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadStatus, setUploadStatus] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
 
   // Load existing data from context if available
   useEffect(() => {
@@ -60,6 +61,11 @@ const InsuranceInformation = () => {
     }
   };
 
+  const handlePreview = () => {
+    updatePreviewData(insuranceData, "insurance");
+    setShowPreview(true);
+  };
+
   const handleSave = async () => {
     try {
       // Save insurance data first
@@ -82,6 +88,7 @@ const InsuranceInformation = () => {
         }
         
         alert("Insurance Information saved successfully!");
+        setShowPreview(false);
       } else {
         alert("Failed to save Insurance Information: " + data.error);
       }
@@ -129,6 +136,113 @@ const InsuranceInformation = () => {
   const handleBrowseClick = () => {
     document.getElementById("insuranceCard").click();
   };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "Not provided";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const PreviewModal = () => (
+    <div className="preview-modal-overlay" onClick={() => setShowPreview(false)}>
+      <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="preview-header">
+          <h2>Insurance Information Preview</h2>
+          <button className="close-btn" onClick={() => setShowPreview(false)}>×</button>
+        </div>
+        
+        <div className="preview-content">
+          <div className="preview-section">
+            <h3>Primary Insurance</h3>
+            <div className="preview-row">
+              <span className="preview-label">Company Name:</span>
+              <span className="preview-value">{insuranceData.primaryCompanyName || "Not provided"}</span>
+            </div>
+            <div className="preview-row">
+              <span className="preview-label">Policy Number:</span>
+              <span className="preview-value">{insuranceData.primaryPolicyNumber || "Not provided"}</span>
+            </div>
+            <div className="preview-row">
+              <span className="preview-label">Group Number:</span>
+              <span className="preview-value">{insuranceData.primaryGroupNumber || "Not provided"}</span>
+            </div>
+            <div className="preview-row">
+              <span className="preview-label">Plan Type:</span>
+              <span className="preview-value">{insuranceData.primaryPlanType}</span>
+            </div>
+            <div className="preview-row">
+              <span className="preview-label">Start Date:</span>
+              <span className="preview-value">{formatDate(insuranceData.primaryStartDate)}</span>
+            </div>
+            <div className="preview-row">
+              <span className="preview-label">End Date:</span>
+              <span className="preview-value">{formatDate(insuranceData.primaryEndDate)}</span>
+            </div>
+          </div>
+
+          {(insuranceData.secondaryCompanyName || insuranceData.secondaryPolicyNumber || insuranceData.secondaryGroupNumber) && (
+            <div className="preview-section">
+              <h3>Secondary Insurance</h3>
+              <div className="preview-row">
+                <span className="preview-label">Company Name:</span>
+                <span className="preview-value">{insuranceData.secondaryCompanyName || "Not provided"}</span>
+              </div>
+              <div className="preview-row">
+                <span className="preview-label">Policy Number:</span>
+                <span className="preview-value">{insuranceData.secondaryPolicyNumber || "Not provided"}</span>
+              </div>
+              <div className="preview-row">
+                <span className="preview-label">Group Number:</span>
+                <span className="preview-value">{insuranceData.secondaryGroupNumber || "Not provided"}</span>
+              </div>
+              <div className="preview-row">
+                <span className="preview-label">Plan Type:</span>
+                <span className="preview-value">{insuranceData.secondaryPlanType}</span>
+              </div>
+              <div className="preview-row">
+                <span className="preview-label">Start Date:</span>
+                <span className="preview-value">{formatDate(insuranceData.secondaryStartDate)}</span>
+              </div>
+              <div className="preview-row">
+                <span className="preview-label">End Date:</span>
+                <span className="preview-value">{formatDate(insuranceData.secondaryEndDate)}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="preview-section">
+            <h3>Contact Information</h3>
+            <div className="preview-row">
+              <span className="preview-label">Contact Number:</span>
+              <span className="preview-value">{insuranceData.contactNumber || "Not provided"}</span>
+            </div>
+            <div className="preview-row">
+              <span className="preview-label">Insurance Card Files:</span>
+              <span className="preview-value">
+                {selectedFiles.length > 0 
+                  ? selectedFiles.map(file => file.name).join(', ')
+                  : "No files selected"
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="preview-actions">
+          <button className="preview-cancel-btn" onClick={() => setShowPreview(false)}>
+            Edit
+          </button>
+          <button className="preview-save-btn" onClick={handleSave}>
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="insurance-container">
@@ -368,13 +482,15 @@ const InsuranceInformation = () => {
 
       {/* Buttons */}
       <div className="form-actions">
-        <button className="save-btn" onClick={handleSave}>
-          Save
+        <button className="preview-btn" onClick={handlePreview}>
+          Preview
         </button>
         <button className="next-btn" onClick={handleNext}>
           Next
         </button>
       </div>
+
+      {showPreview && <PreviewModal />}
     </div>
   );
 };
