@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import "./ailments.css";
 
 const Ailments = () => {
-  // Replace these with your real navigation / context functions
   const navigate = (path) => console.log("Navigate:", path);
   const updatePreviewData = (data, type) =>
     console.log("Update preview:", type, data);
 
-  const [ailment, setAilment] = useState({
+  const initialAilment = {
     problemName: "",
     icdCode: "",
     description: "",
@@ -20,9 +19,12 @@ const Ailments = () => {
     sideEffects: "",
     treatmentPlan: "",
     testResults: ""
-  });
+  };
 
+  const [ailment, setAilment] = useState(initialAilment);
+  const [ailmentsList, setAilmentsList] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,34 +65,51 @@ const Ailments = () => {
     setShowPreview(true);
   };
 
-  const handleSave = async () => {
-    try {
-      console.log("Saving:", ailment);
-      updatePreviewData(ailment, "ailments");
-      alert("Ailment saved");
-      setShowPreview(false);
-      setAilment({
-        problemName: "",
-        icdCode: "",
-        description: "",
-        status: "Select",
-        severity: "Select",
-        dateOfOnset: "",
-        pain: "0",
-        riskFactor: "",
-        comorbidities: "",
-        sideEffects: "",
-        treatmentPlan: "",
-        testResults: ""
-      });
-    } catch (err) {
-      console.error(err);
-      alert("Save failed");
+  const handleAdd = () => {
+    if (!ailment.problemName) {
+      alert("Please enter at least a problem name");
+      return;
+    }
+    
+    if (editingIndex !== null) {
+      const updated = [...ailmentsList];
+      updated[editingIndex] = { ...ailment };
+      setAilmentsList(updated);
+      setEditingIndex(null);
+      alert("Ailment updated successfully");
+    } else {
+      setAilmentsList([...ailmentsList, { ...ailment }]);
+      alert("Ailment added successfully");
+    }
+    
+    setAilment(initialAilment);
+    setShowPreview(false);
+  };
+
+  const handleEdit = (index) => {
+    setAilment(ailmentsList[index]);
+    setEditingIndex(index);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = (index) => {
+    if (window.confirm("Are you sure you want to delete this ailment?")) {
+      setAilmentsList(ailmentsList.filter((_, i) => i !== index));
     }
   };
 
-  const handleNext = async () => {
-    if (ailment.problemName) await handleSave();
+  const handleCancelEdit = () => {
+    setAilment(initialAilment);
+    setEditingIndex(null);
+  };
+
+  const handleNext = () => {
+    if (ailmentsList.length === 0 && ailment.problemName) {
+      if (window.confirm("You have unsaved data. Do you want to add it before continuing?")) {
+        handleAdd();
+      }
+    }
+    updatePreviewData(ailmentsList, "ailments");
     navigate("/dashboard/assessment");
   };
 
@@ -99,6 +118,15 @@ const Ailments = () => {
       <header className="fixed-header">
         <h1 className="header-title">Ailments</h1>
       </header>
+
+      {editingIndex !== null && (
+        <div className="editing-banner">
+          <span>Editing Ailment #{editingIndex + 1}</span>
+          <button className="cancel-edit-btn" onClick={handleCancelEdit}>
+            Cancel Edit
+          </button>
+        </div>
+      )}
 
       {/* Problem Information */}
       <fieldset className="section ailments-section">
@@ -297,6 +325,56 @@ const Ailments = () => {
         <button className="preview-btn" onClick={handlePreview}>
           Preview
         </button>
+        <button className="add-btn" onClick={handleAdd}>
+          {editingIndex !== null ? "Update" : "Add"} Ailment
+        </button>
+      </div>
+
+      {/* Saved Ailments List */}
+      {ailmentsList.length > 0 && (
+        <div className="saved-ailments">
+          <h2 className="saved-title">Saved Ailments ({ailmentsList.length})</h2>
+          {ailmentsList.map((item, index) => (
+            <div key={index} className="ailment-card">
+              <div className="ailment-header">
+                <div>
+                  <h3 className="ailment-name">{item.problemName}</h3>
+                  {item.icdCode && <span className="icd-badge">ICD: {item.icdCode}</span>}
+                </div>
+                <div className="ailment-actions">
+                  <button className="edit-btn" onClick={() => handleEdit(index)}>
+                    Edit
+                  </button>
+                  <button className="delete-btn" onClick={() => handleDelete(index)}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+              <div className="ailment-details">
+                <div className="detail-row">
+                  <span className="detail-label">Status:</span>
+                  <span>{item.status !== "Select" ? item.status : "—"}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Severity:</span>
+                  <span>{item.severity !== "Select" ? item.severity : "—"}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Pain:</span>
+                  <span>{item.pain}/10</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Onset:</span>
+                  <span>{formatDate(item.dateOfOnset)}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Next Button */}
+      <div className="next-btn-container">
         <button className="next-btn" onClick={handleNext}>
           Next
         </button>
@@ -428,8 +506,8 @@ const Ailments = () => {
               >
                 Cancel
               </button>
-              <button className="preview-save-btn" onClick={handleSave}>
-                Save
+              <button className="preview-save-btn" onClick={handleAdd}>
+                {editingIndex !== null ? "Update" : "Add"}
               </button>
             </div>
           </div>
