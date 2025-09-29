@@ -105,9 +105,16 @@ export default function AllergiesForm({ closeForm, onSave }) {
           <label>Allergies Type</label>
           <select name="allergyType" value={formData.allergyType} onChange={handleChange}>
             <option value="">Select</option>
-            <option value="Penicillin">Penicillin</option>
-            <option value="Latex">Latex</option>
-            <option value="Pollen">Pollen</option>
+            <option value="Medication Allergy">Medication Allergy</option>
+            <option value="Food Allergy">Food Allergy</option>
+            <option value="Environmental Allergy">Environmental Allergy</option>
+            <option value="Insect Sting Allergy">Insect Sting Allergy</option>
+            <option value="Latex Allergy">Latex Allergy</option>
+            <option value="Animal Allergy">Animal Allergy</option>
+            <option value="Pollen Allergy">Pollen Allergy</option>
+            <option value="Mold Allergy">Mold Allergy</option>
+            <option value="Dust Allergy">Dust Allergy</option>
+            <option value="Other">Other</option>
           </select>
         </div>
 
@@ -115,8 +122,23 @@ export default function AllergiesForm({ closeForm, onSave }) {
           <label>Allergic Substance</label>
           <select name="substance" value={formData.substance} onChange={handleChange}>
             <option value="">Select</option>
-            <option value="Food">Food</option>
-            <option value="Medication">Medication</option>
+            <option value="Penicillin">Penicillin</option>
+            <option value="Sulfa Drugs">Sulfa Drugs</option>
+            <option value="Aspirin">Aspirin</option>
+            <option value="Shellfish">Shellfish</option>
+            <option value="Nuts">Nuts (e.g., peanuts, almonds, cashews)</option>
+            <option value="Eggs">Eggs</option>
+            <option value="Milk">Milk</option>
+            <option value="Wheat">Wheat</option>
+            <option value="Soy">Soy</option>
+            <option value="Pollen">Pollen (ragweed, grass, etc.)</option>
+            <option value="Dust Mites">Dust Mites</option>
+            <option value="Latex">Latex</option>
+            <option value="Nickel">Nickel</option>
+            <option value="Pet Dander">Pet Dander</option>
+            <option value="Bee Venom">Bee Venom</option>
+            <option value="Mold">Mold</option>
+            <option value="Certain Medications">Certain Medications (specify if known)</option>
             <option value="Other">Other</option>
           </select>
         </div>
@@ -128,6 +150,8 @@ export default function AllergiesForm({ closeForm, onSave }) {
             <option value="Mild">Mild</option>
             <option value="Moderate">Moderate</option>
             <option value="Severe">Severe</option>
+            <option value="Critical">Critical</option>
+            <option value="Unknown">Unknown</option>
           </select>
         </div>
 

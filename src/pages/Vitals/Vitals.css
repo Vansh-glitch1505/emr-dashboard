@@ -165,6 +165,79 @@ textarea {
   padding-top: 2rem;
 }
 
+/* Preview Styles */
+.preview-container {
+  background-color: var(--background-blue);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.preview-title {
+  color: var(--primary-blue);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.preview-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.preview-section h4 {
+  color: var(--primary-blue);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--light-blue);
+  padding-bottom: 0.5rem;
+}
+
+.preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.preview-row:last-child {
+  border-bottom: none;
+}
+
+.preview-label {
+  font-weight: 500;
+  color: var(--text-dark);
+  min-width: 150px;
+}
+
+.preview-value {
+  font-weight: 600;
+  color: var(--primary-blue);
+  text-align: right;
+}
+
+.preview-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.preview-main-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Button Styles */
 .save-btn {
   background-color: var(--primary-blue);
   color: var(--white);
@@ -186,7 +259,28 @@ textarea {
   cursor: not-allowed;
 }
 
-.skip-btn {
+.preview-btn {
+  background-color: #27ae60;
+  color: var(--white);
+  border: none;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  border-radius: var(--input-radius);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 600;
+}
+
+.preview-btn:hover:not(:disabled) {
+  background-color: #E8F0FE;
+}
+
+.preview-btn:disabled {
+  background-color: var(--text-light);
+  cursor: not-allowed;
+}
+
+.skip-btn, .next-btn {
   background-color: var(--white);
   color: var(--primary-blue);
   border: 1px solid var(--primary-blue);
@@ -196,6 +290,26 @@ textarea {
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 600;
+}
+
+.skip-btn:hover, .next-btn:hover {
+  background-color: var(--light-blue);
+}
+
+.back-btn {
+  background-color: #236D8A;
+  color: var(--white);
+  border: none;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  border-radius: var(--input-radius);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 600;
+}
+
+.back-btn:hover {
+  background-color: #0D47A1;
 }
 
 .fixed-header {
@@ -215,11 +329,6 @@ textarea {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-
-.skip-btn:hover {
-  background-color: var(--light-blue);
-}
-
 .error {
   border-color: #e74c3c !important;
 }
@@ -228,6 +337,15 @@ textarea {
   color: #e74c3c;
   font-size: 0.8rem;
   margin-top: 0.25rem;
+}
+
+.error-message {
+  background-color: #ffe6e6;
+  color: #e74c3c;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #e74c3c;
 }
 
 .success-message {
@@ -272,7 +390,37 @@ textarea {
     flex-direction: column;
   }
   
-  .save-btn, .skip-btn {
+  .save-btn, .skip-btn, .preview-btn, .next-btn {
     width: 100%;
+  }
+  
+  /* Preview Mobile Styles */
+  .preview-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .preview-main-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .back-btn {
+    width: 100%;
+  }
+  
+  .preview-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .preview-label {
+    min-width: auto;
+  }
+  
+  .preview-value {
+    text-align: left;
   }
 }

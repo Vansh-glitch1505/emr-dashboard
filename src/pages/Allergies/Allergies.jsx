@@ -15,18 +15,46 @@ const Allergies = () => {
     },
   ]);
 
+  // Dropdown options
+  const allergenOptions = [
+    "Penicillin", "Sulfa Drugs", "Aspirin", "Shellfish",
+    "Nuts (e.g., peanuts, almonds, cashews)", "Eggs", "Milk",
+    "Wheat", "Soy", "Pollen (specific types, e.g., ragweed, grass)",
+    "Dust Mites", "Latex", "Nickel", "Pet Dander",
+    "Bee Venom", "Mould", "Certain Medications (specify if known)",
+    "Other"
+  ];
+
+  const reactionOptions = [
+    "Rash", "Itching", "Hives", "Swelling", "Difficulty Breathing",
+    "Anaphylaxis", "Nausea", "Vomiting", "Diarrhoea", "Dizziness",
+    "Fainting", "Other"
+  ];
+
+  const severityOptions = ["Mild", "Moderate", "Severe", "Critical", "Unknown", "None"];
+
+  const statusOptions = ["Active", "Inactive", "Resolved", "Chronic", "Acute", "Recurrent", "Unknown", "None"];
+
+  const categoryOptions = ["Medications", "Foods", "Environmental", "Insects", "Latex", "Other"];
+
+  const codeOptions = [
+    "A100: Medications",
+    "A200: Foods",
+    "A300: Environmental",
+    "A400: Insects",
+    "A500: Latex",
+    "A600: Other"
+  ];
+
   const handleChange = (index, field, value) => {
     const updatedData = [...allergyData];
     updatedData[index][field] = value;
     setAllergyData(updatedData);
   };
 
-  const handleNext = () => {
-    navigate('/dashboard/family-history');
-  };
+  const handleNext = () => navigate('/dashboard/family-history');
 
   const handleSave = () => {
-    // Add save logic here - could be API call to save allergy data
     console.log("Saving allergy data:", allergyData);
     alert("Allergy information saved successfully!");
   };
@@ -34,14 +62,7 @@ const Allergies = () => {
   const handleAddRow = () => {
     setAllergyData([
       ...allergyData,
-      {
-        allergen: "",
-        reaction: "",
-        severity: "",
-        category: "",
-        code: "",
-        status: "",
-      },
+      { allergen: "", reaction: "", severity: "", category: "", code: "", status: "" },
     ]);
   };
 
@@ -78,20 +99,22 @@ const Allergies = () => {
               {allergyData.map((item, index) => (
                 <tr key={index}>
                   <td>
-                    <input
-                      type="text"
+                    <select
                       value={item.allergen}
                       onChange={(e) => handleChange(index, "allergen", e.target.value)}
-                      placeholder="e.g. Penicillin"
-                    />
+                    >
+                      <option value="">Select</option>
+                      {allergenOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
                   </td>
                   <td>
-                    <input
-                      type="text"
+                    <select
                       value={item.reaction}
                       onChange={(e) => handleChange(index, "reaction", e.target.value)}
-                      placeholder="e.g. Rash"
-                    />
+                    >
+                      <option value="">Select</option>
+                      {reactionOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
                   </td>
                   <td>
                     <select
@@ -99,10 +122,7 @@ const Allergies = () => {
                       onChange={(e) => handleChange(index, "severity", e.target.value)}
                     >
                       <option value="">Select</option>
-                      <option value="Mild">Mild</option>
-                      <option value="Moderate">Moderate</option>
-                      <option value="Severe">Severe</option>
-                      <option value="Life-threatening">Life-threatening</option>
+                      {severityOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                     </select>
                   </td>
                   <td>
@@ -111,20 +131,17 @@ const Allergies = () => {
                       onChange={(e) => handleChange(index, "category", e.target.value)}
                     >
                       <option value="">Select</option>
-                      <option value="Food">Food</option>
-                      <option value="Drug">Drug</option>
-                      <option value="Environmental">Environmental</option>
-                      <option value="Insect">Insect</option>
-                      <option value="Other">Other</option>
+                      {categoryOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                     </select>
                   </td>
                   <td>
-                    <input
-                      type="text"
+                    <select
                       value={item.code}
                       onChange={(e) => handleChange(index, "code", e.target.value)}
-                      placeholder="e.g. ICD-10 code"
-                    />
+                    >
+                      <option value="">Select</option>
+                      {codeOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
                   </td>
                   <td>
                     <select
@@ -132,9 +149,7 @@ const Allergies = () => {
                       onChange={(e) => handleChange(index, "status", e.target.value)}
                     >
                       <option value="">Select</option>
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                      <option value="Resolved">Resolved</option>
+                      {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                     </select>
                   </td>
                   <td>

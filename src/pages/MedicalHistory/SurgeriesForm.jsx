@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./MedicalHistory.css"; // Reuse the same CSS file
 
-// ⬇️ Added onSave to props
 const SurgeriesForm = ({ closeForm, onSave }) => {
   const [surgeryType, setSurgeryType] = useState("");
   const [surgeryDate, setSurgeryDate] = useState("");
@@ -21,10 +20,7 @@ const SurgeriesForm = ({ closeForm, onSave }) => {
         surgeonName,
         postOpNotes
       };
-      
       setSurgeryList(prev => [...prev, newSurgery]);
-      
-      // Clear form after adding
       setSurgeryType('');
       setSurgeryDate('');
       setSurgeonName('');
@@ -34,8 +30,6 @@ const SurgeriesForm = ({ closeForm, onSave }) => {
 
   const handleSave = () => {
     let finalList = [...surgeryList];
-
-    // If there's current form data, add it before saving
     if (surgeryType || surgeryDate || surgeonName || postOpNotes) {
       const newItem = {
         id: Date.now(),
@@ -46,21 +40,13 @@ const SurgeriesForm = ({ closeForm, onSave }) => {
       };
       finalList.push(newItem);
     }
-
     setSavedData(finalList);
     setShowPreview(true);
-
-    // ⬇️ NEW: Pass data to parent
-    if (onSave) {
-      onSave(finalList);
-    }
-
+    if (onSave) onSave(finalList);
     console.log("Saved surgeries:", finalList);
   };
 
-  const handleEdit = () => {
-    setShowPreview(false);
-  };
+  const handleEdit = () => setShowPreview(false);
 
   const removeSurgery = (id) => {
     setSurgeryList(prev => prev.filter(item => item.id !== id));
@@ -115,7 +101,6 @@ const SurgeriesForm = ({ closeForm, onSave }) => {
         <button className="close-btn" onClick={closeForm}>×</button>
       </div>
 
-      {/* Show added surgeries list */}
       {surgeryList.length > 0 && (
         <div className="added-immunizations">
           <h3>Added Surgeries:</h3>
@@ -144,12 +129,38 @@ const SurgeriesForm = ({ closeForm, onSave }) => {
 
       <div className="form-group">
         <label>Surgery Type</label>
-        <input
-          type="text"
+        <select
           value={surgeryType}
           onChange={(e) => setSurgeryType(e.target.value)}
-          placeholder="e.g. Appendectomy"
-        />
+        >
+          <option value="">-- Select Surgery Type --</option>
+          <option value="Cardiothoracic Surgery">Cardiothoracic Surgery</option>
+          <option value="Orthopedic Surgery">Orthopedic Surgery</option>
+          <option value="Neurosurgery">Neurosurgery</option>
+          <option value="General Surgery">General Surgery</option>
+          <option value="Plastic and Reconstructive Surgery">Plastic and Reconstructive Surgery</option>
+          <option value="Pediatric Surgery">Pediatric Surgery</option>
+          <option value="Vascular Surgery">Vascular Surgery</option>
+          <option value="Urological Surgery">Urological Surgery</option>
+          <option value="Gynecological Surgery">Gynecological Surgery</option>
+          <option value="ENT Surgery">ENT (Ear, Nose, Throat) Surgery</option>
+          <option value="Ophthalmic Surgery">Ophthalmic Surgery (Eye Surgery)</option>
+          <option value="Oral and Maxillofacial Surgery">Oral and Maxillofacial Surgery</option>
+          <option value="Transplant Surgery">Transplant Surgery</option>
+          <option value="Bariatric Surgery">Bariatric Surgery (Weight Loss Surgery)</option>
+          <option value="Cosmetic Surgery">Cosmetic Surgery</option>
+          <option value="Oncological Surgery">Oncological Surgery (Cancer Surgery)</option>
+          <option value="Endoscopic Surgery">Endoscopic Surgery</option>
+          <option value="Minimally Invasive Surgery">Minimally Invasive Surgery</option>
+          <option value="Trauma Surgery">Trauma Surgery</option>
+          <option value="Emergency Surgery">Emergency Surgery</option>
+          <option value="Colorectal Surgery">Colorectal Surgery</option>
+          <option value="Hernia Repair Surgery">Hernia Repair Surgery</option>
+          <option value="Thoracic Surgery">Thoracic Surgery (Chest Surgery)</option>
+          <option value="Laparoscopic Surgery">Laparoscopic Surgery</option>
+          <option value="Spinal Surgery">Spinal Surgery</option>
+          <option value="Other">Other</option>
+        </select>
       </div>
 
       <div className="form-group">

@@ -299,16 +299,23 @@ const InsuranceInformation = () => {
           <div className="input-group">
             <label htmlFor="primaryPlanType">Plan Type</label>
             <select
-              id="primaryPlanType"
-              name="primaryPlanType"
-              value={insuranceData.primaryPlanType}
-              onChange={handleChange}
+            id="primaryPlanType"
+            name="primaryPlanType"
+            value={insuranceData.primaryPlanType}
+            onChange={handleChange}
             >
-              <option value="Family Insurance">Family Insurance</option>
-              <option value="Individual">Individual</option>
-              <option value="Employer">Employer</option>
-            </select>
-          </div>
+      <option value="">Select Plan Type</option>
+      <option value="HMO">Health Maintenance Organization (HMO)</option>
+      <option value="PPO">Preferred Provider Organization (PPO)</option>
+      <option value="POS">Point of Service (POS)</option>
+      <option value="EPO">Exclusive Provider Organization (EPO)</option>
+      <option value="Medicare">Medicare</option>
+      <option value="Medicaid">Medicaid</option>
+      <option value="Private Insurance">Private Insurance</option>
+      <option value="Other">Other</option>
+    </select>
+</div>
+
 
           <div className="input-group date-group">
             <label>Insurance Effective Dates</label>
@@ -383,18 +390,24 @@ const InsuranceInformation = () => {
 
         <div className="form-row">
           <div className="input-group">
-            <label htmlFor="secondaryPlanType">Plan Type</label>
+            <label htmlFor="primaryPlanType">Plan Type</label>
             <select
-              id="secondaryPlanType"
-              name="secondaryPlanType"
-              value={insuranceData.secondaryPlanType}
-              onChange={handleChange}
+            id="primaryPlanType"
+            name="primaryPlanType"
+            value={insuranceData.primaryPlanType}
+            onChange={handleChange}
             >
-              <option value="Family">Family</option>
-              <option value="Individual">Individual</option>
-              <option value="Employer">Employer</option>
-            </select>
-          </div>
+      <option value="">Select Plan Type</option>
+      <option value="HMO">Health Maintenance Organization (HMO)</option>
+      <option value="PPO">Preferred Provider Organization (PPO)</option>
+      <option value="POS">Point of Service (POS)</option>
+      <option value="EPO">Exclusive Provider Organization (EPO)</option>
+      <option value="Medicare">Medicare</option>
+      <option value="Medicaid">Medicaid</option>
+      <option value="Private Insurance">Private Insurance</option>
+      <option value="Other">Other</option>
+    </select>
+</div>
 
           <div className="input-group date-group">
             <label>Insurance Effective Dates</label>

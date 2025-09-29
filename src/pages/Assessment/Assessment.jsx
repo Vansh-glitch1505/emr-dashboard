@@ -4,6 +4,7 @@ import "./Assessment.css";
 
 export default function Assessment() {
   const navigate = useNavigate();
+  const [showPreview, setShowPreview] = useState(false);
 
   const [assessment, setAssessment] = useState({
     chiefComplaints: '',
@@ -38,7 +39,7 @@ export default function Assessment() {
     updatedTests[index] = {
       ...updatedTests[index],
       file: file,
-      fileName: file.name
+      fileName: file?.name || ''
     };
     setTests(updatedTests);
   };
@@ -59,47 +60,131 @@ export default function Assessment() {
     setTests(updatedTests);
   };
 
-  // Replace your handleSave function in Assessment.jsx with this:
+  const handleSave = async () => {
+    try {
+      // Prepare data to send to backend
+      const assessmentData = {
+        ...assessment,
+        tests: tests
+      };
 
-const handleSave = async () => {
-  try {
-    // Prepare data to send to backend
-    const assessmentData = {
-      ...assessment,
-      tests: tests
-    };
+      const res = await fetch('http://localhost:5000/api/assessment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(assessmentData)
+      });
 
-    const res = await fetch('http://localhost:5000/api/assessment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(assessmentData)
-    });
+      const data = await res.json();
 
-    const data = await res.json();
-
-    if (data.success) {
-      alert('Assessment saved successfully!');
-      // Optionally reset form after successful save
-      // setAssessment({
-      //   chiefComplaints: '',
-      //   historyOfPresentIllness: '',
-      //   pastMedicalHistory: '',
-      //   medicationHistory: '',
-      //   remindersAlerts: '',
-      //   planCare: ''
-      // });
-      // setTests([]);
-    } else {
-      alert(data.message || 'Failed to save assessment');
+      if (data.success) {
+        alert('Assessment saved successfully!');
+        setShowPreview(false);
+      } else {
+        alert(data.message || 'Failed to save assessment');
+      }
+    } catch (err) {
+      console.error('Error saving assessment:', err);
+      alert('Error saving assessment');
     }
-  } catch (err) {
-    console.error('Error saving assessment:', err);
-    alert('Error saving assessment');
-  }
-};
+  };
+
+  const handlePreview = () => {
+    setShowPreview(true);
+  };
 
   const handleNext = () => {
     navigate('/dashboard/medical-history');
+  };
+
+  const PreviewModal = () => {
+    if (!showPreview) return null;
+
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content" role="dialog" aria-modal="true" aria-label="Assessment preview">
+          <div className="modal-header">
+            <h2>Assessment Preview</h2>
+            {/* Close button placed inside header (top-right) */}
+            <button
+              className="close-btn"
+              aria-label="Close preview"
+              onClick={() => setShowPreview(false)}
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="modal-body">
+            <div className="preview-section">
+              <h3>Patient Information</h3>
+
+              <div className="preview-item">
+                <label>Chief Complaints:</label>
+                <p>{assessment.chiefComplaints || 'Not specified'}</p>
+              </div>
+
+              <div className="preview-item">
+                <label>History of Present Illness:</label>
+                <p>{assessment.historyOfPresentIllness || 'Not specified'}</p>
+              </div>
+
+              <div className="preview-item">
+                <label>Past Medical History:</label>
+                <p>{assessment.pastMedicalHistory || 'Not specified'}</p>
+              </div>
+
+              <div className="preview-item">
+                <label>Medication History:</label>
+                <p>{assessment.medicationHistory || 'Not specified'}</p>
+              </div>
+            </div>
+
+            {tests.length > 0 && (
+              <div className="preview-section">
+                <h3>Test Results</h3>
+                {tests.map((test, index) => (
+                  <div key={test.id} className="preview-test-card">
+                    <h4>Test {index + 1}</h4>
+                    <div className="preview-item">
+                      <label>Results:</label>
+                      <p>{test.result || 'No results entered'}</p>
+                    </div>
+                    <div className="preview-item">
+                      <label>File:</label>
+                      <p>{test.fileName || 'No file uploaded'}</p>
+                    </div>
+                    <div className="preview-item">
+                      <label>Comments:</label>
+                      <p>{test.comment || 'No comments'}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="preview-section">
+              <h3>Additional Information</h3>
+
+              <div className="preview-item">
+                <label>Reminders & Alerts:</label>
+                <p>{assessment.remindersAlerts || 'Not specified'}</p>
+              </div>
+
+              <div className="preview-item">
+                <label>Plan of Care:</label>
+                <p>{assessment.planCare || 'Not specified'}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="modal-actions">
+            <button className="save-btn" onClick={handleSave}>
+              Save Assessment
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -117,7 +202,7 @@ const handleSave = async () => {
           <div className="form-row">
             <div className="input-group">
               <label>Chief Complaints</label>
-              <textarea 
+              <textarea
                 value={assessment.chiefComplaints}
                 onChange={(e) => handleInputChange('chiefComplaints', e.target.value)}
                 rows="3"
@@ -128,7 +213,7 @@ const handleSave = async () => {
           <div className="form-row">
             <div className="input-group">
               <label>History of Present Illness</label>
-              <textarea 
+              <textarea
                 value={assessment.historyOfPresentIllness}
                 onChange={(e) => handleInputChange('historyOfPresentIllness', e.target.value)}
                 rows="4"
@@ -139,7 +224,7 @@ const handleSave = async () => {
           <div className="form-row">
             <div className="input-group">
               <label>Past Medical History</label>
-              <textarea 
+              <textarea
                 value={assessment.pastMedicalHistory}
                 onChange={(e) => handleInputChange('pastMedicalHistory', e.target.value)}
                 rows="3"
@@ -150,7 +235,7 @@ const handleSave = async () => {
           <div className="form-row">
             <div className="input-group">
               <label>Medication History</label>
-              <textarea 
+              <textarea
                 value={assessment.medicationHistory}
                 onChange={(e) => handleInputChange('medicationHistory', e.target.value)}
                 rows="3"
@@ -203,7 +288,7 @@ const handleSave = async () => {
               </div>
 
               <div className="test-actions">
-                <button 
+                <button
                   className="remove-test"
                   onClick={() => removeTest(index)}
                 >
@@ -227,7 +312,7 @@ const handleSave = async () => {
           <div className="form-row">
             <div className="input-group">
               <label>Reminders & Alerts</label>
-              <textarea 
+              <textarea
                 value={assessment.remindersAlerts}
                 onChange={(e) => handleInputChange('remindersAlerts', e.target.value)}
                 rows="2"
@@ -239,7 +324,7 @@ const handleSave = async () => {
           <div className="form-row">
             <div className="input-group">
               <label>Plan of Care</label>
-              <textarea 
+              <textarea
                 value={assessment.planCare}
                 onChange={(e) => handleInputChange('planCare', e.target.value)}
                 rows="4"
@@ -251,14 +336,16 @@ const handleSave = async () => {
 
         {/* Action Buttons */}
         <div className="form-actions">
-          <button className="save-btn" onClick={handleSave}>
-            Save
+          <button className="preview-btn" onClick={handlePreview}>
+            Preview
           </button>
           <button className="next-btn" onClick={handleNext}>
             Next
           </button>
         </div>
       </div>
+
+      <PreviewModal />
     </div>
   );
 }

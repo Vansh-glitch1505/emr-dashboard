@@ -29,6 +29,7 @@ const Vitals = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     // Calculate BMI when height or weight changes
@@ -80,57 +81,62 @@ const Vitals = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Replace your handleSubmit function in Vitals.jsx with this:
+  const handlePreview = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    setShowPreview(true);
+  };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validateForm()) return;
-  
-  setIsLoading(true);
-  setErrorMessage('');
-  
-  try {
-    // Prepare data for API
-    const vitalsData = {
-      patient_id: patientId,
-      date: formData.date,
-      time: formData.time,
-      systolic: formData.systolic || null,
-      diastolic: formData.diastolic || null,
-      pulse: formData.pulse || null,
-      respiratory: formData.respiratory || null,
-      temperature: formData.temperature || null,
-      temp_unit: formData.tempUnit,
-      height: formData.height || null,
-      height_unit: formData.heightUnit,
-      weight: formData.weight || null,
-      bmi: formData.bmi || null,
-      spo2: formData.spo2 || null,
-      comments: formData.comments || null
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    
+    setIsLoading(true);
+    setErrorMessage('');
+    
+    try {
+      // Prepare data for API
+      const vitalsData = {
+        patient_id: patientId,
+        date: formData.date,
+        time: formData.time,
+        systolic: formData.systolic || null,
+        diastolic: formData.diastolic || null,
+        pulse: formData.pulse || null,
+        respiratory: formData.respiratory || null,
+        temperature: formData.temperature || null,
+        temp_unit: formData.tempUnit,
+        height: formData.height || null,
+        height_unit: formData.heightUnit,
+        weight: formData.weight || null,
+        bmi: formData.bmi || null,
+        spo2: formData.spo2 || null,
+        comments: formData.comments || null
+      };
 
-    // Use fetch instead of axios for consistency with your other components
-    const response = await fetch('http://localhost:5000/api/vitals', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(vitalsData)
-    });
+      // Use fetch instead of axios for consistency with your other components
+      const response = await fetch('http://localhost:5000/api/vitals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(vitalsData)
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      updatePreviewData(formData, 'vitals');
-      setIsSubmitted(true);
-    } else {
-      setErrorMessage(data.message || 'Failed to save vitals. Please try again.');
+      if (data.success) {
+        updatePreviewData(formData, 'vitals');
+        setIsSubmitted(true);
+        setShowPreview(false);
+      } else {
+        setErrorMessage(data.message || 'Failed to save vitals. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving vitals:', error);
+      setErrorMessage('Failed to save vitals. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-  } catch (error) {
-    console.error('Error saving vitals:', error);
-    setErrorMessage('Failed to save vitals. Please try again.');
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const handleNext = () => {
     navigate('/dashboard/allergies');
@@ -155,13 +161,129 @@ const handleSubmit = async (e) => {
       comments: "",
     });
     setIsSubmitted(false);
+    setShowPreview(false);
+  };
+
+  const handleBackToEdit = () => {
+    setShowPreview(false);
+  };
+
+  const renderPreview = () => {
+    return (
+      <div className="preview-container">
+        <h3 className="preview-title">Preview Vitals Data</h3>
+        
+        <div className="preview-section">
+          <h4>Date & Time</h4>
+          <div className="preview-row">
+            <span className="preview-label">Date:</span>
+            <span className="preview-value">{formData.date}</span>
+          </div>
+          <div className="preview-row">
+            <span className="preview-label">Time:</span>
+            <span className="preview-value">{formData.time}</span>
+          </div>
+        </div>
+
+        <div className="preview-section">
+          <h4>Vital Signs</h4>
+          {formData.systolic && (
+            <div className="preview-row">
+              <span className="preview-label">Systolic BP:</span>
+              <span className="preview-value">{formData.systolic} mmHg</span>
+            </div>
+          )}
+          {formData.diastolic && (
+            <div className="preview-row">
+              <span className="preview-label">Diastolic BP:</span>
+              <span className="preview-value">{formData.diastolic} mmHg</span>
+            </div>
+          )}
+          {formData.pulse && (
+            <div className="preview-row">
+              <span className="preview-label">Pulse Rate:</span>
+              <span className="preview-value">{formData.pulse} BPM</span>
+            </div>
+          )}
+          {formData.respiratory && (
+            <div className="preview-row">
+              <span className="preview-label">Respiratory Rate:</span>
+              <span className="preview-value">{formData.respiratory} BPM</span>
+            </div>
+          )}
+          {formData.temperature && (
+            <div className="preview-row">
+              <span className="preview-label">Temperature:</span>
+              <span className="preview-value">{formData.temperature}°{formData.tempUnit === "Celsius" ? "C" : "F"}</span>
+            </div>
+          )}
+          {formData.spo2 && (
+            <div className="preview-row">
+              <span className="preview-label">SpO₂:</span>
+              <span className="preview-value">{formData.spo2}%</span>
+            </div>
+          )}
+        </div>
+
+        <div className="preview-section">
+          <h4>Anthropometrics</h4>
+          {formData.height && (
+            <div className="preview-row">
+              <span className="preview-label">Height:</span>
+              <span className="preview-value">{formData.height} {formData.heightUnit}</span>
+            </div>
+          )}
+          {formData.weight && (
+            <div className="preview-row">
+              <span className="preview-label">Weight:</span>
+              <span className="preview-value">{formData.weight} kg</span>
+            </div>
+          )}
+          {formData.bmi && (
+            <div className="preview-row">
+              <span className="preview-label">BMI:</span>
+              <span className="preview-value">{formData.bmi} kg/m²</span>
+            </div>
+          )}
+        </div>
+
+        {formData.comments && (
+          <div className="preview-section">
+            <h4>Additional Notes</h4>
+            <div className="preview-row">
+              <span className="preview-label">Comments:</span>
+              <span className="preview-value">{formData.comments}</span>
+            </div>
+          </div>
+        )}
+
+        <div className="preview-actions">
+          <button type="button" className="back-btn" onClick={handleBackToEdit}>
+            Back to Edit
+          </button>
+          <div className="preview-main-actions">
+            <button 
+              type="button" 
+              className="save-btn"
+              onClick={handleSubmit}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Save Vitals'}
+            </button>
+            <button type="button" className="next-btn" onClick={handleNext}>
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
     <div className="vitals-container">
       <header className="fixed-header">
         <h1 className="header-title"></h1>
-       </header>
+      </header>
       <h2 className="vitals-title">Patient Vitals</h2>
       
       {errorMessage && <div className="error-message">{errorMessage}</div>}
@@ -178,8 +300,10 @@ const handleSubmit = async (e) => {
             </button>
           </div>
         </div>
+      ) : showPreview ? (
+        renderPreview()
       ) : (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handlePreview}>
           <fieldset className="vitals-section">
             <legend className="section-title">Date & Time</legend>
             <div className="form-row">
@@ -412,10 +536,10 @@ const handleSubmit = async (e) => {
           <div className="form-actions">
             <button 
               type="submit" 
-              className="save-btn"
+              className="preview-btn"
               disabled={isLoading}
             >
-              {isLoading ? 'Saving...' : 'Save Vitals'}
+              Preview
             </button>
             <button type="button" className="skip-btn" onClick={handleNext}>
               Next

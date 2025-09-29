@@ -84,9 +84,8 @@ const AlcoholUse = ({ onClose }) => {
         >
           <option>Beer</option>
           <option>Wine</option>
-          <option>Red wine</option>
-          <option>Whiskey</option>
-          <option>Vodka</option>
+          <option>Liquor/Spirits</option>
+          <option>Mixed Drinks</option>
           <option>Other</option>
         </select>
       </div>

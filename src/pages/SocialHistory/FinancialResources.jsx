@@ -79,10 +79,15 @@ const FinancialResources = ({ onClose }) => {
           value={formData.employmentStatus} 
           onChange={handleChange}
         >
-          <option>Employed</option>
+          <option>Employed Full-time</option>
+          <option>Employed Part-time</option>
           <option>Unemployed</option>
+          <option>Self-employed</option>
           <option>Student</option>
           <option>Retired</option>
+          <option>Homemaker</option>
+          <option>Disabled</option>
+          <option>Other</option>
         </select>
       </div>
 
@@ -94,8 +99,12 @@ const FinancialResources = ({ onClose }) => {
           onChange={handleChange}
         >
           <option>None</option>
-          <option>Family</option>
-          <option>Government</option>
+          <option>Family Support</option>
+          <option>Government Assistance (e.g., welfare)</option>
+          <option>Disability Benefits</option>
+          <option>Retirement Benefits</option>
+          <option>Child Support</option>
+          <option>Aimony</option>
           <option>Other</option>
         </select>
       </div>

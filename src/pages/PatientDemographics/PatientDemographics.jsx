@@ -468,54 +468,75 @@ const PatientDemographics = () => {
           </fieldset>
 
           {/* --- Other Details --- */}
-          <fieldset className="section">
-            <legend>Other Details</legend>
-            <div className="section-inner">
-              <div className="form-row">
-                <div className="input-group">
-                  <label htmlFor="bloodGroup">Blood Group</label>
-                  <input
-                    id="bloodGroup"
-                    name="bloodGroup"
-                    value={formData.bloodGroup}
-                    onChange={handleChange}
-                  />
-                </div>
+         <fieldset className="section">
+  <legend>Other Details</legend>
+  <div className="section-inner">
+    <div className="form-row">
+      <div className="input-group">
+        <label htmlFor="bloodGroup">Blood Group</label>
+        <select
+          id="bloodGroup"
+          name="bloodGroup"
+          value={formData.bloodGroup}
+          onChange={handleChange}
+        >
+          <option value="">Select Blood Group</option>
+          <option value="A+">A Positive (A⁺)</option>
+          <option value="A-">A Negative (A⁻)</option>
+          <option value="B+">B Positive (B⁺)</option>
+          <option value="B-">B Negative (B⁻)</option>
+          <option value="AB+">AB Positive (AB⁺)</option>
+          <option value="AB-">AB Negative (AB⁻)</option>
+          <option value="O+">O Positive (O⁺)</option>
+          <option value="O-">O Negative (O⁻)</option>
+          <option value="None">None</option>
+        </select>
+      </div>
 
-                <div className="input-group">
-                  <label htmlFor="occupation">Occupation</label>
-                  <input
-                    id="occupation"
-                    name="occupation"
-                    value={formData.occupation}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
+      <div className="input-group">
+        <label htmlFor="occupation">Occupation</label>
+        <select
+          id="occupation"
+          name="occupation"
+          value={formData.occupation}
+          onChange={handleChange}
+        >
+          <option value="">Select Occupation</option>
+          <option value="Unemployed">Unemployed</option>
+          <option value="Employed">Employed</option>
+          <option value="Student">Student</option>
+          <option value="Business">Business</option>
+          <option value="Services">Services</option>
+          <option value="Retired">Retired</option>
+          <option value="Government/civil service">Government / Civil Service</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
 
-              <div className="form-row">
-                <div className="input-group">
-                  <label htmlFor="aadharNumber">Aadhar Number</label>
-                  <input
-                    id="aadharNumber"
-                    name="aadharNumber"
-                    value={formData.aadharNumber}
-                    onChange={handleChange}
-                  />
-                </div>
+    <div className="form-row">
+      <div className="input-group">
+        <label htmlFor="aadharNumber">Aadhar Number</label>
+        <input
+          id="aadharNumber"
+          name="aadharNumber"
+          value={formData.aadharNumber}
+          onChange={handleChange}
+        />
+      </div>
 
-                <div className="input-group">
-                  <label htmlFor="panNumber">PAN Number</label>
-                  <input
-                    id="panNumber"
-                    name="panNumber"
-                    value={formData.panNumber}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </div>
-          </fieldset>
+      <div className="input-group">
+        <label htmlFor="panNumber">PAN Number</label>
+        <input
+          id="panNumber"
+          name="panNumber"
+          value={formData.panNumber}
+          onChange={handleChange}
+        />
+      </div>
+    </div>
+  </div>
+</fieldset>
 
           <div className="form-actions-center">
             <button type="button" className="preview-btn" onClick={handlePreview}>

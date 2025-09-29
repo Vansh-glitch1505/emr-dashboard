@@ -1,15 +1,38 @@
 import React, { useState } from 'react';
 import "./MedicalHistory.css";
 
-// ⬇️ Added onSave to props
 export default function ImmunizationForm({ closeForm, onSave }) {
   const [vaccineName, setVaccineName] = useState('');
   const [dateAdministered, setDateAdministered] = useState('');
   const [reactions, setReactions] = useState('');
-  
+
   const [immunizationList, setImmunizationList] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
   const [savedData, setSavedData] = useState(null);
+
+  // Vaccine options
+  const vaccineOptions = [
+    "Influenza (Flu) Vaccine",
+    "Measles, Mumps, and Rubella (MMR) Vaccine",
+    "Varicella (Chickenpox) Vaccine",
+    "Hepatitis B Vaccine",
+    "Hepatitis A Vaccine",
+    "Human Papillomavirus (HPV) Vaccine",
+    "Tetanus, Diphtheria, and Pertussis (Tdap) Vaccine",
+    "Pneumococcal Vaccine",
+    "Meningococcal Vaccine",
+    "Haemophilus influenzae type b (Hib) Vaccine",
+    "Rotavirus Vaccine",
+    "Polio Vaccine",
+    "Shingles (Herpes Zoster) Vaccine",
+    "COVID-19 Vaccine (e.g., Pfizer-BioNTech, Moderna, Johnson & Johnson)",
+    "Typhoid Vaccine",
+    "Rabies Vaccine",
+    "Yellow Fever Vaccine",
+    "Japanese Encephalitis Vaccine",
+    "Cholera Vaccine",
+    "Anthrax Vaccine"
+  ];
 
   const handleAdd = () => {
     if (vaccineName || dateAdministered || reactions) {
@@ -21,8 +44,6 @@ export default function ImmunizationForm({ closeForm, onSave }) {
       };
       
       setImmunizationList(prev => [...prev, newImmunization]);
-      
-      // Clear form after adding
       setVaccineName('');
       setDateAdministered('');
       setReactions('');
@@ -31,36 +52,18 @@ export default function ImmunizationForm({ closeForm, onSave }) {
 
   const handleSave = () => {
     let finalList = [...immunizationList];
-
-    // If there's current form data, add it before saving
     if (vaccineName || dateAdministered || reactions) {
-      const newItem = {
-        id: Date.now(),
-        vaccineName,
-        dateAdministered,
-        reactions
-      };
-      finalList.push(newItem);
+      finalList.push({ id: Date.now(), vaccineName, dateAdministered, reactions });
     }
-
     setSavedData(finalList);
     setShowPreview(true);
-
-    // ⬇️ NEW: Pass data to parent
-    if (onSave) {
-      onSave(finalList);
-    }
-
+    if (onSave) onSave(finalList);
     console.log("Saved immunizations:", finalList);
   };
 
-  const handleEdit = () => {
-    setShowPreview(false);
-  };
+  const handleEdit = () => setShowPreview(false);
 
-  const removeImmunization = (id) => {
-    setImmunizationList(prev => prev.filter(item => item.id !== id));
-  };
+  const removeImmunization = (id) => setImmunizationList(prev => prev.filter(item => item.id !== id));
 
   if (showPreview) {
     return (
@@ -82,9 +85,7 @@ export default function ImmunizationForm({ closeForm, onSave }) {
                 </ul>
               </div>
             ))
-          ) : (
-            <p>No immunizations added.</p>
-          )}
+          ) : <p>No immunizations added.</p>}
         </div>
 
         <div className="button-group-right">
@@ -102,25 +103,16 @@ export default function ImmunizationForm({ closeForm, onSave }) {
         <button className="close-btn" onClick={closeForm}>×</button>
       </div>
 
-      {/* Show added immunizations list */}
       {immunizationList.length > 0 && (
         <div className="added-immunizations">
           <h3>Added Immunizations:</h3>
-          {immunizationList.map((immunization, index) => (
+          {immunizationList.map((immunization) => (
             <div key={immunization.id} className="immunization-item">
               <div className="immunization-details">
                 <strong>{immunization.vaccineName}</strong> - {immunization.dateAdministered}
-                {immunization.reactions && (
-                  <span className="reaction-note"> (Reactions: {immunization.reactions})</span>
-                )}
+                {immunization.reactions && <span className="reaction-note"> (Reactions: {immunization.reactions})</span>}
               </div>
-              <button 
-                className="remove-btn" 
-                onClick={() => removeImmunization(immunization.id)}
-                title="Remove immunization"
-              >
-                ×
-              </button>
+              <button className="remove-btn" onClick={() => removeImmunization(immunization.id)}>×</button>
             </div>
           ))}
         </div>
@@ -128,12 +120,12 @@ export default function ImmunizationForm({ closeForm, onSave }) {
 
       <div className="form-group">
         <label>Vaccine Name</label>
-        <input
-          type="text"
-          value={vaccineName}
-          onChange={(e) => setVaccineName(e.target.value)}
-          placeholder="e.g. Influenza (Flu) Vaccine"
-        />
+        <select value={vaccineName} onChange={(e) => setVaccineName(e.target.value)}>
+          <option value="">Select Vaccine</option>
+          {vaccineOptions.map(vaccine => (
+            <option key={vaccine} value={vaccine}>{vaccine}</option>
+          ))}
+        </select>
       </div>
 
       <div className="form-group">
@@ -142,7 +134,6 @@ export default function ImmunizationForm({ closeForm, onSave }) {
           type="date"
           value={dateAdministered}
           onChange={(e) => setDateAdministered(e.target.value)}
-          placeholder="e.g. October 2, 2022"
         />
       </div>
 
