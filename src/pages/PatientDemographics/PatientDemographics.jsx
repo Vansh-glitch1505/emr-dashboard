@@ -148,6 +148,8 @@ const PatientDemographics = () => {
 
         if (response.ok) {
           const result = await response.json();
+          localStorage.setItem('currentPatientId', result.data.id);
+
           alert("Patient demographics saved successfully!");
           updatePreviewData(formData, "patient");
           setShowPreview(false);

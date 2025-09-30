@@ -99,11 +99,18 @@ const ContactInformation = () => {
 
   const handleSave = async () => {
     try {
+      const patientId = localStorage.getItem('currentPatientId');
+
+      if (!patientId) {
+      alert("Please complete Patient Demographics first");
+      navigate('/dashboard/patient-demographics');
+      return;
+    }
       const response = await fetch('http://localhost:5000/api/contact-information', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: 1, // replace with logged-in user's ID
+          patient_id: patientId, // replace with logged-in user's ID
           ...formData
         })
       });

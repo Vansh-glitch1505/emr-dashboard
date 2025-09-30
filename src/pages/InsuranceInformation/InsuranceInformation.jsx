@@ -67,36 +67,49 @@ const InsuranceInformation = () => {
   };
 
   const handleSave = async () => {
-    try {
-      // Save insurance data first
-      updatePreviewData(insuranceData, "insurance");
+  try {
+    // Get the stored patient ID
+    const patientId = localStorage.getItem('currentPatientId');
 
-      const res = await fetch("http://localhost:5000/api/insurance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...insuranceData, user_id: 1 }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        console.log("Saved Insurance Data:", data);
-        
-        // Upload files if any are selected
-        if (selectedFiles.length > 0) {
-          await handleFileUpload();
-        }
-        
-        alert("Insurance Information saved successfully!");
-        setShowPreview(false);
-      } else {
-        alert("Failed to save Insurance Information: " + data.error);
-      }
-    } catch (error) {
-      console.error("Error saving insurance info:", error);
-      alert("An error occurred while saving insurance info.");
+    if (!patientId) {
+      alert("Please complete Patient Demographics first");
+      navigate('/dashboard/patient-demographics'); // redirect if missing
+      return;
     }
-  };
+
+    // Save insurance data first
+    updatePreviewData(insuranceData, "insurance");
+
+    const res = await fetch("http://localhost:5000/api/insurance", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        patient_id: patientId,   // attach patient_id instead of user_id
+        ...insuranceData
+      }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      console.log("Saved Insurance Data:", data);
+
+      // Upload files if any are selected
+      if (selectedFiles.length > 0) {
+        await handleFileUpload(patientId); // pass patientId to upload as well
+      }
+
+      alert("Insurance Information saved successfully!");
+      setShowPreview(false);
+    } else {
+      alert("Failed to save Insurance Information: " + (data.error || "Unknown error"));
+    }
+  } catch (error) {
+    console.error("Error saving insurance info:", error);
+    alert("An error occurred while saving insurance info.");
+  }
+};
+
 
   const handleFileUpload = async () => {
     if (selectedFiles.length === 0) return;
@@ -390,11 +403,11 @@ const InsuranceInformation = () => {
 
         <div className="form-row">
           <div className="input-group">
-            <label htmlFor="primaryPlanType">Plan Type</label>
+            <label htmlFor="secondaryPlanType">Plan Type</label>
             <select
-            id="primaryPlanType"
-            name="primaryPlanType"
-            value={insuranceData.primaryPlanType}
+            id="secondaryPlanType"
+            name="secondaryPlanType"
+            value={insuranceData.secondaryPlanType}
             onChange={handleChange}
             >
       <option value="">Select Plan Type</option>

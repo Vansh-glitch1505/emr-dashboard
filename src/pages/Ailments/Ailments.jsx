@@ -25,6 +25,7 @@ const Ailments = () => {
   const [ailmentsList, setAilmentsList] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -103,20 +104,75 @@ const Ailments = () => {
     setEditingIndex(null);
   };
 
-  const handleNext = () => {
-    if (ailmentsList.length === 0 && ailment.problemName) {
-      if (window.confirm("You have unsaved data. Do you want to add it before continuing?")) {
-        handleAdd();
+  const handleSaveAndNext = async () => {
+    // Check if there's unsaved data in the form
+    if (ailment.problemName && editingIndex === null) {
+      if (!window.confirm("You have unsaved data. Do you want to add it before continuing?")) {
+        // User chose not to save, proceed anyway
+        await saveToBackend();
+        return;
       }
+      // Add the current ailment to the list
+      setAilmentsList(prev => [...prev, { ...ailment }]);
+      // Save including the new ailment
+      await saveToBackend([...ailmentsList, { ...ailment }]);
+    } else if (ailment.problemName && editingIndex !== null) {
+      // If editing, update the list first
+      const updated = [...ailmentsList];
+      updated[editingIndex] = { ...ailment };
+      setAilmentsList(updated);
+      await saveToBackend(updated);
+    } else {
+      // No unsaved data, just save the list
+      await saveToBackend();
     }
-    updatePreviewData(ailmentsList, "ailments");
-    navigate("/dashboard/assessment");
+  };
+
+  const saveToBackend = async (dataToSave = ailmentsList) => {
+    if (dataToSave.length === 0) {
+      alert("No ailments to save. Please add at least one ailment.");
+      return;
+    }
+
+    setIsSaving(true);
+    
+    try {
+      // Get patient_id from localStorage or wherever you store it
+      const patientId = localStorage.getItem('patient_id') || 'YOUR_PATIENT_ID';
+      
+      // Call the bulk endpoint to save all ailments
+      const response = await fetch(`/api/ailments/${patientId}/bulk`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ailments: dataToSave })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to save ailments');
+      }
+
+      alert(`Successfully saved ${result.totalAilments} ailment(s)!`);
+      
+      // Update preview data and navigate
+      updatePreviewData(dataToSave, "ailments");
+      navigate("/dashboard/assessment");
+      
+    } catch (error) {
+      console.error('Error saving ailments:', error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div className="ailments-container">
       <header className="fixed-header">
-        <h1 className="header-title">Ailments</h1>
+        <h1 className="header-title"></h1>
       </header>
 
       {editingIndex !== null && (
@@ -373,10 +429,14 @@ const Ailments = () => {
         </div>
       )}
 
-      {/* Next Button */}
+      {/* Save & Next Button */}
       <div className="next-btn-container">
-        <button className="next-btn" onClick={handleNext}>
-          Next
+        <button 
+          className="next-btn" 
+          onClick={handleSaveAndNext}
+          disabled={isSaving}
+        >
+          {isSaving ? "Saving..." : "Save & Next"}
         </button>
       </div>
 

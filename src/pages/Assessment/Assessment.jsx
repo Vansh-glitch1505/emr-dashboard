@@ -61,32 +61,43 @@ export default function Assessment() {
   };
 
   const handleSave = async () => {
-    try {
-      // Prepare data to send to backend
-      const assessmentData = {
-        ...assessment,
-        tests: tests
-      };
+  try {
+    // Get the stored patient ID
+    const patientId = localStorage.getItem('currentPatientId');
 
-      const res = await fetch('http://localhost:5000/api/assessment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(assessmentData)
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        alert('Assessment saved successfully!');
-        setShowPreview(false);
-      } else {
-        alert(data.message || 'Failed to save assessment');
-      }
-    } catch (err) {
-      console.error('Error saving assessment:', err);
-      alert('Error saving assessment');
+    if (!patientId) {
+      alert("Please complete Patient Demographics first");
+      navigate('/dashboard/patient-demographics'); // redirect if missing
+      return;
     }
-  };
+
+    // Prepare data to send to backend
+    const assessmentData = {
+      patient_id: patientId,   // attach patient ID
+      ...assessment,
+      tests: tests
+    };
+
+    const res = await fetch('http://localhost:5000/api/assessment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(assessmentData)
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert('Assessment saved successfully!');
+      setShowPreview(false);
+    } else {
+      alert(data.message || 'Failed to save assessment');
+    }
+  } catch (err) {
+    console.error('Error saving assessment:', err);
+    alert('Error saving assessment');
+  }
+};
+
 
   const handlePreview = () => {
     setShowPreview(true);
