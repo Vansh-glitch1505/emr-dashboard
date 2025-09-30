@@ -1,56 +1,54 @@
 import express from "express";
-import upload from "../middleware/upload.js";
+import multer from "multer";
+import path from "path";
 import fs from "fs";
+import Patient from "../models/patients.js";
 
 const router = express.Router();
 
-// Dynamic import function to load the Patient model
-async function getPatientModel() {
-  const patientModule = await import("../models/patients.js");
-  return patientModule.default;
+// Create uploads directory if it doesn't exist
+const uploadsDir = "uploads";
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Helper function to convert date from YYYY-MM-DD to DD-MM-YYYY
-function convertDateFormat(dateString) {
-  if (!dateString) return '';
-  
-  // Check if it's already in DD-MM-YYYY format
-  if (/^\d{2}-\d{2}-\d{4}$/.test(dateString)) {
-    return dateString;
-  }
-  
-  // Convert from YYYY-MM-DD to DD-MM-YYYY
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-    const [year, month, day] = dateString.split('-');
-    return `${day}-${month}-${year}`;
-  }
-  
-  return dateString;
-}
-
-// @desc    Test route
-// @route   GET /api/patient-demographics
-router.get('/', async (req, res) => {
-  try {
-    const Patient = await getPatientModel();
-    const patients = await Patient.find();
-    res.json(patients);
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Error fetching patients", error: err.message });
-  }
+// Configure multer for file upload
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, "patient-" + uniqueSuffix + path.extname(file.originalname));
+  },
 });
 
-// @desc    Create patient demographics
-// @route   POST /api/patient-demographics
-router.post('/', upload.single('photo'), async (req, res) => {
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error("Only image files are allowed (jpeg, jpg, png, gif)"));
+    }
+  },
+});
+
+// Helper function to convert date format from YYYY-MM-DD to MM-DD-YYYY
+const convertDateFormat = (dateStr) => {
+  if (!dateStr) return "";
+  const [year, month, day] = dateStr.split("-");
+  return `${month}-${day}-${year}`;
+};
+
+// POST - Create new patient demographics
+router.post("/", upload.single("photo"), async (req, res) => {
   try {
-    console.log('=== DEBUG INFO ===');
-    console.log('Request body:', req.body);
-    console.log('Request file:', req.file);
-    console.log('==================');
-
-    const Patient = await getPatientModel();
-
     const {
       firstName,
       middleName,
@@ -68,177 +66,346 @@ router.post('/', upload.single('photo'), async (req, res) => {
       occupation,
       aadharNumber,
       panNumber,
-      // Optional contact info
-      mobile,
-      mobileCode,
-      email,
-      preferredContactMethods,
-      emergencyContactName,
-      emergencyContactPhone,
-      emergencyContactEmail,
-      emergencyContactRelationship
     } = req.body;
 
-    // Validation - check required demographics fields
+    // Validate required fields
     if (!firstName || !lastName || !dob || !gender) {
       return res.status(400).json({
         success: false,
-        message: "Please provide all required fields: firstName, lastName, dob, gender"
+        message: "Missing required fields: firstName, lastName, dob, and gender are required",
       });
     }
 
-    // Clean and validate Aadhar number (optional)
-    let cleanedAadhar = '';
-    if (aadharNumber && aadharNumber.trim()) {
-      cleanedAadhar = aadharNumber.replace(/\D/g, '');
-      if (cleanedAadhar.length !== 12) {
-        return res.status(400).json({
-          success: false,
-          message: "Aadhar number must be exactly 12 digits"
-        });
-      }
-    }
-
-    // Clean and validate PAN number (optional)
-    let cleanedPAN = '';
-    if (panNumber && panNumber.trim()) {
-      cleanedPAN = panNumber.toUpperCase().trim();
-      if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanedPAN)) {
-        return res.status(400).json({
-          success: false,
-          message: "PAN number format is invalid (format: ABCDE1234F)"
-        });
-      }
-    }
-
-    // Convert date format
-    const formattedDob = convertDateFormat(dob);
-
-    // Create patient data with all required fields for validation
-    const patientData = {
-      // Required demographics fields
-      name: {
-        first: firstName,
-        middle: middleName || '',
-        last: lastName
-      },
-      date_of_birth: formattedDob,
-      gender: gender,
-      
-      // Required by validation schema
-      blood_group: bloodGroup || 'None', // Default to 'None' if not provided
-      
-      // Address - required by validation
-      address: {
-        street: `${address1 || ''} ${address2 || ''}`.trim() || '',
-        city: city || '',
-        district: district || '',
-        state: state || '',
-        postal_code: postalCode || '',
-        country: country || ''
-      },
-
-      // Contact info - required by validation
-      contact_info: {
-        mobile: {
-          code: mobileCode || '+91', // Default to +91 for India
-          number: mobile || ''
-        },
-        email: email || '',
-        preferred_contact_methods: preferredContactMethods ? 
-          (Array.isArray(preferredContactMethods) ? preferredContactMethods : [preferredContactMethods]) : 
-          ['Email'], // Default value
-        emergency_contact: {
-          name: {
-            first: emergencyContactName || '',
-            last: '' // You might want to split the name
-          },
-          relationship: emergencyContactRelationship || '',
-          phone: {
-            code: '+91', // Default
-            number: emergencyContactPhone || ''
-          },
-          email: emergencyContactEmail || ''
-        }
-      },
-
-      // Insurance - required by validation
-      insurance: {
-        primary: {
-          company_name: '',
-          policy_number: '',
-          plan_type: 'Other' // Default value from enum
-        },
-        insurance_contact_number: ''
-      },
-      
-      // Optional demographics fields
-      occupation: occupation || '',
-      aadhaar: cleanedAadhar || '',
-      pan: cleanedPAN || ''
+    // Map blood group display value to schema enum value
+    const bloodGroupMap = {
+      "A+": "A Positive (A⁺)",
+      "A-": "A Negative (A⁻)",
+      "B+": "B Positive (B⁺)",
+      "B-": "B Negative (B⁻)",
+      "AB+": "AB Positive (AB⁺)",
+      "AB-": "AB Negative (AB⁻)",
+      "O+": "O Positive (O⁺)",
+      "O-": "O Negative (O⁻)",
+      "None": "None",
     };
 
-    // Add photo path if uploaded
-    if (req.file) {
-      console.log('Photo uploaded but not stored in schema:', req.file.path);
-      // You might want to add a photo field to your schema or handle this differently
+    // Prepare patient data according to schema
+    const patientData = {
+      name: {
+        first: firstName,
+        middle: middleName || "",
+        last: lastName,
+      },
+      date_of_birth: convertDateFormat(dob),
+      gender: gender,
+      address: {
+        street: address1 || "",
+        city: city || "",
+        postal_code: postalCode || "",
+        district: district || "",
+        state: state || "",
+        country: country || "India",
+      },
+    };
+
+    // Add optional fields only if they exist
+    if (bloodGroup) {
+      patientData.blood_group = bloodGroupMap[bloodGroup] || bloodGroup;
     }
 
-    console.log('Final patient data:', JSON.stringify(patientData, null, 2));
+    if (occupation) {
+      patientData.occupation = occupation;
+    }
 
-    const patient = new Patient(patientData);
-    const savedPatient = await patient.save();
+    if (aadharNumber) {
+      patientData.aadhaar = aadharNumber;
+    }
+
+    if (panNumber) {
+      patientData.pan = panNumber;
+    }
+
+    // Handle photo upload
+    if (req.file) {
+      // In a real application, you would save the file to a file storage service
+      // and store the file ID or path in the database
+      // For now, we'll just store a placeholder ObjectId
+      const mongoose = await import("mongoose");
+      patientData.img = {
+        file_id: new mongoose.Types.ObjectId(),
+      };
+    }
+
+    // Add placeholder data for required fields that aren't in demographics form
+    // These will be filled in later steps
+    patientData.contact_info = {
+      mobile: {
+        code: "+91",
+        number: "0000000000"
+      },
+      email: "placeholder@example.com",
+      preferred_contact_methods: ["Email"],
+      emergency_contact: []
+    };
+
+    patientData.insurance = {
+      primary: {
+        company_name: "Not Provided",
+        policy_number: "N/A",
+        plan_type: "Other",
+      },
+      insurance_contact_number: "0000000000",
+      insurance_card_img: {
+        file_id: new (await import("mongoose")).Types.ObjectId()
+      }
+    };
+
+    // Format date as DD-MM-YYYY for vitals
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    
+    patientData.vitals = {
+      date: `${day}-${month}-${year}`,
+      time: now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      })
+    };
+
+    // Create new patient
+    const newPatient = new Patient(patientData);
+    await newPatient.save();
 
     res.status(201).json({
       success: true,
       message: "Patient demographics saved successfully",
-      data: savedPatient
+      data: {
+        id: newPatient._id,
+        name: `${firstName} ${middleName} ${lastName}`.trim(),
+        photoPath: req.file ? `/uploads/${req.file.filename}` : null,
+      },
     });
-
   } catch (error) {
-    console.error('Error saving patient demographics:', error);
-    
-    // Log more detailed validation error if available
-    if (error.name === 'ValidationError') {
-      console.error('Validation errors:', error.errors);
-    }
-    
-    // Log MongoDB validation error details
-    if (error.code === 121 && error.errInfo) {
-      console.error('MongoDB validation details:', JSON.stringify(error.errInfo.details, null, 2));
+    console.error("Error saving patient demographics:", error);
+
+    // Handle validation errors
+    if (error.name === "ValidationError") {
+      const errors = Object.keys(error.errors).map((key) => ({
+        field: key,
+        message: error.errors[key].message,
+      }));
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: errors,
+      });
     }
 
-    // Delete uploaded file if there was an error
-    if (req.file) {
-      fs.unlink(req.file.path, (err) => {
-        if (err) console.error('Error deleting file:', err);
+    // Handle duplicate key errors
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "A patient with this information already exists",
       });
     }
 
     res.status(500).json({
       success: false,
-      message: "Error saving patient demographics",
+      message: "Failed to save patient demographics",
       error: error.message,
-      // Include validation details in development
-      ...(process.env.NODE_ENV === 'development' && {
-        validationDetails: error.errInfo?.details
-      })
     });
   }
 });
 
-// @desc    Get a patient by ID
-// @route   GET /api/patient-demographics/:id
-router.get('/:id', async (req, res) => {
+// GET - Retrieve all patients
+router.get("/", async (req, res) => {
   try {
-    const Patient = await getPatientModel();
+    const patients = await Patient.find().select(
+      "name date_of_birth gender blood_group contact_info.email"
+    );
+
+    res.status(200).json({
+      success: true,
+      count: patients.length,
+      data: patients,
+    });
+  } catch (error) {
+    console.error("Error fetching patients:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch patients",
+      error: error.message,
+    });
+  }
+});
+
+// GET - Retrieve single patient by ID
+router.get("/:id", async (req, res) => {
+  try {
     const patient = await Patient.findById(req.params.id);
+
     if (!patient) {
-      return res.status(404).json({ success: false, message: "Patient not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found",
+      });
     }
-    res.json(patient);
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Error fetching patient", error: err.message });
+
+    res.status(200).json({
+      success: true,
+      data: patient,
+    });
+  } catch (error) {
+    console.error("Error fetching patient:", error);
+
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid patient ID format",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch patient",
+      error: error.message,
+    });
+  }
+});
+
+// PUT - Update patient demographics
+router.put("/:id", upload.single("photo"), async (req, res) => {
+  try {
+    const {
+      firstName,
+      middleName,
+      lastName,
+      dob,
+      gender,
+      address1,
+      address2,
+      city,
+      postalCode,
+      district,
+      state,
+      country,
+      bloodGroup,
+      occupation,
+      aadharNumber,
+      panNumber,
+    } = req.body;
+
+    const patient = await Patient.findById(req.params.id);
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found",
+      });
+    }
+
+    // Map blood group
+    const bloodGroupMap = {
+      "A+": "A Positive (A⁺)",
+      "A-": "A Negative (A⁻)",
+      "B+": "B Positive (B⁺)",
+      "B-": "B Negative (B⁻)",
+      "AB+": "AB Positive (AB⁺)",
+      "AB-": "AB Negative (AB⁻)",
+      "O+": "O Positive (O⁺)",
+      "O-": "O Negative (O⁻)",
+      "None": "None",
+    };
+
+    // Update fields
+    if (firstName) patient.name.first = firstName;
+    if (middleName !== undefined) patient.name.middle = middleName;
+    if (lastName) patient.name.last = lastName;
+    if (dob) patient.date_of_birth = convertDateFormat(dob);
+    if (gender) patient.gender = gender;
+    if (address1 !== undefined) patient.address.street = address1;
+    if (city) patient.address.city = city;
+    if (postalCode) patient.address.postal_code = postalCode;
+    if (district) patient.address.district = district;
+    if (state) patient.address.state = state;
+    if (country) patient.address.country = country;
+    if (bloodGroup) patient.blood_group = bloodGroupMap[bloodGroup] || bloodGroup;
+    if (occupation) patient.occupation = occupation;
+    if (aadharNumber) patient.aadhaar = aadharNumber;
+    if (panNumber) patient.pan = panNumber;
+
+    // Handle photo upload
+    if (req.file) {
+      const mongoose = await import("mongoose");
+      patient.img = {
+        file_id: new mongoose.Types.ObjectId(),
+      };
+    }
+
+    await patient.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Patient demographics updated successfully",
+      data: patient,
+    });
+  } catch (error) {
+    console.error("Error updating patient:", error);
+
+    if (error.name === "ValidationError") {
+      const errors = Object.keys(error.errors).map((key) => ({
+        field: key,
+        message: error.errors[key].message,
+      }));
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: errors,
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update patient demographics",
+      error: error.message,
+    });
+  }
+});
+
+// DELETE - Delete patient
+router.delete("/:id", async (req, res) => {
+  try {
+    const patient = await Patient.findByIdAndDelete(req.params.id);
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Patient deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting patient:", error);
+
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid patient ID format",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete patient",
+      error: error.message,
+    });
   }
 });
 
