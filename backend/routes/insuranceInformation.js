@@ -75,6 +75,13 @@ router.post('/', async (req, res) => {
       });
     }
 
+    // Find patient first to check if insurance card exists
+    const patient = await Patient.findById(patient_id);
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+
     // Build insurance object according to schema
     const insuranceData = {
       primary: {
@@ -85,11 +92,14 @@ router.post('/', async (req, res) => {
         effective_start: formatDateToSchema(primaryStartDate),
         effective_end: formatDateToSchema(primaryEndDate)
       },
-      insurance_contact_number: contactNumber,
-      insurance_card_img: {
-        file_id: null // Will be updated when file is uploaded
-      }
+      insurance_contact_number: contactNumber
     };
+
+    // Only include insurance_card_img if it exists in the patient record
+    // Otherwise, don't include it at all (this prevents the required validation error)
+    if (patient.insurance?.insurance_card_img?.file_id) {
+      insuranceData.insurance_card_img = patient.insurance.insurance_card_img;
+    }
 
     // Add secondary insurance if provided
     if (secondaryCompanyName || secondaryPolicyNumber) {
@@ -103,16 +113,9 @@ router.post('/', async (req, res) => {
       };
     }
 
-    // Find patient and update insurance information
-    const patient = await Patient.findByIdAndUpdate(
-      patient_id,
-      { insurance: insuranceData },
-      { new: true, runValidators: true }
-    );
-
-    if (!patient) {
-      return res.status(404).json({ error: 'Patient not found' });
-    }
+    // Update patient insurance information
+    patient.insurance = insuranceData;
+    await patient.save();
 
     res.status(200).json({
       message: 'Insurance information saved successfully',
@@ -194,9 +197,13 @@ router.put('/:patient_id', async (req, res) => {
         effective_start: formatDateToSchema(primaryStartDate),
         effective_end: formatDateToSchema(primaryEndDate)
       },
-      insurance_contact_number: contactNumber,
-      insurance_card_img: patient.insurance?.insurance_card_img || { file_id: null }
+      insurance_contact_number: contactNumber
     };
+
+    // Preserve existing insurance card image if it exists
+    if (patient.insurance?.insurance_card_img?.file_id) {
+      insuranceData.insurance_card_img = patient.insurance.insurance_card_img;
+    }
 
     // Add secondary insurance if provided
     if (secondaryCompanyName || secondaryPolicyNumber) {
@@ -243,32 +250,25 @@ router.post('/:patient_id/upload-card', upload.array('insuranceCards', 5), async
       return res.status(404).json({ error: 'Patient not found' });
     }
 
-    // For simplicity, we'll store the first file's ID in the schema
-    // You might want to create a separate File collection for better management
-    const fileInfo = {
-      file_id: null, // In a real implementation, you'd create a File document and store its ObjectId
-      path: req.files[0].path,
-      filename: req.files[0].filename,
-      originalname: req.files[0].originalname,
-      mimetype: req.files[0].mimetype,
-      size: req.files[0].size
-    };
+    // Create a placeholder ObjectId for the file
+    // In production, you should create a File document in a separate collection
+    const mongoose = await import('mongoose');
+    const fileId = new mongoose.default.Types.ObjectId();
 
-    // Update patient with insurance card image info
+    // Initialize insurance if it doesn't exist
     if (!patient.insurance) {
-      patient.insurance = {
-        primary: { company_name: '', policy_number: '', plan_type: '' },
-        insurance_contact_number: '',
-        insurance_card_img: { file_id: null }
-      };
+      return res.status(400).json({ 
+        error: 'Please create insurance information before uploading card images' 
+      });
     }
 
-    patient.insurance.insurance_card_img = { file_id: null }; // Store actual ObjectId in production
-
+    // Update insurance card image info
+    patient.insurance.insurance_card_img = { file_id: fileId };
     await patient.save();
 
     res.status(200).json({
       message: 'Insurance card image(s) uploaded successfully',
+      file_id: fileId,
       files: req.files.map(file => ({
         filename: file.filename,
         originalname: file.originalname,

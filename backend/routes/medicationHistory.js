@@ -1,208 +1,104 @@
-import express from 'express';
-import Patient from '../models/patients.js'; // Changed from MedicationHistory to Patient
+import express from "express";
+import Patient from "../models/patients.js";
 
 const router = express.Router();
 
-// GET all medication histories
-router.get('/', async (req, res) => {
-  try {
-    const medicationHistories = await Patient.find().sort({ createdAt: -1 }); // Changed from MedicationHistory to Patient
-    res.status(200).json({
-      success: true,
-      count: medicationHistories.length,
-      data: medicationHistories
-    });
-  } catch (error) {
-    console.error('Error fetching medication histories:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching medication histories',
-      error: error.message
-    });
-  }
-});
-
-// GET active medications by userId (must be before :userId)
-router.get('/:userId/active', async (req, res) => {
+// GET medication history for a specific patient
+router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-    const userIdNumber = parseInt(userId, 10);
     
-    if (isNaN(userIdNumber)) {
-      return res.status(400).json({ success: false, message: 'Invalid userId format' });
+    const patient = await Patient.findById(userId).select("medication_history");
+    
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
     }
-
-    const medicationHistory = await Patient.findOne({ userId: userIdNumber }); // Changed from MedicationHistory to Patient
-    if (!medicationHistory) {
-      return res.status(200).json({ success: true, data: [] });
-    }
-
-    const activeMedications = medicationHistory.medications.filter(med => med.status === true);
-
-    res.status(200).json({
-      success: true,
-      count: activeMedications.length,
-      data: activeMedications
-    });
+    
+    // Return the medication history array
+    res.json(patient.medication_history || []);
   } catch (error) {
-    console.error('Error fetching active medications:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching active medications',
-      error: error.message
-    });
+    console.error("Error fetching medication history:", error);
+    res.status(500).json({ error: "Failed to fetch medication history" });
   }
 });
 
-// GET inactive medications by userId (must be before :userId)
-router.get('/:userId/inactive', async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const userIdNumber = parseInt(userId, 10);
-    
-    if (isNaN(userIdNumber)) {
-      return res.status(400).json({ success: false, message: 'Invalid userId format' });
-    }
-
-    const medicationHistory = await Patient.findOne({ userId: userIdNumber }); // Changed from MedicationHistory to Patient
-    if (!medicationHistory) {
-      return res.status(200).json({ success: true, data: [] });
-    }
-
-    const inactiveMedications = medicationHistory.medications.filter(med => med.status === false);
-
-    res.status(200).json({
-      success: true,
-      count: inactiveMedications.length,
-      data: inactiveMedications
-    });
-  } catch (error) {
-    console.error('Error fetching inactive medications:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching inactive medications',
-      error: error.message
-    });
-  }
-});
-
-// GET medication history by userId
-router.get('/:userId', async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const userIdNumber = parseInt(userId, 10);
-    
-    if (isNaN(userIdNumber)) {
-      return res.status(400).json({ success: false, message: 'Invalid userId format' });
-    }
-
-    const medicationHistory = await Patient.findOne({ userId: userIdNumber }); // Changed from MedicationHistory to Patient
-    if (!medicationHistory) {
-      return res.status(200).json([]); // empty array if not found
-    }
-
-    res.status(200).json(medicationHistory.medications);
-  } catch (error) {
-    console.error('Error fetching medication history:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching medication history',
-      error: error.message
-    });
-  }
-});
-
-// POST create or update medication history
-router.post('/', async (req, res) => {
+// POST/UPDATE medication history for a patient
+router.post("/", async (req, res) => {
   try {
     const { userId, medications } = req.body;
-
-    if (!userId) return res.status(400).json({ success: false, message: 'userId is required' });
-    if (!Array.isArray(medications)) return res.status(400).json({ success: false, message: 'medications must be an array' });
-
-    const userIdNumber = parseInt(userId, 10);
-    if (isNaN(userIdNumber)) return res.status(400).json({ success: false, message: 'Invalid userId format' });
-
-    const processedMedications = medications.map(med => ({
-      problem: med.problem?.trim() || '',
-      medicine: med.medicine?.trim() || '',
-      mg: med.mg?.trim() || '',
-      doseTime: med.doseTime || '',
-      timePeriod: med.timePeriod || '',
-      status: Boolean(med.status)
-    }));
-
-    let medicationHistory = await Patient.findOne({ userId: userIdNumber }); // Changed from MedicationHistory to Patient
-
-    if (medicationHistory) {
-      medicationHistory.medications = processedMedications;
-      await medicationHistory.save();
-      res.status(200).json({ success: true, message: 'Medication history updated successfully', data: medicationHistory });
-    } else {
-      const newMedicationHistory = new Patient({ userId: userIdNumber, medications: processedMedications }); // Changed from MedicationHistory to Patient
-      const saved = await newMedicationHistory.save();
-      res.status(201).json({ success: true, message: 'Medication history created successfully', data: saved });
+    
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
     }
-  } catch (error) {
-    console.error('Error saving medication history:', error);
-    if (error.name === 'ValidationError') {
-      const validationErrors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ success: false, message: 'Validation error', errors: validationErrors });
+    
+    if (!Array.isArray(medications)) {
+      return res.status(400).json({ error: "medications must be an array" });
     }
-    res.status(500).json({ success: false, message: 'Error saving medication history', error: error.message });
-  }
-});
-
-// PUT update medication history by userId
-router.put('/:userId', async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { medications } = req.body;
-
-    const userIdNumber = parseInt(userId, 10);
-    if (isNaN(userIdNumber)) return res.status(400).json({ success: false, message: 'Invalid userId format' });
-    if (!Array.isArray(medications)) return res.status(400).json({ success: false, message: 'medications must be an array' });
-
-    const processedMedications = medications.map(med => ({
-      problem: med.problem?.trim() || '',
-      medicine: med.medicine?.trim() || '',
-      mg: med.mg?.trim() || '',
-      doseTime: med.doseTime || '',
-      timePeriod: med.timePeriod || '',
-      status: Boolean(med.status)
+    
+    // Transform frontend data to match schema
+    const transformedMedications = medications.map(med => ({
+      problem: med.problem || "",
+      medicine: med.medicine || "",
+      dosage: parseFloat(med.mg) || 0,
+      dose_time: med.doseTime || "",
+      frequency: med.doseTime || "", // You might want to separate this
+      time_period: med.timePeriod || "",
+      status: med.status ? "Active" : "Inactive"
     }));
-
-    const updated = await Patient.findOneAndUpdate( // Changed from MedicationHistory to Patient
-      { userId: userIdNumber },
-      { medications: processedMedications },
-      { new: true, runValidators: true, upsert: true }
+    
+    // Find and update the patient
+    const patient = await Patient.findByIdAndUpdate(
+      userId,
+      { medication_history: transformedMedications },
+      { new: true, runValidators: true }
     );
-
-    res.status(200).json({ success: true, message: 'Medication history updated successfully', data: updated });
-  } catch (error) {
-    console.error('Error updating medication history:', error);
-    if (error.name === 'ValidationError') {
-      const validationErrors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ success: false, message: 'Validation error', errors: validationErrors });
+    
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
     }
-    res.status(500).json({ success: false, message: 'Error updating medication history', error: error.message });
+    
+    res.json({ 
+      message: "Medication history saved successfully",
+      medication_history: patient.medication_history
+    });
+  } catch (error) {
+    console.error("Error saving medication history:", error);
+    
+    // Handle validation errors
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ error: "Validation failed", details: errors });
+    }
+    
+    res.status(500).json({ error: "Failed to save medication history" });
   }
 });
 
-// DELETE medication history by userId
-router.delete('/:userId', async (req, res) => {
+// DELETE a specific medication entry
+router.delete("/:userId/:medicationId", async (req, res) => {
   try {
-    const { userId } = req.params;
-    const userIdNumber = parseInt(userId, 10);
-    if (isNaN(userIdNumber)) return res.status(400).json({ success: false, message: 'Invalid userId format' });
-
-    const deleted = await Patient.findOneAndDelete({ userId: userIdNumber }); // Changed from MedicationHistory to Patient
-    if (!deleted) return res.status(404).json({ success: false, message: 'Medication history not found' });
-
-    res.status(200).json({ success: true, message: 'Medication history deleted successfully', data: deleted });
+    const { userId, medicationId } = req.params;
+    
+    const patient = await Patient.findById(userId);
+    
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+    
+    // Remove the medication from the array
+    patient.medication_history = patient.medication_history.filter(
+      med => med._id.toString() !== medicationId
+    );
+    
+    await patient.save();
+    
+    res.json({ 
+      message: "Medication deleted successfully",
+      medication_history: patient.medication_history
+    });
   } catch (error) {
-    console.error('Error deleting medication history:', error);
-    res.status(500).json({ success: false, message: 'Error deleting medication history', error: error.message });
+    console.error("Error deleting medication:", error);
+    res.status(500).json({ error: "Failed to delete medication" });
   }
 });
 

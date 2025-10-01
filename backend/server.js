@@ -8,6 +8,10 @@ import contactInformationRoutes from "./routes/contactInformation.js";
 import insuranceInformationRoutes from "./routes/insuranceInformation.js"
 import ailmentsRoutes from "./routes/ailments.js";
 import assessmentRoutes from "./routes/assessment.js";
+import medicationhistoryRoutes from "./routes/medicationHistory.js"
+import vitalsRoutes from "./routes/vitals.js"
+import allergiesRoutes from "./routes/allergies.js"
+import familyhistoryRoutes from "./routes/familyHistory.js"
 
 dotenv.config();
 
@@ -27,6 +31,10 @@ app.use('/api/contact-information', contactInformationRoutes);
 app.use('/api/insurance', insuranceInformationRoutes);
 app.use('/api/ailments', ailmentsRoutes);
 app.use('/api/assessment', assessmentRoutes);
+app.use('/api/medication-history', medicationhistoryRoutes);
+app.use('/api/vitals', vitalsRoutes);
+app.use('/api/allergies', allergiesRoutes);
+app.use('/api/family-history', familyhistoryRoutes);
 
 
 // Root route
