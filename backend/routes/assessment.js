@@ -78,14 +78,17 @@ router.post('/:patient_id', upload.array('testFiles', 10), async (req, res) => {
       parsedTests.forEach((test, index) => {
         const uploadedFile = req.files ? req.files[index] : null;
         
+        // Only add test results that have actual content
         if (test.result || uploadedFile) {
-          testResults.push({
-            results: test.result || '',
+          const testResult = {
+            results: test.result || 'No result specified',
+            comments: test.comment || '',
             test_file: {
-              file_id: uploadedFile ? new mongoose.Types.ObjectId() : null
-            },
-            comments: test.comment || ''
-          });
+              file_id: uploadedFile ? new mongoose.Types.ObjectId() : new mongoose.Types.ObjectId()
+            }
+          };
+
+          testResults.push(testResult);
         }
       });
     }
@@ -126,9 +129,15 @@ router.post('/:patient_id', upload.array('testFiles', 10), async (req, res) => {
 
   } catch (error) {
     console.error('Error adding assessment:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Validation errors:', error.errors);
     res.status(500).json({ 
       error: 'Failed to add assessment',
-      details: error.message 
+      details: error.message,
+      validationErrors: error.errors ? Object.keys(error.errors).map(key => ({
+        field: key,
+        message: error.errors[key].message
+      })) : null
     });
   }
 });
@@ -162,13 +171,15 @@ router.post('/:patient_id/json', async (req, res) => {
     if (tests && Array.isArray(tests)) {
       tests.forEach(test => {
         if (test.result) {
-          testResults.push({
+          const testResult = {
             results: test.result,
+            comments: test.comment || '',
             test_file: {
-              file_id: null
-            },
-            comments: test.comment || ''
-          });
+              file_id: test.fileId || new mongoose.Types.ObjectId()
+            }
+          };
+
+          testResults.push(testResult);
         }
       });
     }
@@ -198,10 +209,16 @@ router.post('/:patient_id/json', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error adding assessment:', error);
+    console.error('Error adding assessment (JSON):', error);
+    console.error('Error stack:', error.stack);
+    console.error('Validation errors:', error.errors);
     res.status(500).json({ 
       error: 'Failed to add assessment',
-      details: error.message 
+      details: error.message,
+      validationErrors: error.errors ? Object.keys(error.errors).map(key => ({
+        field: key,
+        message: error.errors[key].message
+      })) : null
     });
   }
 });
@@ -226,7 +243,7 @@ router.get('/:patient_id', async (req, res) => {
       testResults: assessment.test_results.map(test => ({
         result: test.results,
         comment: test.comments,
-        fileId: test.test_file?.file_id
+        fileId: test.test_file?.file_id || null
       })),
       remindersAlerts: assessment.reminders_alerts,
       planCare: assessment.plan_of_care
@@ -273,7 +290,7 @@ router.get('/:patient_id/:assessment_index', async (req, res) => {
       testResults: assessment.test_results.map(test => ({
         result: test.results,
         comment: test.comments,
-        fileId: test.test_file?.file_id
+        fileId: test.test_file?.file_id || null
       })),
       remindersAlerts: assessment.reminders_alerts,
       planCare: assessment.plan_of_care
@@ -324,13 +341,15 @@ router.put('/:patient_id/:assessment_index', async (req, res) => {
     if (tests && Array.isArray(tests)) {
       tests.forEach(test => {
         if (test.result) {
-          testResults.push({
+          const testResult = {
             results: test.result,
+            comments: test.comment || '',
             test_file: {
-              file_id: test.fileId || null
-            },
-            comments: test.comment || ''
-          });
+              file_id: test.fileId || new mongoose.Types.ObjectId()
+            }
+          };
+
+          testResults.push(testResult);
         }
       });
     }

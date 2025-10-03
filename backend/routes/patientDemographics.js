@@ -69,10 +69,18 @@ router.post("/", upload.single("photo"), async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!firstName || !lastName || !dob || !gender) {
+    if (!firstName || !lastName || !dob || !gender || !bloodGroup) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields: firstName, lastName, dob, and gender are required",
+        message: "Missing required fields: firstName, lastName, dob, gender, and bloodGroup are required",
+      });
+    }
+
+    // Validate address required fields
+    if (!city || !postalCode || !district || !state) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required address fields: city, postalCode, district, and state are required",
       });
     }
 
@@ -98,21 +106,18 @@ router.post("/", upload.single("photo"), async (req, res) => {
       },
       date_of_birth: convertDateFormat(dob),
       gender: gender,
+      blood_group: bloodGroupMap[bloodGroup] || bloodGroup,
       address: {
         street: address1 || "",
-        city: city || "",
-        postal_code: postalCode || "",
-        district: district || "",
-        state: state || "",
+        city: city,
+        postal_code: postalCode,
+        district: district,
+        state: state,
         country: country || "India",
       },
     };
 
     // Add optional fields only if they exist
-    if (bloodGroup) {
-      patientData.blood_group = bloodGroupMap[bloodGroup] || bloodGroup;
-    }
-
     if (occupation) {
       patientData.occupation = occupation;
     }
@@ -127,9 +132,6 @@ router.post("/", upload.single("photo"), async (req, res) => {
 
     // Handle photo upload
     if (req.file) {
-      // In a real application, you would save the file to a file storage service
-      // and store the file ID or path in the database
-      // For now, we'll just store a placeholder ObjectId
       const mongoose = await import("mongoose");
       patientData.img = {
         file_id: new mongoose.Types.ObjectId(),
@@ -137,7 +139,6 @@ router.post("/", upload.single("photo"), async (req, res) => {
     }
 
     // Add placeholder data for required fields that aren't in demographics form
-    // These will be filled in later steps
     patientData.contact_info = {
       mobile: {
         code: "+91",
@@ -160,19 +161,17 @@ router.post("/", upload.single("photo"), async (req, res) => {
       }
     };
 
-    // Format date as DD-MM-YYYY for vitals
+    // Format date and time correctly for vitals
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
     
     patientData.vitals = {
-      date: `${day}-${month}-${year}`,
-      time: now.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true 
-      })
+      date: `${day}-${month}-${year}`, // DD-MM-YYYY format
+      time: `${hours}:${minutes}` // 24-hour HH:MM format
     };
 
     // Create new patient
