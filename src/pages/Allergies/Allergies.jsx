@@ -54,10 +54,42 @@ const Allergies = () => {
 
   const handleNext = () => navigate('/dashboard/family-history');
 
-  const handleSave = () => {
-    console.log("Saving allergy data:", allergyData);
-    alert("Allergy information saved successfully!");
-  };
+  const handleSave = async () => {
+  try {
+    const patientId = localStorage.getItem('currentPatientId');
+
+    if (!patientId) {
+      alert("Please complete Patient Demographics first");
+      navigate('/dashboard/patient-demographics');
+      return;
+    }
+
+    const response = await fetch('http://localhost:5000/api/allergies', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        patient_id: patientId,
+        allergies: allergyData  // ✅ Fixed: send as array
+      })
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      alert("Allergy information saved successfully!");
+      // Note: updatePreviewData and setShowPreview are referenced but not defined in your code
+      // updatePreviewData(allergyData, "allergies");
+      // setShowPreview(false);
+    } else {
+      const errorData = await response.json();
+      console.error('Error response:', errorData);
+      alert(`Failed to save allergy information: ${errorData.message || 'Unknown error'}`);
+    }
+  } catch (error) {
+    console.error("Error saving allergy information:", error);
+    alert("Error saving allergy information.");
+  }
+};
+
 
   const handleAddRow = () => {
     setAllergyData([

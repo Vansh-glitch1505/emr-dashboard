@@ -59,6 +59,11 @@ router.post('/:patient_id', async (req, res) => {
       return res.status(400).json({ error: 'Status is required' });
     }
 
+    // Validate severity - must be provided and not "Select"
+    if (!severity || severity === 'Select') {
+      return res.status(400).json({ error: 'Severity is required' });
+    }
+
     // Find the patient
     const patient = await Patient.findById(patient_id);
 
@@ -72,7 +77,7 @@ router.post('/:patient_id', async (req, res) => {
       icd_code: icdCode || '',
       description: description || '',
       status: status,
-      severity: severity !== 'Select' ? severity : '',
+      severity: severity, // Must be a valid enum value
       pain: getPainLevelText(pain),
       date_of_onset: formatDateToSchema(dateOfOnset),
       risk_factor: riskFactor || '',
@@ -110,6 +115,7 @@ router.post('/:patient_id', async (req, res) => {
 });
 
 // POST - Add multiple ailments at once
+// POST - Add multiple ailments at once
 router.post('/:patient_id/bulk', async (req, res) => {
   try {
     const { patient_id } = req.params;
@@ -129,6 +135,29 @@ router.post('/:patient_id/bulk', async (req, res) => {
       return res.status(404).json({ error: 'Patient not found' });
     }
 
+    // Validate each ailment before processing
+    for (let i = 0; i < ailments.length; i++) {
+      const ailment = ailments[i];
+      
+      if (!ailment.problemName) {
+        return res.status(400).json({ 
+          error: `Ailment at index ${i}: Problem name is required` 
+        });
+      }
+      
+      if (!ailment.status || ailment.status === 'Select') {
+        return res.status(400).json({ 
+          error: `Ailment at index ${i}: Status is required` 
+        });
+      }
+      
+      if (!ailment.severity || ailment.severity === 'Select') {
+        return res.status(400).json({ 
+          error: `Ailment at index ${i}: Severity is required` 
+        });
+      }
+    }
+
     // Initialize ailments array if it doesn't exist
     if (!patient.ailments) {
       patient.ailments = [];
@@ -140,8 +169,8 @@ router.post('/:patient_id/bulk', async (req, res) => {
       icd_code: ailment.icdCode || '',
       description: ailment.description || '',
       status: ailment.status,
-      severity: ailment.severity !== 'Select' ? ailment.severity : '',
-      pain: getPainLevelText(ailment.pain),
+      severity: ailment.severity,
+      pain: getPainLevelText(ailment.pain || '0'),
       date_of_onset: formatDateToSchema(ailment.dateOfOnset),
       risk_factor: ailment.riskFactor || '',
       Comorbidities: ailment.comorbidities || '',
@@ -149,6 +178,9 @@ router.post('/:patient_id/bulk', async (req, res) => {
       Treatment_plan: ailment.treatmentPlan || '',
       Test_results: ailment.testResults || ''
     }));
+
+    // Log the data being added for debugging
+    console.log('Ailments to add:', JSON.stringify(ailmentsToAdd, null, 2));
 
     patient.ailments.push(...ailmentsToAdd);
     await patient.save();
@@ -161,9 +193,19 @@ router.post('/:patient_id/bulk', async (req, res) => {
 
   } catch (error) {
     console.error('Error adding bulk ailments:', error);
+    
+    // Log detailed validation error
+    if (error.name === 'ValidationError') {
+      console.error('Validation errors:', JSON.stringify(error.errors, null, 2));
+    }
+    if (error.errInfo) {
+      console.error('MongoDB validation details:', JSON.stringify(error.errInfo.details, null, 2));
+    }
+    
     res.status(500).json({ 
       error: 'Failed to add ailments',
-      details: error.message 
+      details: error.message,
+      validationDetails: error.errInfo?.details
     });
   }
 });
@@ -278,6 +320,11 @@ router.put('/:patient_id/:ailment_index', async (req, res) => {
       testResults
     } = req.body;
 
+    // Validate severity
+    if (!severity || severity === 'Select') {
+      return res.status(400).json({ error: 'Severity is required' });
+    }
+
     const patient = await Patient.findById(patient_id);
 
     if (!patient) {
@@ -294,8 +341,8 @@ router.put('/:patient_id/:ailment_index', async (req, res) => {
       icd_code: icdCode || '',
       description: description || '',
       status: status,
-      severity: severity !== 'Select' ? severity : '',
-      pain: getPainLevelText(pain),
+      severity: severity, // Must be a valid enum value
+      pain: getPainLevelText(pain || '0'),
       date_of_onset: formatDateToSchema(dateOfOnset),
       risk_factor: riskFactor || '',
       Comorbidities: comorbidities || '',

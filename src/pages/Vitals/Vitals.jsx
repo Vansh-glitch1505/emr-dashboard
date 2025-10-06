@@ -3,9 +3,110 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import "./Vitals.css";
 import axios from 'axios';
 
+// Add this helper function at the top of your Vitals component (after imports)
+
+const convertTo24Hour = (time12h) => {
+  if (!time12h) return '';
+  
+  // If already in 24-hour format, return as is
+  if (/^([01]\d|2[0-3]):([0-5]\d)$/.test(time12h)) {
+    return time12h;
+  }
+  
+  // Handle 12-hour format with AM/PM
+  const [time, modifier] = time12h.split(' ');
+  let [hours, minutes] = time.split(':');
+  
+  if (hours === '12') {
+    hours = '00';
+  }
+  
+  if (modifier === 'PM') {
+    hours = parseInt(hours, 10) + 12;
+  }
+  
+  return `${hours.toString().padStart(2, '0')}:${minutes}`;
+};
+
+// Then update your handleSubmit function to use this conversion:
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+  setErrorMessage('');
+
+  try {
+    const patientId = localStorage.getItem('currentPatientId');
+
+    if (!patientId) {
+      alert("Please complete Patient Demographics first");
+      navigate('/dashboard/patient-demographics');
+      return;
+    }
+
+    // Convert time to 24-hour format before sending
+    const time24h = convertTo24Hour(formData.time);
+
+    const vitalsData = {
+      patient_id: patientId,
+      date: formData.date,
+      time: time24h,  // Use converted time
+      systolic: formData.systolic || null,
+      diastolic: formData.diastolic || null,
+      pulse: formData.pulse || null,
+      respiratory: formData.respiratory || null,
+      temperature: formData.temperature || null,
+      temp_unit: formData.tempUnit,
+      height: formData.height || null,
+      height_unit: formData.heightUnit,
+      weight: formData.weight || null,
+      bmi: formData.bmi || null,
+      spo2: formData.spo2 || null,
+      comments: formData.comments || null
+    };
+
+    const response = await fetch('http://localhost:5000/api/vitals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(vitalsData)
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success) {
+        alert("Vitals saved successfully!");
+        updatePreviewData(formData, 'vitals');
+        setIsSubmitted(true);
+        setShowPreview(false);
+      } else {
+        setErrorMessage(data.message || 'Failed to save vitals. Please try again.');
+      }
+    } else {
+      const errorData = await response.json();
+      console.error('Error response:', errorData);
+      setErrorMessage(errorData.message || 'Failed to save vitals. Please try again.');
+    }
+  } catch (error) {
+    console.error('Error saving vitals:', error);
+    setErrorMessage('Error saving vitals. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// Also update the initial time value in your useState:
+// Change this line in your formData initialization:
+// time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+// To:
+// time: new Date().toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit', hour12: false}),
+
 const Vitals = () => {
   const navigate = useNavigate();
   const { vitalsData: contextVitals, updatePreviewData, patientId } = useOutletContext();
+
+  
   
   const [formData, setFormData] = useState({
     patient_id: patientId,
@@ -21,7 +122,7 @@ const Vitals = () => {
     bmi: "",
     spo2: "",
     date: new Date().toISOString().split('T')[0],
-    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+    time: new Date().toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit', hour12: false}),
     comments: "",
   });
 
@@ -88,55 +189,70 @@ const Vitals = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    setErrorMessage('');
-    
-    try {
-      // Prepare data for API
-      const vitalsData = {
-        patient_id: patientId,
-        date: formData.date,
-        time: formData.time,
-        systolic: formData.systolic || null,
-        diastolic: formData.diastolic || null,
-        pulse: formData.pulse || null,
-        respiratory: formData.respiratory || null,
-        temperature: formData.temperature || null,
-        temp_unit: formData.tempUnit,
-        height: formData.height || null,
-        height_unit: formData.heightUnit,
-        weight: formData.weight || null,
-        bmi: formData.bmi || null,
-        spo2: formData.spo2 || null,
-        comments: formData.comments || null
-      };
+  e.preventDefault();
+  if (!validateForm()) return;
 
-      // Use fetch instead of axios for consistency with your other components
-      const response = await fetch('http://localhost:5000/api/vitals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(vitalsData)
-      });
+  setIsLoading(true);
+  setErrorMessage('');
 
+  try {
+    // Get the stored patient ID
+    const patientId = localStorage.getItem('currentPatientId');
+
+    if (!patientId) {
+      alert("Please complete Patient Demographics first");
+      navigate('/dashboard/patient-demographics');
+      return;
+    }
+
+    // Prepare data for API
+    const vitalsData = {
+      patient_id: patientId,
+      date: formData.date,
+      time: formData.time,
+      systolic: formData.systolic || null,
+      diastolic: formData.diastolic || null,
+      pulse: formData.pulse || null,
+      respiratory: formData.respiratory || null,
+      temperature: formData.temperature || null,
+      temp_unit: formData.tempUnit,
+      height: formData.height || null,
+      height_unit: formData.heightUnit,
+      weight: formData.weight || null,
+      bmi: formData.bmi || null,
+      spo2: formData.spo2 || null,
+      comments: formData.comments || null
+    };
+
+    const response = await fetch('http://localhost:5000/api/vitals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(vitalsData)
+    });
+
+    if (response.ok) {
       const data = await response.json();
-
       if (data.success) {
+        alert("Vitals saved successfully!");
         updatePreviewData(formData, 'vitals');
         setIsSubmitted(true);
         setShowPreview(false);
       } else {
         setErrorMessage(data.message || 'Failed to save vitals. Please try again.');
       }
-    } catch (error) {
-      console.error('Error saving vitals:', error);
-      setErrorMessage('Failed to save vitals. Please try again.');
-    } finally {
-      setIsLoading(false);
+    } else {
+      const errorData = await response.json();
+      console.error('Error response:', errorData);
+      setErrorMessage(errorData.message || 'Failed to save vitals. Please try again.');
     }
-  };
+  } catch (error) {
+    console.error('Error saving vitals:', error);
+    setErrorMessage('Error saving vitals. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleNext = () => {
     navigate('/dashboard/allergies');

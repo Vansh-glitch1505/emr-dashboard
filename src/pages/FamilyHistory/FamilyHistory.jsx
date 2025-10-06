@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import "./FamilyHistory.css";
 
 const FamilyHistory = () => {
@@ -8,7 +8,6 @@ const FamilyHistory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState('');
   const navigate = useNavigate();
-  const { patientId } = useParams(); // Get patientId from URL params
   const [hasAddedMembers, setHasAddedMembers] = useState(false);
   const [currentMember, setCurrentMember] = useState({
     firstName: "",
@@ -102,8 +101,12 @@ const FamilyHistory = () => {
 
   // Save to database function
   const saveToDatabase = async () => {
+    // ✅ Get patientId from localStorage (same as Ailments.jsx)
+    const patientId = localStorage.getItem("currentPatientId");
+
     if (!patientId) {
-      setSaveStatus('Error: Patient ID not found');
+      setSaveStatus('Error: No patient selected. Please complete Patient Demographics first.');
+      navigate("/dashboard/patient-demographics");
       return false;
     }
 
@@ -116,7 +119,8 @@ const FamilyHistory = () => {
     setSaveStatus('Saving...');
     
     try {
-      const response = await fetch(`/api/family-history/${patientId}`, {
+      // ✅ Use patientId from localStorage in the API call
+      const response = await fetch(`http://localhost:5000/api/family-history/${patientId}`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

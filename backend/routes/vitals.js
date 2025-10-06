@@ -3,6 +3,24 @@ import Patient from "../models/patients.js";
 
 const router = express.Router();
 
+// Helper function to convert YYYY-MM-DD to DD-MM-YYYY
+const convertDateFormat = (dateStr) => {
+  if (!dateStr) return dateStr;
+  
+  // Check if already in DD-MM-YYYY format
+  if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+    return dateStr;
+  }
+  
+      // Convert from YYYY-MM-DD to DD-MM-YYYY
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    const [year, month, day] = dateStr.split('-');
+    return `${day}-${month}-${year}`;
+  }
+  
+  return dateStr;
+};
+
 // POST - Create/Update patient vitals
 router.post("/", async (req, res) => {
   try {
@@ -49,39 +67,64 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Prepare vitals data object
+    // Prepare vitals data object - only include fields if they have values
     const vitalsData = {
-      date: date,
-      time: time,
-      blood_pressure: {
-        systolic: systolic ? Number(systolic) : undefined,
-        diastolic: diastolic ? Number(diastolic) : undefined
-      },
-      pulse_rate: {
-        value: pulse ? Number(pulse) : undefined
-      },
-      respiratory_rate: {
-        value: respiratory ? Number(respiratory) : undefined
-      },
-      temperature: {
-        value: temperature ? Number(temperature) : undefined,
-        unit: temp_unit || "Celsius"
-      },
-      spo2: {
-        value: spo2 ? Number(spo2) : undefined
-      },
-      height: {
-        value: height ? Number(height) : undefined,
-        unit: height_unit || "feet"
-      },
-      weight: {
-        value: weight ? Number(weight) : undefined
-      },
-      bmi: {
-        value: bmi ? Number(bmi) : undefined
-      },
-      additional_comments: comments || ""
+      date: convertDateFormat(date),
+      time: time
     };
+
+    // Add blood pressure only if at least one value exists
+    if (systolic || diastolic) {
+      vitalsData.blood_pressure = {};
+      if (systolic) vitalsData.blood_pressure.systolic = parseFloat(systolic) + 0.0;
+      if (diastolic) vitalsData.blood_pressure.diastolic = parseFloat(diastolic) + 0.0;
+    }
+
+    // Add pulse rate if provided
+    if (pulse) {
+      vitalsData.pulse_rate = { value: parseFloat(pulse) + 0.0 };
+    }
+
+    // Add respiratory rate if provided
+    if (respiratory) {
+      vitalsData.respiratory_rate = { value: parseFloat(respiratory) + 0.0 };
+    }
+
+    // Add temperature if provided
+    if (temperature) {
+      vitalsData.temperature = {
+        value: parseFloat(temperature) + 0.0,
+        unit: temp_unit || "Celsius"
+      };
+    }
+
+    // Add SpO2 if provided
+    if (spo2) {
+      vitalsData.spo2 = { value: parseFloat(spo2) + 0.0 };
+    }
+
+    // Add height if provided
+    if (height) {
+      vitalsData.height = {
+        value: parseFloat(height) + 0.0,
+        unit: height_unit || "feet"
+      };
+    }
+
+    // Add weight if provided
+    if (weight) {
+      vitalsData.weight = { value: parseFloat(weight) + 0.0 };
+    }
+
+    // Add BMI if provided
+    if (bmi) {
+      vitalsData.bmi = { value: parseFloat(bmi) + 0.0 };
+    }
+
+    // Add comments if provided
+    if (comments) {
+      vitalsData.additional_comments = comments;
+    }
 
     // Update patient's vitals
     patient.vitals = vitalsData;
@@ -95,10 +138,22 @@ router.post("/", async (req, res) => {
 
   } catch (error) {
     console.error("Error saving vitals:", error);
+    
+    // Log validation error details if available
+    if (error.name === 'ValidationError') {
+      console.error("Validation errors:", JSON.stringify(error.errors, null, 2));
+    }
+    
+    // Log MongoDB validation error details
+    if (error.errInfo?.details) {
+      console.error("MongoDB validation details:", JSON.stringify(error.errInfo.details, null, 2));
+    }
+    
     res.status(500).json({
       success: false,
       message: "Failed to save vitals",
-      error: error.message
+      error: error.message,
+      details: error.errInfo?.details || error.errors
     });
   }
 });
@@ -162,39 +217,58 @@ router.put("/:patientId", async (req, res) => {
       });
     }
 
-    // Update vitals data
-    const vitalsData = {
-      date: date || patient.vitals?.date,
-      time: time || patient.vitals?.time,
-      blood_pressure: {
-        systolic: systolic !== undefined ? Number(systolic) : patient.vitals?.blood_pressure?.systolic,
-        diastolic: diastolic !== undefined ? Number(diastolic) : patient.vitals?.blood_pressure?.diastolic
-      },
-      pulse_rate: {
-        value: pulse !== undefined ? Number(pulse) : patient.vitals?.pulse_rate?.value
-      },
-      respiratory_rate: {
-        value: respiratory !== undefined ? Number(respiratory) : patient.vitals?.respiratory_rate?.value
-      },
-      temperature: {
-        value: temperature !== undefined ? Number(temperature) : patient.vitals?.temperature?.value,
-        unit: temp_unit || patient.vitals?.temperature?.unit || "Celsius"
-      },
-      spo2: {
-        value: spo2 !== undefined ? Number(spo2) : patient.vitals?.spo2?.value
-      },
-      height: {
-        value: height !== undefined ? Number(height) : patient.vitals?.height?.value,
-        unit: height_unit || patient.vitals?.height?.unit || "feet"
-      },
-      weight: {
-        value: weight !== undefined ? Number(weight) : patient.vitals?.weight?.value
-      },
-      bmi: {
-        value: bmi !== undefined ? Number(bmi) : patient.vitals?.bmi?.value
-      },
-      additional_comments: comments !== undefined ? comments : patient.vitals?.additional_comments
-    };
+    // Start with existing vitals or create new object
+    const vitalsData = patient.vitals || {};
+    
+    // Update date and time if provided
+    if (date) vitalsData.date = convertDateFormat(date);
+    if (time) vitalsData.time = time;
+
+    // Update blood pressure
+    if (systolic !== undefined || diastolic !== undefined) {
+      vitalsData.blood_pressure = vitalsData.blood_pressure || {};
+      if (systolic !== undefined) vitalsData.blood_pressure.systolic = parseFloat(systolic);
+      if (diastolic !== undefined) vitalsData.blood_pressure.diastolic = parseFloat(diastolic);
+    }
+
+    // Update other vitals if provided
+    if (pulse !== undefined) {
+      vitalsData.pulse_rate = { value: parseFloat(pulse) };
+    }
+
+    if (respiratory !== undefined) {
+      vitalsData.respiratory_rate = { value: parseFloat(respiratory) };
+    }
+
+    if (temperature !== undefined) {
+      vitalsData.temperature = {
+        value: parseFloat(temperature),
+        unit: temp_unit || vitalsData.temperature?.unit || "Celsius"
+      };
+    }
+
+    if (spo2 !== undefined) {
+      vitalsData.spo2 = { value: parseFloat(spo2) };
+    }
+
+    if (height !== undefined) {
+      vitalsData.height = {
+        value: parseFloat(height),
+        unit: height_unit || vitalsData.height?.unit || "feet"
+      };
+    }
+
+    if (weight !== undefined) {
+      vitalsData.weight = { value: parseFloat(weight) };
+    }
+
+    if (bmi !== undefined) {
+      vitalsData.bmi = { value: parseFloat(bmi) };
+    }
+
+    if (comments !== undefined) {
+      vitalsData.additional_comments = comments;
+    }
 
     patient.vitals = vitalsData;
     await patient.save();

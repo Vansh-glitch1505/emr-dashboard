@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "./MedicalHistory.css";
+import './MedicalHistory.css';
 
 export default function ImmunizationForm({ closeForm, onSave }) {
   const [vaccineName, setVaccineName] = useState('');
@@ -10,7 +10,6 @@ export default function ImmunizationForm({ closeForm, onSave }) {
   const [showPreview, setShowPreview] = useState(false);
   const [savedData, setSavedData] = useState(null);
 
-  // Vaccine options
   const vaccineOptions = [
     "Influenza (Flu) Vaccine",
     "Measles, Mumps, and Rubella (MMR) Vaccine",
@@ -25,7 +24,7 @@ export default function ImmunizationForm({ closeForm, onSave }) {
     "Rotavirus Vaccine",
     "Polio Vaccine",
     "Shingles (Herpes Zoster) Vaccine",
-    "COVID-19 Vaccine (e.g., Pfizer-BioNTech, Moderna, Johnson & Johnson)",
+    "COVID-19 Vaccine",
     "Typhoid Vaccine",
     "Rabies Vaccine",
     "Yellow Fever Vaccine",
@@ -50,20 +49,66 @@ export default function ImmunizationForm({ closeForm, onSave }) {
     }
   };
 
-  const handleSave = () => {
-    let finalList = [...immunizationList];
-    if (vaccineName || dateAdministered || reactions) {
-      finalList.push({ id: Date.now(), vaccineName, dateAdministered, reactions });
+  const handleSave = async () => {
+    try {
+      const patientId = localStorage.getItem('currentPatientId');
+      
+      if (!patientId) {
+        alert("Please complete Patient Demographics first");
+        return;
+      }
+
+      let finalList = [...immunizationList];
+      if (vaccineName || dateAdministered || reactions) {
+        finalList.push({ 
+          id: Date.now(), 
+          vaccineName, 
+          dateAdministered, 
+          reactions 
+        });
+      }
+
+      const response = await fetch('http://localhost:5000/api/medical-history/immunizations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_id: patientId,
+          immunizations: finalList
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSavedData(finalList);
+        setShowPreview(true);
+        if (onSave) onSave(finalList);
+        alert("Immunizations saved successfully!");
+        console.log("Saved immunizations:", result);
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to save immunizations: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error saving immunizations:", error);
+      alert("Error saving immunizations.");
     }
-    setSavedData(finalList);
-    setShowPreview(true);
-    if (onSave) onSave(finalList);
-    console.log("Saved immunizations:", finalList);
   };
 
   const handleEdit = () => setShowPreview(false);
 
-  const removeImmunization = (id) => setImmunizationList(prev => prev.filter(item => item.id !== id));
+  const removeImmunization = (id) => {
+    setImmunizationList(prev => prev.filter(item => item.id !== id));
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
 
   if (showPreview) {
     return (
@@ -80,12 +125,14 @@ export default function ImmunizationForm({ closeForm, onSave }) {
                 <h4>Immunization {index + 1}</h4>
                 <ul className="preview-list">
                   <li><strong>Vaccine Name:</strong> {immunization.vaccineName}</li>
-                  <li><strong>Date Administered:</strong> {immunization.dateAdministered}</li>
-                  <li><strong>Adverse Reactions:</strong> {immunization.reactions}</li>
+                  <li><strong>Date Administered:</strong> {formatDate(immunization.dateAdministered)}</li>
+                  <li><strong>Adverse Reactions:</strong> {immunization.reactions || 'None reported'}</li>
                 </ul>
               </div>
             ))
-          ) : <p>No immunizations added.</p>}
+          ) : (
+            <p>No immunizations added.</p>
+          )}
         </div>
 
         <div className="button-group-right">
@@ -109,10 +156,18 @@ export default function ImmunizationForm({ closeForm, onSave }) {
           {immunizationList.map((immunization) => (
             <div key={immunization.id} className="immunization-item">
               <div className="immunization-details">
-                <strong>{immunization.vaccineName}</strong> - {immunization.dateAdministered}
-                {immunization.reactions && <span className="reaction-note"> (Reactions: {immunization.reactions})</span>}
+                <strong>{immunization.vaccineName}</strong> - {formatDate(immunization.dateAdministered)}
+                {immunization.reactions && (
+                  <span className="reaction-note"> (Reactions: {immunization.reactions})</span>
+                )}
               </div>
-              <button className="remove-btn" onClick={() => removeImmunization(immunization.id)}>×</button>
+              <button 
+                className="remove-btn" 
+                onClick={() => removeImmunization(immunization.id)}
+                title="Remove immunization"
+              >
+                ×
+              </button>
             </div>
           ))}
         </div>
@@ -120,7 +175,10 @@ export default function ImmunizationForm({ closeForm, onSave }) {
 
       <div className="form-group">
         <label>Vaccine Name</label>
-        <select value={vaccineName} onChange={(e) => setVaccineName(e.target.value)}>
+        <select 
+          value={vaccineName} 
+          onChange={(e) => setVaccineName(e.target.value)}
+        >
           <option value="">Select Vaccine</option>
           {vaccineOptions.map(vaccine => (
             <option key={vaccine} value={vaccine}>{vaccine}</option>
@@ -143,7 +201,7 @@ export default function ImmunizationForm({ closeForm, onSave }) {
           type="text"
           value={reactions}
           onChange={(e) => setReactions(e.target.value)}
-          placeholder="e.g. NA"
+          placeholder="e.g. None, Mild soreness, Fever"
         />
       </div>
 

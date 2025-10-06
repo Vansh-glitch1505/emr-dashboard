@@ -67,34 +67,49 @@ export default function Assessment() {
 
     if (!patientId) {
       alert("Please complete Patient Demographics first");
-      navigate('/dashboard/patient-demographics'); // redirect if missing
+      navigate('/dashboard/patient-demographics');
       return;
     }
 
     // Prepare data to send to backend
     const assessmentData = {
-      patient_id: patientId,   // attach patient ID
-      ...assessment,
-      tests: tests
+      chiefComplaints: assessment.chiefComplaints,
+      historyOfPresentIllness: assessment.historyOfPresentIllness,
+      pastMedicalHistory: assessment.pastMedicalHistory,
+      medicationHistory: assessment.medicationHistory,
+      remindersAlerts: assessment.remindersAlerts,
+      planCare: assessment.planCare,
+      tests: tests.map(test => ({
+        result: test.result || '',
+        comment: test.comment || '',
+        fileId: null // You can add file upload logic later
+      }))
     };
 
-    const res = await fetch('http://localhost:5000/api/assessment', {
+    console.log('Sending assessment data:', assessmentData);
+
+    // Use the /json endpoint since we're not uploading files
+    const res = await fetch(`http://localhost:5000/api/assessment/${patientId}/json`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(assessmentData)
     });
 
     const data = await res.json();
+    console.log('Response:', data);
 
-    if (data.success) {
+    if (res.ok) {
       alert('Assessment saved successfully!');
       setShowPreview(false);
+      // Optional: Clear form or navigate
+      // navigate('/dashboard/medical-history');
     } else {
-      alert(data.message || 'Failed to save assessment');
+      alert(data.error || data.details || 'Failed to save assessment');
+      console.error('Error details:', data);
     }
   } catch (err) {
     console.error('Error saving assessment:', err);
-    alert('Error saving assessment');
+    alert('Error saving assessment: ' + err.message);
   }
 };
 

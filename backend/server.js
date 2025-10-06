@@ -12,6 +12,7 @@ import medicationhistoryRoutes from "./routes/medicationHistory.js"
 import vitalsRoutes from "./routes/vitals.js"
 import allergiesRoutes from "./routes/allergies.js"
 import familyhistoryRoutes from "./routes/familyHistory.js"
+import medicalHistoryRoutes from "./routes/medicalHistory.js"
 
 dotenv.config();
 
@@ -35,7 +36,7 @@ app.use('/api/medication-history', medicationhistoryRoutes);
 app.use('/api/vitals', vitalsRoutes);
 app.use('/api/allergies', allergiesRoutes);
 app.use('/api/family-history', familyhistoryRoutes);
-
+app.use('/api/medical-history', medicalHistoryRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -43,7 +44,8 @@ app.get('/', (req, res) => {
     message: "EMR Server is running",
     endpoints: {
       patientDemographics: "/api/patient-demographics",
-      contactInformation: "/api/contact-information"
+      contactInformation: "/api/contact-information",
+       medicalHistory: "/api/medical-history"
     }
   });
 });
@@ -61,3 +63,5 @@ connectDB()
     console.error('Failed to connect to DB, server not started:', err);
     process.exit(1);
   });
+
+  

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./MedicalHistory.css"; // Reuse the same CSS file
+import "./MedicalHistory.css";
 
 const SurgeriesForm = ({ closeForm, onSave }) => {
   const [surgeryType, setSurgeryType] = useState("");
@@ -25,25 +25,61 @@ const SurgeriesForm = ({ closeForm, onSave }) => {
       setSurgeryDate('');
       setSurgeonName('');
       setPostOpNotes('');
+    } else {
+      alert('Please fill in at least one field');
     }
   };
 
-  const handleSave = () => {
-    let finalList = [...surgeryList];
-    if (surgeryType || surgeryDate || surgeonName || postOpNotes) {
-      const newItem = {
-        id: Date.now(),
-        surgeryType,
-        surgeryDate,
-        surgeonName,
-        postOpNotes
-      };
-      finalList.push(newItem);
+  const handleSave = async () => {
+    try {
+      const patientId = localStorage.getItem('currentPatientId');
+      
+      if (!patientId) {
+        alert("Please complete Patient Demographics first");
+        return;
+      }
+
+      let finalList = [...surgeryList];
+      if (surgeryType || surgeryDate || surgeonName || postOpNotes) {
+        const newItem = {
+          id: Date.now(),
+          surgeryType,
+          surgeryDate,
+          surgeonName,
+          postOpNotes
+        };
+        finalList.push(newItem);
+      }
+
+      if (finalList.length === 0) {
+        alert('Please add at least one surgery');
+        return;
+      }
+
+      const response = await fetch('http://localhost:5000/api/medical-history/surgeries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_id: patientId,
+          surgeries: finalList
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSavedData(finalList);
+        setShowPreview(true);
+        if (onSave) onSave(finalList);
+        alert("Surgeries saved successfully!");
+        console.log("Saved surgeries:", result);
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to save surgeries: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error saving surgeries:", error);
+      alert(`Error saving surgeries: ${error.message}`);
     }
-    setSavedData(finalList);
-    setShowPreview(true);
-    if (onSave) onSave(finalList);
-    console.log("Saved surgeries:", finalList);
   };
 
   const handleEdit = () => setShowPreview(false);
@@ -54,10 +90,12 @@ const SurgeriesForm = ({ closeForm, onSave }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    if (dateString.includes('/') || dateString.includes('-')) {
-      return dateString;
-    }
-    return dateString;
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
   };
 
   if (showPreview) {
@@ -76,8 +114,8 @@ const SurgeriesForm = ({ closeForm, onSave }) => {
                 <ul className="preview-list">
                   <li><strong>Surgery Type:</strong> {surgery.surgeryType}</li>
                   <li><strong>Surgery Date:</strong> {formatDate(surgery.surgeryDate)}</li>
-                  <li><strong>Surgeon Name:</strong> {surgery.surgeonName}</li>
-                  <li><strong>Post-operative Notes:</strong> {surgery.postOpNotes}</li>
+                  <li><strong>Surgeon Name:</strong> {surgery.surgeonName || 'Not specified'}</li>
+                  <li><strong>Post-operative Notes:</strong> {surgery.postOpNotes || 'None'}</li>
                 </ul>
               </div>
             ))
@@ -104,7 +142,7 @@ const SurgeriesForm = ({ closeForm, onSave }) => {
       {surgeryList.length > 0 && (
         <div className="added-immunizations">
           <h3>Added Surgeries:</h3>
-          {surgeryList.map((surgery, index) => (
+          {surgeryList.map((surgery) => (
             <div key={surgery.id} className="immunization-item">
               <div className="immunization-details">
                 <strong>{surgery.surgeryType}</strong> - {formatDate(surgery.surgeryDate)}
@@ -188,6 +226,7 @@ const SurgeriesForm = ({ closeForm, onSave }) => {
           value={postOpNotes}
           onChange={(e) => setPostOpNotes(e.target.value)}
           placeholder="e.g. Recovery went well, no complications"
+          rows="4"
         />
       </div>
 

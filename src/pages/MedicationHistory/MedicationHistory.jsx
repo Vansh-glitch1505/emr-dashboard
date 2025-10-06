@@ -2,39 +2,43 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./MedicationHistory.css";
 
-const emptyRow = () => ({ problem: "", medicine: "", mg: "", doseTime: "", timePeriod: "", status: false });
+const emptyRow = () => ({
+  problem: "",
+  medicine: "",
+  mg: "",
+  doseTime: "",
+  frequency: "",
+  timePeriod: "",
+  status: false
+});
 
 const MedicationHistory = () => {
   const [medications, setMedications] = useState([emptyRow()]);
-  const [selectedTab, setSelectedTab] = useState("current");
   const navigate = useNavigate();
 
-  // get userId from localStorage (ensure you set it at login)
-  const userIdRaw = localStorage.getItem("userId");
-  //const userId = userIdRaw ? parseInt(userIdRaw, 10) : null;
-  const userId = 1;
+  const patientId = localStorage.getItem("currentPatientId");
 
   useEffect(() => {
-    if (!userId) return;
+    if (!patientId) return;
 
     const fetchMeds = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/medication-history/${userId}`);
+        const res = await fetch(`http://localhost:5000/api/medication-history/${patientId}`);
         if (!res.ok) {
           console.error("Failed loading medication history:", await res.text());
           return;
         }
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
-          // map DB rows into front-end shape
           setMedications(
             data.map((r) => ({
               problem: r.problem || "",
               medicine: r.medicine || "",
-              mg: r.mg || "",
-              doseTime: r.doseTime || "",
-              timePeriod: r.timePeriod || "",
-              status: !!r.status
+              mg: r.dosage || "",
+              doseTime: r.dose_time || "",
+              frequency: r.frequency || "",
+              timePeriod: r.duration || "",
+              status: r.status === "Active"
             }))
           );
         }
@@ -44,7 +48,7 @@ const MedicationHistory = () => {
     };
 
     fetchMeds();
-  }, [userId]);
+  }, [patientId]);
 
   const handleChange = (index, field, value) => {
     setMedications((prev) => {
@@ -63,27 +67,27 @@ const MedicationHistory = () => {
   };
 
   const addRow = () => setMedications((prev) => [...prev, emptyRow()]);
+  const removeRow = (index) =>
+    setMedications((prev) => (prev.length === 1 ? prev : prev.filter((_, i) => i !== index)));
 
-  const removeRow = (index) => {
-    setMedications((prev) => {
-      if (prev.length === 1) return prev;
-      return prev.filter((_, i) => i !== index);
-    });
-  };
-
-  const handleNext = async () =>{
-    navigate('/dashboard/vitals');
-  }
+  const handleNext = async () => navigate("/dashboard/vitals");
 
   const handleSave = async () => {
-    if (!userId) {
-      alert("No userId found. Please login again.");
+    if (!patientId) {
+      alert("Please complete Patient Demographics first.");
+      navigate("/dashboard/patient-demographics");
       return;
     }
 
-    // filter out completely empty rows
-    const medsToSend = medications.filter((m) =>
-      m && (m.problem?.trim() || m.medicine?.trim() || m.mg?.trim() || m.doseTime?.trim() || m.timePeriod?.trim())
+    const medsToSend = medications.filter(
+      (m) =>
+        m &&
+        (m.problem?.trim() ||
+          m.medicine?.trim() ||
+          m.mg?.trim() ||
+          m.doseTime?.trim() ||
+          m.frequency?.trim() ||
+          m.timePeriod?.trim())
     );
 
     if (medsToSend.length === 0) {
@@ -95,7 +99,7 @@ const MedicationHistory = () => {
       const res = await fetch("http://localhost:5000/api/medication-history", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, medications: medsToSend })
+        body: JSON.stringify({ patientId, medications: medsToSend })
       });
 
       const data = await res.json();
@@ -115,23 +119,9 @@ const MedicationHistory = () => {
     <div className="medication-container">
       <div className="header-section">
         <header className="fixed-header">
-        <h1 className="header-title"></h1>
-       </header>
+          <h1 className="header-title"></h1>
+        </header>
         <h2 className="medication-title">Medication History</h2>
-        <div className="tabs">
-          <button
-            className={`tab-button ${selectedTab === "current" ? "active" : ""}`}
-            onClick={() => setSelectedTab("current")}
-          >
-            Current Medications
-          </button>
-          <button
-            className={`tab-button ${selectedTab === "past" ? "active" : ""}`}
-            onClick={() => setSelectedTab("past")}
-          >
-            Past Medications
-          </button>
-        </div>
       </div>
 
       <div className="table-section">
@@ -143,6 +133,7 @@ const MedicationHistory = () => {
                 <th>Problem</th>
                 <th>Medicines</th>
                 <th>Dosage</th>
+                <th>Dose Time</th>
                 <th>Frequency</th>
                 <th>Duration</th>
                 <th>Status</th>
@@ -183,30 +174,59 @@ const MedicationHistory = () => {
                   </td>
 
                   <td>
-                    <select value={med.doseTime} onChange={(e) => handleChange(index, "doseTime", e.target.value)}>
+                    <select
+                      value={med.doseTime}
+                      onChange={(e) => handleChange(index, "doseTime", e.target.value)}
+                    >
                       <option value="">Select</option>
-                      <option value="OD">Once daily (OD)</option>
-                      <option value="BD">Twice daily (BD)</option>
-                      <option value="TDS">Thrice daily (TDS)</option>
-                      <option value="QID">Four times daily (QID)</option>
-                      <option value="PRN">As needed (PRN)</option>
+                      <option value="Morning">Morning</option>
+                      <option value="Afternoon">Afternoon</option>
+                      <option value="Evening">Evening</option>
+                      <option value="Night">Night</option>
+                      <option value="Before Meals">Before Meals</option>
+                      <option value="After Meals">After Meals</option>
+                      <option value="With Meals">With Meals</option>
                     </select>
                   </td>
 
                   <td>
-                    <select value={med.timePeriod} onChange={(e) => handleChange(index, "timePeriod", e.target.value)}>
+                    <select
+                      value={med.frequency}
+                      onChange={(e) => handleChange(index, "frequency", e.target.value)}
+                    >
+                      <option value="">Select</option>
+                      <option value="Once daily (OD)">Once daily (OD)</option>
+                      <option value="Twice daily (BD)">Twice daily (BD)</option>
+                      <option value="Thrice daily (TDS)">Thrice daily (TDS)</option>
+                      <option value="Four times daily (QID)">Four times daily (QID)</option>
+                      <option value="As needed (PRN)">As needed (PRN)</option>
+                      <option value="Weekly">Weekly</option>
+                      <option value="Monthly">Monthly</option>
+                    </select>
+                  </td>
+
+                  <td>
+                    <select
+                      value={med.timePeriod}
+                      onChange={(e) => handleChange(index, "timePeriod", e.target.value)}
+                    >
                       <option value="">Select</option>
                       <option value="1 week">1 week</option>
                       <option value="2 weeks">2 weeks</option>
                       <option value="1 month">1 month</option>
                       <option value="3 months">3 months</option>
                       <option value="6 months">6 months</option>
+                      <option value="1 year">1 year</option>
                       <option value="Ongoing">Ongoing</option>
                     </select>
                   </td>
 
                   <td>
-                    <button type="button" className={`status-toggle ${med.status ? "active" : "inactive"}`} onClick={() => toggleStatus(index)}>
+                    <button
+                      type="button"
+                      className={`status-toggle ${med.status ? "active" : "inactive"}`}
+                      onClick={() => toggleStatus(index)}
+                    >
                       {med.status ? "Active" : "Inactive"}
                     </button>
                   </td>
@@ -217,7 +237,11 @@ const MedicationHistory = () => {
                         +
                       </button>
                       {medications.length > 1 && (
-                        <button type="button" className="remove-button" onClick={() => removeRow(index)}>
+                        <button
+                          type="button"
+                          className="remove-button"
+                          onClick={() => removeRow(index)}
+                        >
                           ×
                         </button>
                       )}

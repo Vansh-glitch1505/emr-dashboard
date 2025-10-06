@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './MedicalHistory.css';
 
-// ⬇️ Added onSave to props
 export default function ConditionForm({ closeForm, onSave }) { 
   const [condition, setCondition] = useState('');
   const [diagnosisDate, setDiagnosisDate] = useState('');
@@ -24,7 +23,6 @@ export default function ConditionForm({ closeForm, onSave }) {
       
       setConditionList(prev => [...prev, newCondition]);
       
-      // Clear form after adding
       setCondition('');
       setDiagnosisDate('');
       setPhysician('');
@@ -32,30 +30,60 @@ export default function ConditionForm({ closeForm, onSave }) {
     }
   };
 
-  const handleSave = () => {
-    let finalList = [...conditionList];
+  const handleSave = async () => {
+    try {
+      // Get the stored patient ID
+      const patientId = localStorage.getItem('currentPatientId');
+      
+      if (!patientId) {
+        alert("Please complete Patient Demographics first");
+        return;
+      }
 
-    // If there's current form data, add it before saving
-    if (condition || diagnosisDate || physician || status) {
-      const newItem = {
-        id: Date.now(),
-        condition,
-        diagnosisDate,
-        physician,
-        status
-      };
-      finalList.push(newItem);
+      let finalList = [...conditionList];
+
+      // If there's current form data, add it before saving
+      if (condition || diagnosisDate || physician || status) {
+        const newItem = {
+          id: Date.now(),
+          condition,
+          diagnosisDate,
+          physician,
+          status
+        };
+        finalList.push(newItem);
+      }
+
+      // Send to backend
+      const response = await fetch('http://localhost:5000/api/medical-history/conditions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_id: patientId,
+          conditions: finalList
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSavedData(finalList);
+        setShowPreview(true);
+        
+        // Pass data to parent
+        if (onSave) {
+          onSave(finalList);
+        }
+        
+        alert("Conditions saved successfully!");
+        console.log("Saved conditions:", result);
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to save conditions: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error saving conditions:", error);
+      alert("Error saving conditions.");
     }
-
-    setSavedData(finalList);
-    setShowPreview(true);
-
-    // ⬇️ NEW: Pass data to parent
-    if (onSave) {
-      onSave(finalList);
-    }
-
-    console.log("Saved conditions:", finalList);
   };
 
   const handleEdit = () => {
@@ -117,7 +145,6 @@ export default function ConditionForm({ closeForm, onSave }) {
         <button className="close-btn" onClick={closeForm}>×</button>
       </div>
 
-      {/* Show added conditions list */}
       {conditionList.length > 0 && (
         <div className="added-immunizations">
           <h3>Added Conditions:</h3>
@@ -175,12 +202,19 @@ export default function ConditionForm({ closeForm, onSave }) {
 
       <div className="form-group">
         <label>Current Status</label>
-        <input 
-          type="text" 
+        <select 
           value={status} 
           onChange={(e) => setStatus(e.target.value)}
-          placeholder="e.g. Managed, Resolved, Ongoing"
-        />
+        >
+          <option value="">Select Status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="Resolved">Resolved</option>
+          <option value="Chronic">Chronic</option>
+          <option value="Acute">Acute</option>
+          <option value="Recurrent">Recurrent</option>
+          <option value="Unknown">Unknown</option>
+        </select>
       </div>
 
       <div className="button-group-right">

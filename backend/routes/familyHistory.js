@@ -1,13 +1,16 @@
-import express from "express";
+  import express from "express";
 import Patient from "../models/patients.js";
 
 const router = express.Router();
 
 // POST - Create/Update patient family history
+// POST - Create/Update patient family history
 router.post("/:patientId", async (req, res) => {
   try {
     const { patientId } = req.params;
     const { familyMembers, geneticConditions } = req.body;
+
+    console.log('Received data:', { familyMembers, geneticConditions }); // Debug log
 
     // Validate required fields
     if (!patientId) {
@@ -34,28 +37,39 @@ router.post("/:patientId", async (req, res) => {
       });
     }
 
-    // Process family members data
+    // ✅ FIX: Transform frontend data to match schema keys & structure
     const processedFamilyMembers = familyMembers.map(member => {
-      // Convert date format from YYYY-MM-DD to MM-DD-YYYY for the model
+      // ✅ FIX: Convert date format YYYY-MM-DD → MM-DD-YYYY
       let formattedDob = member.dob;
       if (member.dob) {
         const dobParts = member.dob.split("-");
-        formattedDob = `${dobParts[1]}-${dobParts[2]}-${dobParts[0]}`;
+        if (dobParts.length === 3) {
+          formattedDob = `${dobParts[1]}-${dobParts[2]}-${dobParts[0]}`;
+        }
       }
 
-      // Create genetic conditions array for this member
-      const memberGeneticConditions = geneticConditions
-        ?.filter(gc => {
-          const fullName = `${member.firstName} ${member.lastName}`.toLowerCase();
-          return gc.affectedMember.toLowerCase().includes(member.relationship.toLowerCase()) ||
-                 gc.affectedMember.toLowerCase() === fullName;
+      // ✅ FIX: Find & map genetic conditions belonging to this member
+      const memberGeneticConditions = (geneticConditions || [])
+        .filter(gc => {
+          const memberRelationship = member.relationship.toLowerCase();
+          const affectedMember = gc.affectedMember?.toLowerCase() || "";
+
+          // Match by relationship
+          if (affectedMember === memberRelationship) return true;
+          if (affectedMember.includes(memberRelationship)) return true;
+
+          // Match by full name
+          const memberFullName = `${member.firstName} ${member.lastName}`.toLowerCase();
+          return affectedMember === memberFullName;
         })
         .map(gc => ({
+          // ✅ FIX: match schema exactly
           condition_name: gc.conditionName,
-          affected_family_members: gc.affectedMember,
-          affected_family_member: gc.affectedMember,
-          genetic_testing_results: gc.testResults
-        })) || [];
+          affected_family_member: gc.affectedMember, // ✅ correct field name
+          genetic_testing_results: gc.testResults    // ✅ correct field name
+        }));
+
+      console.log(`Member ${member.firstName} genetic conditions:`, memberGeneticConditions);
 
       return {
         name: {
@@ -63,23 +77,25 @@ router.post("/:patientId", async (req, res) => {
           middle: member.middleName || "",
           last: member.lastName
         },
-        date_of_birth: formattedDob,
+        date_of_birth: formattedDob,                // ✅ schema key
         gender: member.gender,
         relationship: member.relationship,
         deceased: member.deceased,
-        medical_conditions: member.medicalConditions || [],
-        genetic_conditions: memberGeneticConditions
+        medical_conditions: member.medicalConditions || [], // ✅ schema key
+        genetic_conditions: memberGeneticConditions         // ✅ schema key
       };
     });
 
-    // Update patient's family history
+    // ✅ FIX: Ensure correct structure inside `family_history`
     if (!patient.family_history) {
-      patient.family_history = {};
+      patient.family_history = { family_members: [] };
     }
-    
+
     patient.family_history.family_members = processedFamilyMembers;
-    
+
     await patient.save();
+
+    console.log('Saved family history:', JSON.stringify(patient.family_history, null, 2));
 
     res.status(200).json({
       success: true,
@@ -96,6 +112,7 @@ router.post("/:patientId", async (req, res) => {
     });
   }
 });
+
 
 // GET - Retrieve patient family history by patient ID
 router.get("/:patientId", async (req, res) => {

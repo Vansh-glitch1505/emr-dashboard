@@ -214,7 +214,7 @@ const patientSchema = new Schema({
         match: /^\d{7,10}$/
       },
       insurance_card_img: {
-        file_id: { type: Schema.Types.ObjectId, required: true }
+        file_id: { type: Schema.Types.ObjectId }
       }
     },
     required: true
@@ -229,7 +229,11 @@ const patientSchema = new Schema({
       required: true,
       enum: ['Active', 'Inactive', 'Resolved', 'Chronic', 'Acute', 'Recurrent', 'Unknown', 'None']
     },
-    severity: { type: String },
+    severity: {
+      type: String,
+      required: true,
+      enum: ['Mild', 'Moderate', 'Severe', 'Critical', 'Unknown', 'None']
+    },
     pain: {
       type: String,
       enum: [
@@ -241,32 +245,13 @@ const patientSchema = new Schema({
       type: String,
       match: /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])-\d{4}$/
     },
-    risk_factor: { type: Schema.Types.Mixed },
+    risk_factor: { type: String },
     Comorbidities: { type: String },
     Medication_side_effects: { type: String },
     Treatment_plan: { type: String },
     Test_results: { type: String }
   }],
-  
-  assessments: [{
-    chief_complaints: { type: String },
-    history_of_present_illness: { type: String },
-    past_medical_history: { type: String },
-    medication_history: { type: String },
-    test_results: [{
-      results: { type: String, required: true },
-      test_file: {
-        type: {
-          file_id: { type: Schema.Types.ObjectId, required: true }
-        },
-        required: true
-      },
-      comments: { type: String }
-    }],
-    reminders_alerts: { type: String },
-    plan_of_care: { type: String }
-  }],
-  
+
   medical_history: {
     conditions: [{
       condition_name: { type: String, required: true },
@@ -280,7 +265,11 @@ const patientSchema = new Schema({
         required: true,
         enum: ['Active', 'Inactive', 'Resolved', 'Chronic', 'Acute', 'Recurrent', 'Unknown', 'None']
       },
-      severity: { type: String, required: true }
+      severity: {
+        type: String,
+        required: true,
+        enum: ['Mild', 'Moderate', 'Severe', 'Critical', 'unknown', 'None']
+      }
     }],
     
     surgeries: [{
@@ -378,20 +367,41 @@ const patientSchema = new Schema({
       type: String,
       required: true,
       minlength: 1,
-      maxlength: 50
+      maxlength: 100
     },
     dosage: {
       type: Number,
       required: true,
       min: 0
     },
-    dose_time: { type: String, required: true },
-    frequency: { type: String },
-    time_period: { type: String, required: true },
+    dose_time: {
+      type: String,
+      required: true,
+      enum: [
+        "Morning", "Afternoon", "Evening",
+        "Night", "Before Meals", "After Meals", "With Meals"
+      ]
+    },
+    frequency: {
+      type: String,
+      required: true,
+      enum: [
+        "Once daily (OD)", "Twice daily (BD)", "Thrice daily (TDS)",
+        "Four times daily (QID)", "As needed (PRN)", "Weekly", "Monthly"
+      ]
+    },
+    duration: {
+      type: String,
+      required: true,
+      enum: [
+        "1 week", "2 weeks", "1 month",
+        "3 months", "6 months", "1 year", "Ongoing"
+      ]
+    },
     status: {
       type: String,
       required: true,
-      enum: ['Active', 'Inactive']
+      enum: ["Active", "Inactive"]
     }
   }],
   
@@ -478,15 +488,12 @@ const patientSchema = new Schema({
     }
   }],
   
-  family_history: {
+family_history: {
     family_members: [{
       name: {
-        type: {
-          first: { type: String, required: true },
-          middle: { type: String },
-          last: { type: String, required: true }
-        },
-        required: true
+        first: { type: String, required: true },
+        middle: { type: String },
+        last: { type: String, required: true }
       },
       date_of_birth: {
         type: String,
@@ -511,7 +518,6 @@ const patientSchema = new Schema({
       medical_conditions: [{ type: String }],
       genetic_conditions: [{
         condition_name: { type: String, required: true },
-        affected_family_members: { type: String, required: true },
         affected_family_member: {
           type: String,
           enum: [
@@ -519,7 +525,8 @@ const patientSchema = new Schema({
             'Maternal Grandmother', 'Paternal Uncle', 'Paternal Aunt',
             'Maternal Uncle', 'Maternal Aunt', 'Father', 'Mother',
             'Brother', 'Sister', 'Self', 'Other'
-          ]
+          ], 
+          required: true
         },
         genetic_testing_results: {
           type: String,
@@ -722,6 +729,5 @@ const patientSchema = new Schema({
 });
 
 const Patient = mongoose.model('Patient', patientSchema);
-
 
 export default Patient;

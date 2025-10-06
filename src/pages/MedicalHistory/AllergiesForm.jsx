@@ -1,85 +1,110 @@
 import React, { useState } from 'react';
 import './MedicalHistory.css';
 
-// ✅ Added onSave in props
 export default function AllergiesForm({ closeForm, onSave }) {
-  const [formData, setFormData] = useState({
-    allergyType: '',
-    substance: '',
-    severity: '',
-  });
+  const [allergyType, setAllergyType] = useState('');
+  const [substance, setSubstance] = useState('');
+  const [severity, setSeverity] = useState('');
 
-  const [addedAllergies, setAddedAllergies] = useState([]);
+  const [allergyList, setAllergyList] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
   const [savedData, setSavedData] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const allergyTypes = [
+    'Medication Allergy', 'Food Allergy', 'Environmental Allergy',
+    'Insect Sting Allergy', 'Latex Allergy', 'Animal Allergy',
+    'Pollen Allergy', 'Mold Allergy', 'Dust Allergy', 'Other'
+  ];
+
+  const allergicSubstances = [
+    'Penicillin', 'Sulfa Drugs', 'Aspirin', 'Shellfish', 'Nuts',
+    'Eggs', 'Milk', 'Wheat', 'Soy', 'Pollen', 'Dust Mites',
+    'Latex', 'Nickel', 'Pet Dander', 'Bee Venom', 'Mold',
+    'Certain Medications', 'Other'
+  ];
+
+  const severityLevels = ['Mild', 'Moderate', 'Severe', 'Critical', 'Unknown'];
 
   const handleAdd = () => {
-    if (formData.allergyType && formData.substance && formData.severity) {
-      setAddedAllergies((prev) => [...prev, { ...formData }]);
-      // Reset form after adding
-      setFormData({
-        allergyType: '',
-        substance: '',
-        severity: '',
+    if (allergyType || substance || severity) {
+      const newAllergy = {
+        id: Date.now(),
+        allergyType,
+        substance,
+        severity
+      };
+      setAllergyList(prev => [...prev, newAllergy]);
+      setAllergyType('');
+      setSubstance('');
+      setSeverity('');
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const patientId = localStorage.getItem('currentPatientId');
+      
+      if (!patientId) {
+        alert("Please complete Patient Demographics first");
+        return;
+      }
+
+      let finalList = [...allergyList];
+      if (allergyType || substance || severity) {
+        finalList.push({ id: Date.now(), allergyType, substance, severity });
+      }
+
+      const response = await fetch('http://localhost:5000/api/medical-history/allergies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_id: patientId,
+          allergies: finalList
+        })
       });
-      console.log('Added Allergy:', formData);
+
+      if (response.ok) {
+        const result = await response.json();
+        setSavedData(finalList);
+        setShowPreview(true);
+        if (onSave) onSave(finalList);
+        alert("Allergies saved successfully!");
+        console.log("Saved allergies:", result);
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to save allergies: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error saving allergies:", error);
+      alert("Error saving allergies.");
     }
   };
 
-  const handleRemove = (index) => {
-    setAddedAllergies((prev) => prev.filter((_, i) => i !== index));
-  };
+  const handleEdit = () => setShowPreview(false);
 
-  const handleSave = () => {
-    // Save the data and show preview
-    setSavedData([...addedAllergies]);
-    setShowPreview(true);
+  const removeAllergy = (id) => setAllergyList(prev => prev.filter(item => item.id !== id));
 
-    // ✅ Pass data back to parent
-    if (onSave) {
-      onSave([...addedAllergies]);
-    }
-  };
-
-  const handleEdit = () => {
-    setShowPreview(false);
-  };
-
-  // Preview view after Save is clicked
-  if (showPreview && savedData) {
+  if (showPreview) {
     return (
-      <div className="form-container">
+      <div className="right-panel">
         <div className="form-header">
-          <h2>Allergies Preview</h2>
-          <button className="close-btn" onClick={closeForm}>
-            X
-          </button>
+          <h2 className="form-title">Allergies Preview</h2>
+          <button className="close-btn" onClick={closeForm}>×</button>
         </div>
-        
+
         <div className="preview-container">
-          <table className="allergies-table">
-            <thead>
-              <tr>
-                <th>Allergy Type</th>
-                <th>Allergic Substance</th>
-                <th>Severity</th>
-              </tr>
-            </thead>
-            <tbody>
-              {savedData.map((allergy, index) => (
-                <tr key={index}>
-                  <td>{allergy.allergyType}</td>
-                  <td>{allergy.substance}</td>
-                  <td>{allergy.severity}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {savedData && savedData.length > 0 ? (
+            savedData.map((allergy, index) => (
+              <div key={allergy.id} className="immunization-preview-item">
+                <h4>Allergy {index + 1}</h4>
+                <ul className="preview-list">
+                  <li><strong>Allergy Type:</strong> {allergy.allergyType}</li>
+                  <li><strong>Allergic Substance:</strong> {allergy.substance}</li>
+                  <li><strong>Severity:</strong> {allergy.severity}</li>
+                </ul>
+              </div>
+            ))
+          ) : <p>No allergies added.</p>}
         </div>
 
         <div className="button-group-right">
@@ -90,113 +115,61 @@ export default function AllergiesForm({ closeForm, onSave }) {
     );
   }
 
-  // Form view
   return (
-    <div className="form-container">
+    <div className="right-panel">
       <div className="form-header">
-        <h2>Allergies</h2>
-        <button className="close-btn" onClick={closeForm}>
-          X
-        </button>
+        <h2 className="form-title">Allergies</h2>
+        <button className="close-btn" onClick={closeForm}>×</button>
       </div>
 
-      <div className="form-body">
-        <div className="form-group">
-          <label>Allergies Type</label>
-          <select name="allergyType" value={formData.allergyType} onChange={handleChange}>
-            <option value="">Select</option>
-            <option value="Medication Allergy">Medication Allergy</option>
-            <option value="Food Allergy">Food Allergy</option>
-            <option value="Environmental Allergy">Environmental Allergy</option>
-            <option value="Insect Sting Allergy">Insect Sting Allergy</option>
-            <option value="Latex Allergy">Latex Allergy</option>
-            <option value="Animal Allergy">Animal Allergy</option>
-            <option value="Pollen Allergy">Pollen Allergy</option>
-            <option value="Mold Allergy">Mold Allergy</option>
-            <option value="Dust Allergy">Dust Allergy</option>
-            <option value="Other">Other</option>
-          </select>
+      {allergyList.length > 0 && (
+        <div className="added-immunizations">
+          <h3>Added Allergies:</h3>
+          {allergyList.map((allergy) => (
+            <div key={allergy.id} className="immunization-item">
+              <div className="immunization-details">
+                <strong>{allergy.allergyType}</strong> - {allergy.substance}
+                {allergy.severity && <span className="reaction-note"> (Severity: {allergy.severity})</span>}
+              </div>
+              <button className="remove-btn" onClick={() => removeAllergy(allergy.id)}>×</button>
+            </div>
+          ))}
         </div>
+      )}
 
-        <div className="form-group">
-          <label>Allergic Substance</label>
-          <select name="substance" value={formData.substance} onChange={handleChange}>
-            <option value="">Select</option>
-            <option value="Penicillin">Penicillin</option>
-            <option value="Sulfa Drugs">Sulfa Drugs</option>
-            <option value="Aspirin">Aspirin</option>
-            <option value="Shellfish">Shellfish</option>
-            <option value="Nuts">Nuts (e.g., peanuts, almonds, cashews)</option>
-            <option value="Eggs">Eggs</option>
-            <option value="Milk">Milk</option>
-            <option value="Wheat">Wheat</option>
-            <option value="Soy">Soy</option>
-            <option value="Pollen">Pollen (ragweed, grass, etc.)</option>
-            <option value="Dust Mites">Dust Mites</option>
-            <option value="Latex">Latex</option>
-            <option value="Nickel">Nickel</option>
-            <option value="Pet Dander">Pet Dander</option>
-            <option value="Bee Venom">Bee Venom</option>
-            <option value="Mold">Mold</option>
-            <option value="Certain Medications">Certain Medications (specify if known)</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Severity</label>
-          <select name="severity" value={formData.severity} onChange={handleChange}>
-            <option value="">Select</option>
-            <option value="Mild">Mild</option>
-            <option value="Moderate">Moderate</option>
-            <option value="Severe">Severe</option>
-            <option value="Critical">Critical</option>
-            <option value="Unknown">Unknown</option>
-          </select>
-        </div>
-
-        <div className="button-row">
-          <button className="blue-btn" onClick={handleAdd}>Add</button>
-        </div>
-
-        {/* Show added allergies before saving */}
-        {addedAllergies.length > 0 && (
-          <div className="allergies-preview">
-            <table className="allergies-table">
-              <thead>
-                <tr>
-                  <th>Allergy Type</th>
-                  <th>Allergic Substance</th>
-                  <th>Severity</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {addedAllergies.map((allergy, index) => (
-                  <tr key={index}>
-                    <td>{allergy.allergyType}</td>
-                    <td>{allergy.substance}</td>
-                    <td>{allergy.severity}</td>
-                    <td>
-                      <button 
-                        className="remove-btn" 
-                        onClick={() => handleRemove(index)}
-                        title="Remove allergy"
-                      >
-                        ×
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+      <div className="form-group">
+        <label>Allergy Type</label>
+        <select value={allergyType} onChange={(e) => setAllergyType(e.target.value)}>
+          <option value="">Select Allergy Type</option>
+          {allergyTypes.map(type => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
       </div>
 
-      <div className="form-footer">
-        <button className="cancel-btn" onClick={closeForm}>Cancel</button>
-        <button className="blue-btn" onClick={handleSave}>Save</button>
+      <div className="form-group">
+        <label>Allergic Substance</label>
+        <select value={substance} onChange={(e) => setSubstance(e.target.value)}>
+          <option value="">Select Substance</option>
+          {allergicSubstances.map(sub => (
+            <option key={sub} value={sub}>{sub}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="form-group">
+        <label>Severity</label>
+        <select value={severity} onChange={(e) => setSeverity(e.target.value)}>
+          <option value="">Select Severity</option>
+          {severityLevels.map(level => (
+            <option key={level} value={level}>{level}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="button-group-right">
+        <button type="button" onClick={handleAdd}>Add</button>
+        <button type="submit" onClick={handleSave}>Save</button>
       </div>
     </div>
   );

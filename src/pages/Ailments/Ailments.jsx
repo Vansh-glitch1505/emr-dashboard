@@ -72,6 +72,17 @@ const Ailments = () => {
       return;
     }
     
+    // ADD THIS VALIDATION
+    if (ailment.status === "Select") {
+      alert("Please select a valid status");
+      return;
+    }
+    
+    if (ailment.severity === "Select") {
+      alert("Please select a valid severity");
+      return;
+    }
+    
     if (editingIndex !== null) {
       const updated = [...ailmentsList];
       updated[editingIndex] = { ...ailment };
@@ -129,45 +140,73 @@ const Ailments = () => {
   };
 
   const saveToBackend = async (dataToSave = ailmentsList) => {
+      if (dataToSave.length === 0) {
+      alert("No ailments to save. Please add at least one ailment.");
+      return;
+    }
+
+    // Validate all ailments before saving
+    for (let i = 0; i < dataToSave.length; i++) {
+      const ailment = dataToSave[i];
+      if (ailment.severity === "Select" || !ailment.severity) {
+        alert(`Ailment "${ailment.problemName}" has invalid severity. Please edit and select a valid severity.`);
+        return;
+      }
+      if (ailment.status === "Select" || !ailment.status) {
+        alert(`Ailment "${ailment.problemName}" has invalid status. Please edit and select a valid status.`);
+        return;
+      }
+    }
+
     if (dataToSave.length === 0) {
       alert("No ailments to save. Please add at least one ailment.");
       return;
     }
 
     setIsSaving(true);
-    
+
     try {
-      // Get patient_id from localStorage or wherever you store it
-      const patientId = localStorage.getItem('patient_id') || 'YOUR_PATIENT_ID';
-      
-      // Call the bulk endpoint to save all ailments
-      const response = await fetch(`/api/ailments/${patientId}/bulk`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ailments: dataToSave })
+      // ✅ Get patientId from localStorage (set during demographics save)
+      const patientId = localStorage.getItem("currentPatientId");
+
+      if (!patientId) {
+        alert("No patient selected. Please complete Patient Demographics first.");
+        setIsSaving(false);
+        navigate("/dashboard/patient-demographics");
+        return;
+      }
+
+      // In your saveToBackend function, before the fetch:
+      console.log('Sending ailments:', JSON.stringify(dataToSave, null, 2));
+
+      // ✅ Save ailments to backend using patientId
+      const response = await fetch(`http://localhost:5000/api/ailments/${patientId}/bulk`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ailments: dataToSave }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to save ailments');
+        throw new Error(result.error || "Failed to save ailments");
       }
 
       alert(`Successfully saved ${result.totalAilments} ailment(s)!`);
-      
-      // Update preview data and navigate
+
+      // ✅ Update preview and navigate
       updatePreviewData(dataToSave, "ailments");
       navigate("/dashboard/assessment");
-      
+
     } catch (error) {
-      console.error('Error saving ailments:', error);
+      console.error("Error saving ailments:", error);
       alert(`Error: ${error.message}`);
     } finally {
       setIsSaving(false);
     }
   };
+
+
 
   return (
     <div className="ailments-container">
